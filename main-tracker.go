@@ -16,38 +16,80 @@ func Tables_Create(db *sql.DB) {
 	log.Println("create tables 'tracker', 'field', 'number', and 'option' if they do not exist")
 
 	_, err := db.Exec(`
+		-- foreign_keys constraints are not on by default
 		PRAGMA foreign_keys = ON;
+
 		CREATE TABLE IF NOT EXISTS tracker (
 			tracker_id INTEGER NOT NULL UNIQUE,
+
+			-- name to identify this tracker
 			tracker_name TEXT NOT NULL UNIQUE,
-			tracker_notes TEXT,
+
+			-- markdown formated notes
+			tracker_notes TEXT NOT NULL DEFAULT "",
+
 			PRIMARY KEY (tracker_id)
 		);
+
 		CREATE TABLE IF NOT EXISTS field (
 			field_id INTEGER NOT NULL UNIQUE,
+
+			-- parent tracker
 			tracker_id INTEGER NOT NULL,
+
+			-- use "number" to track a signed whole number
+			-- examples: weight, height...
+			-- use "option" to a list of options
+			-- examples: exersise, read status
 			field_type TEXT CHECK(field_type in ('number', 'option')) NOT NULL DEFAULT 'number',
+
+			-- name to identify this field
 			field_name TEXT NOT NULL,
-			field_notes TEXT,
+
+			-- markdown formated notes
+			field_notes TEXT NOT NULL DEFAULT "",
+
+			-- a tracker can not have duplicate field_name's
+			UNIQUE(tracker_id, field_name),
+
 			PRIMARY KEY(field_id),
 			FOREIGN KEY(tracker_id) REFERENCES tracker (tracker_id) ON DELETE CASCADE
 		);
+
 		CREATE TABLE IF NOT EXISTS number (
 			number_id INTEGER NOT NULL UNIQUE,
+
+			-- parent field
 			field_id INTEGER NOT NULL,
+
+			-- max/min value
 			max_flag INTEGER NOT NULL DEFAULT false,
 			max_value INTEGER NOT NULL DEFAULT 1000,
 			min_flag INTEGER NOT NULL DEFAULT false,
 			min_value INTEGER NOT NULL DEFAULT 1,
+
+			-- 0 round to integer
+			-- 2 round to 2 decimal places. example money
+			-- -3 is thousands
 			decimal_places INTEGER NOT NULL DEFAULT 0,
+
 			PRIMARY KEY(number_id)
 			FOREIGN KEY(field_id) REFERENCES field (field_id) ON DELETE CASCADE
 		);
+
 		CREATE TABLE IF NOT EXISTS option (
 			option_id INTEGER NOT NULL UNIQUE,
+
+			-- parent field
 			field_id INTEGER NOT NULL,
+
+			-- key value pair
 			option_value INTEGER NOT NULL DEFAULT 0,
 			option_name TEXT NOT NULL DEFAULT "value",
+
+			-- an option can not have duplicate option_name's
+			UNIQUE(field_id, option_name),
+
 			PRIMARY KEY(option_id)
 			FOREIGN KEY(field_id) REFERENCES field (field_id) ON DELETE CASCADE
 		);
@@ -382,7 +424,7 @@ func Tracker_Add_Option_Field(db *sql.DB, tracker_name string, field_name string
 type Record_Table struct {
 	tracker Tracker
 	records []Record
-	fields []Field_Deep
+	fields  []Field_Deep
 }
 
 type Record struct {
@@ -390,7 +432,7 @@ type Record struct {
 	timestamp string
 	notes     string
 
-	data   []int64
+	data []int64
 }
 
 func Record_Get_Deep(db *sql.DB, tracker_name string) (Record_Table, error) {
@@ -448,10 +490,10 @@ func Record_Get_Deep(db *sql.DB, tracker_name string) (Record_Table, error) {
 				record.data = append(record.data, col_int)
 			}
 		}
-		
+
 		records = append(records, record)
 	}
-	
+
 	record_table.records = records
 
 	return record_table, nil

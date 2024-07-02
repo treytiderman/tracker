@@ -15,16 +15,18 @@ func main() {
 	log.Println("SQLITE file ./data.db opened")
 	defer db.Close()
 
+	Tables_Create(db)
+
 	Tracker_New(db, "test-1")
 	Tracker_Update_Notes(db, "test-1", "this is just a test")
 	Tracker_Add_Number_Field(db, "test-1", "num", false, 500, true, 100, 2)
 	Tracker_Add_Option_Field(db, "test-1", "opt", []int{0, 1}, []string{"ok", "error"})
 
 	Record_Table_Create(db, "test-1")
-	// Record_Add(db, "test-1", "", []string{"num", "opt"}, []int{42, 0})
-	// Record_Add(db, "test-1", "", []string{"num", "opt"}, []int{0, 1})
-	// Record_Add(db, "test-1", "tehe", []string{"num", "opt"}, []int{69, 0})
-	// Record_Add(db, "test-1", "", []string{"num", "opt"}, []int{3, 1})
+	Record_Add(db, "test-1", "", []string{"num", "opt"}, []int{42, 0})
+	Record_Add(db, "test-1", "", []string{"num", "opt"}, []int{0, 1})
+	Record_Add(db, "test-1", "tehe", []string{"num", "opt"}, []int{69, 0})
+	Record_Add(db, "test-1", "", []string{"num", "opt"}, []int{3, 1})
 
 	log.Println("Tracker_Get")
 	resultA, errA := Tracker_Get_All(db)

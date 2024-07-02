@@ -11,3 +11,7 @@ go run .
 ```
 go build .
 ```
+
+```
+go build -o ./build/app.exe .
+```
