@@ -118,9 +118,9 @@ func Tables_Drop(db *sql.DB) {
 // trackers
 
 type Tracker struct {
-	id    int
-	name  string
-	notes string
+	Id    int
+	Name  string
+	Notes string
 }
 
 func Tracker_Get_All(db *sql.DB) ([]Tracker, error) {
@@ -133,7 +133,7 @@ func Tracker_Get_All(db *sql.DB) ([]Tracker, error) {
 	var trackers []Tracker
 	for rows.Next() {
 		var tracker Tracker
-		err2 := rows.Scan(&tracker.id, &tracker.name, &tracker.notes)
+		err2 := rows.Scan(&tracker.Id, &tracker.Name, &tracker.Notes)
 		if err2 != nil {
 			return nil, err2
 		}
@@ -147,7 +147,7 @@ func Tracker_By_Name(db *sql.DB, tracker_name string) (Tracker, error) {
 	row := db.QueryRow(`SELECT * FROM tracker WHERE tracker_name = ?;`, tracker_name)
 
 	var tracker Tracker
-	err := row.Scan(&tracker.id, &tracker.name, &tracker.notes)
+	err := row.Scan(&tracker.Id, &tracker.Name, &tracker.Notes)
 	if err != nil {
 		return tracker, err
 	}
@@ -210,32 +210,32 @@ func Tracker_Update_Notes(db *sql.DB, tracker_name string, notes string) error {
 // field
 
 type Field struct {
-	field_id    int
-	field_type  string
-	field_name  string
-	field_notes string
+	Id    int
+	Type  string
+	Name  string
+	Notes string
 }
 
 type Field_Deep struct {
-	field_id    int
-	field_type  string
-	field_name  string
-	field_notes string
-	type_number Field_Number
-	type_option Field_Option
+	Id    int
+	Type  string
+	Name  string
+	Notes string
+	Type_Number Field_Number
+	Type_Option Field_Option
 }
 
 type Field_Number struct {
-	max_flag       bool
-	max_value      int
-	min_flag       bool
-	min_value      int
-	decimal_places int
+	Max_Flag       bool
+	Max_Value      int
+	Min_Flag       bool
+	Min_Value      int
+	Decimal_Places int
 }
 
 type Field_Option struct {
-	option_values []int
-	option_names  []string
+	Option_Values []int
+	Option_Names  []string
 }
 
 func Tracker_Get_Fields(db *sql.DB, tracker_name string) ([]Field, error) {
@@ -256,7 +256,7 @@ func Tracker_Get_Fields(db *sql.DB, tracker_name string) ([]Field, error) {
 	var fields []Field
 	for rows.Next() {
 		var field Field
-		err2 := rows.Scan(&field.field_id, &field.field_type, &field.field_name, &field.field_notes)
+		err2 := rows.Scan(&field.Id, &field.Type, &field.Name, &field.Notes)
 		if err2 != nil {
 			return nil, err2
 		}
@@ -271,7 +271,7 @@ func Tracker_Get_Number(db *sql.DB, field_id int) (Field_Number, error) {
 		FROM number WHERE field_id = ?;`, field_id)
 
 	var number Field_Number
-	err := row.Scan(&number.max_flag, &number.max_value, &number.min_flag, &number.min_value, &number.decimal_places)
+	err := row.Scan(&number.Max_Flag, &number.Max_Value, &number.Min_Flag, &number.Min_Value, &number.Decimal_Places)
 	if err != nil {
 		return number, err
 	}
@@ -297,8 +297,8 @@ func Tracker_Get_Option(db *sql.DB, field_id int) (Field_Option, error) {
 		if err2 != nil {
 			return option, err2
 		}
-		option.option_values = append(option.option_values, option_value)
-		option.option_names = append(option.option_names, option_name)
+		option.Option_Values = append(option.Option_Values, option_value)
+		option.Option_Names = append(option.Option_Names, option_name)
 	}
 
 	return option, nil
@@ -317,14 +317,14 @@ func Tracker_Get_Fields_Deep(db *sql.DB, tracker_name string) ([]Field_Deep, err
 		type_option := Field_Option{}
 
 		// get fields
-		if field.field_type == "number" {
-			field_number, err2 := Tracker_Get_Number(db, field.field_id)
+		if field.Type == "number" {
+			field_number, err2 := Tracker_Get_Number(db, field.Id)
 			if err2 != nil {
 				return fields_deep, err1
 			}
 			type_number = field_number
-		} else if field.field_type == "option" {
-			field_option, err2 := Tracker_Get_Option(db, field.field_id)
+		} else if field.Type == "option" {
+			field_option, err2 := Tracker_Get_Option(db, field.Id)
 			if err2 != nil {
 				return fields_deep, err1
 			}
@@ -333,12 +333,12 @@ func Tracker_Get_Fields_Deep(db *sql.DB, tracker_name string) ([]Field_Deep, err
 
 		// build up return object
 		fields_deep = append(fields_deep, Field_Deep{
-			field_id:    field.field_id,
-			field_type:  field.field_type,
-			field_name:  field.field_name,
-			field_notes: field.field_notes,
-			type_number: type_number,
-			type_option: type_option,
+			Id:    field.Id,
+			Type:  field.Type,
+			Name:  field.Name,
+			Notes: field.Notes,
+			Type_Number: type_number,
+			Type_Option: type_option,
 		})
 	}
 
@@ -452,7 +452,7 @@ func Record_Get_Deep(db *sql.DB, tracker_name string) (Record_Table, error) {
 
 	var records []Record
 
-	records_query := fmt.Sprintf("SELECT * FROM tracker_%d;", tracker.id)
+	records_query := fmt.Sprintf("SELECT * FROM tracker_%d;", tracker.Id)
 	rows, err3 := db.Query(records_query)
 	if err3 != nil {
 		return record_table, err3
@@ -516,10 +516,10 @@ func Record_Table_Create(db *sql.DB, tracker_name string) error {
 	for _, field := range fields {
 		custom_field_string := ""
 
-		if field.field_type == "number" {
-			custom_field_string = fmt.Sprintf("%s INT NOT NULL DEFAULT 0,", field.field_name)
-		} else if field.field_type == "option" {
-			custom_field_string = fmt.Sprintf("%s INT NOT NULL DEFAULT 0,", field.field_name)
+		if field.Type == "number" {
+			custom_field_string = fmt.Sprintf("%s INT NOT NULL DEFAULT 0,", field.Name)
+		} else if field.Type == "option" {
+			custom_field_string = fmt.Sprintf("%s INT NOT NULL DEFAULT 0,", field.Name)
 		}
 
 		custom_fields_string = strings.Join([]string{custom_fields_string, custom_field_string}, "\n\t")
