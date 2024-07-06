@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="tracker app">
+    <title>Title</title>
+    <script src="https://unpkg.com/htmx.org@2.0.0"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="
+    font-sans
+    bg-zinc-800
+    text-zinc-200
+    [&::-webkit-scrollbar]:w-2
+    [&::-webkit-scrollbar-track]:bg-zinc-800
+    [&::-webkit-scrollbar-thumb]:bg-zinc-700
+    [&::-webkit-scrollbar-thumb]:rounded-full
+">
+    <main class="p-4 max-w-lg mx-auto flex flex-col gap-4">
+        <div class="flex items-center border-b-2 border-zinc-500 pb-4 mb-4">
+            <h1 class="text-4xl font-bold text-violet-300">Trackers</h1>
+        </div>
+
+        <details class="[&_svg]:open:-rotate-180 p-4 border-2 border-zinc-700 rounded-lg">
+            <summary class="w-full list-none flex cursor-pointer items-center gap-4 [&::-webkit-details-marker]:hidden">
+                <div>
+                    <h2 class="text-lg font-bold text-violet-300">Walk Dog 🐶</h2>
+                    <div class="font-thin text-sm text-zinc-400">Each time I take the dog out</div>
+                </div>
+                <div class="ml-auto text-violet-300">
+                    <svg class="rotate-0 transform transition-all duration-200" fill="none" height="24" width="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+            </summary>
+            <div class="flex flex-col gap-2 mt-4">
+                <h3 class="">Data Fields:</h3>
+                <div class="flex flex-wrap items-center gap-4">
+                    <div class="w-4"></div>
+                    <div class="font-thin text-sm text-zinc-400">None...</div>
+                </div>
+            </div>
+        </details>
+
+        <details class="[&_svg]:open:-rotate-180 p-4 border-2 border-zinc-700 rounded-lg">
+            <summary class="w-full list-none flex cursor-pointer items-center gap-4 [&::-webkit-details-marker]:hidden">
+                <div>
+                    <h2 class="text-lg font-bold text-violet-300">Brush Teeth 🦷</h2>
+                    <div class="font-thin text-sm text-zinc-400">Each time I brush my teeth</div>
+                </div>
+                <div class="ml-auto text-violet-300">
+                    <svg class="rotate-0 transform transition-all duration-200" fill="none" height="24" width="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+            </summary>
+            <div class="flex flex-col gap-2 mt-4">
+                <h3 class="">Data Fields:</h3>
+                <div class="flex flex-wrap items-center gap-4">
+                    <div class="w-4"></div>
+                    <div class="font-thin text-sm text-zinc-400">None...</div>
+                </div>
+            </div>
+        </details>
+
+        <details class="[&_svg]:open:-rotate-180 p-4 border-2 border-zinc-700 rounded-lg">
+            <summary class="w-full list-none flex cursor-pointer items-center gap-4 [&::-webkit-details-marker]:hidden">
+                <div>
+                    <h2 class="text-lg font-bold text-violet-300">My Weight ⚖️</h2>
+                    <div class="font-thin text-sm text-zinc-400">Weight in pounds</div>
+                </div>
+                <div class="ml-auto text-violet-300">
+                    <svg class="rotate-0 transform transition-all duration-200" fill="none" height="24" width="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+            </summary>
+            <div class="flex flex-col gap-2 mt-4">
+                <h3 class="">Data Fields:</h3>
+                <div class="flex flex-wrap items-end gap-4">
+                    <div class="w-4"> </div>
+                    <div class="">Weight</div>
+                    <div class="font-thin text-sm text-zinc-400">0.00</div>
+                </div>
+            </div>
+        </details>
+
+        <details class="[&_svg]:open:-rotate-180 p-4 border-2 border-zinc-700 rounded-lg">
+            <summary class="w-full list-none flex cursor-pointer items-center gap-4 [&::-webkit-details-marker]:hidden">
+                <div>
+                    <h2 class="text-lg font-bold text-violet-300">Lift 🏋️</h2>
+                    <div class="font-thin text-sm text-zinc-400">My Lifting Habits</div>
+                </div>
+                <div class="ml-auto text-violet-300">
+                    <svg class="rotate-0 transform transition-all duration-200" fill="none" height="24" width="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+            </summary>
+            <div class="flex flex-col gap-2 mt-4">
+                <h3 class="">Data Fields:</h3>
+                <div class="flex flex-wrap items-center gap-4">
+                    <div class="w-4"></div>
+                    <div class="">Exersise</div>
+                    <div class="font-thin text-sm text-zinc-400">Deadlift | Bench | Sqaut</div>
+                </div>
+                <div class="flex flex-wrap items-center gap-4">
+                    <div class="w-4"></div>
+                    <div class="">Weight</div>
+                    <div class="font-thin text-sm text-zinc-400">0</div>
+                </div>
+                <div class="flex flex-wrap items-center gap-4">
+                    <div class="w-4"></div>
+                    <div class="">Reps</div>
+                    <div class="font-thin text-sm text-zinc-400">0</div>
+                </div>
+            </div>
+        </details>
+
+    </main>
+
+</body>
+
+</html>

@@ -1,6 +1,8 @@
 # Todo
 
-- [ ] make it work
+- [ ] Add Tailwind css as a static file
+    - https://github.com/tailwindlabs/tailwindcss-from-zero-to-production/tree/main/01-setting-up-tailwindcss
+- [ ] Next
 
 # Ideas
 

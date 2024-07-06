@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Title</title>
+    <link rel="stylesheet" href="./public/css/styles.css">
+    <script src="https://unpkg.com/htmx.org@2.0.0"></script>
+</head>
+
+<body>
+    <h1>{{ .Title }}</h1>
+    <form hx-post="/names/add" hx-target="#name-list" hx-swap="beforeend">
+        <label>
+            Add name <br>
+            <input name="name-add" type="text">
+        </label>
+        <input type="submit" value="Add">
+    </form>
+    <div id="name-list">
+        {{ range .Names }}
+            {{ block "block-name" . }}
+                <p>
+                    Hi my name is {{ . }}
+                    {{ if eq . "trey" }} *** {{ end }}
+                </p>
+            {{ end }}
+        {{ end }}
+    </div>
+</body>
+
+</html>
