@@ -155,6 +155,18 @@ func Tracker_By_Name(db *sql.DB, tracker_name string) (Tracker, error) {
 	return tracker, nil
 }
 
+func Tracker_By_Id(db *sql.DB, tracker_id int) (Tracker, error) {
+	row := db.QueryRow(`SELECT * FROM tracker WHERE tracker_id = ?;`, tracker_id)
+
+	var tracker Tracker
+	err := row.Scan(&tracker.Id, &tracker.Name, &tracker.Notes)
+	if err != nil {
+		return tracker, err
+	}
+
+	return tracker, nil
+}
+
 func Tracker_Get_Id(db *sql.DB, tracker_name string) (int, error) {
 	row := db.QueryRow(`SELECT tracker_id FROM tracker WHERE tracker_name = ?;`, tracker_name)
 
@@ -217,10 +229,10 @@ type Field struct {
 }
 
 type Field_Deep struct {
-	Id    int
-	Type  string
-	Name  string
-	Notes string
+	Id          int
+	Type        string
+	Name        string
+	Notes       string
 	Type_Number Field_Number
 	Type_Option Field_Option
 }
@@ -236,6 +248,18 @@ type Field_Number struct {
 type Field_Option struct {
 	Option_Values []int
 	Option_Names  []string
+}
+
+func Field_By_Id(db *sql.DB, field_id int) (Field, error) {
+	row := db.QueryRow(`SELECT field_id, field_type, field_name, field_notes FROM field WHERE field_id = ?;`, field_id)
+
+	var field Field
+	err := row.Scan(&field.Id, &field.Type, &field.Name, &field.Notes)
+	if err != nil {
+		return field, err
+	}
+
+	return field, nil
 }
 
 func Tracker_Get_Fields(db *sql.DB, tracker_name string) ([]Field, error) {
@@ -333,10 +357,10 @@ func Tracker_Get_Fields_Deep(db *sql.DB, tracker_name string) ([]Field_Deep, err
 
 		// build up return object
 		fields_deep = append(fields_deep, Field_Deep{
-			Id:    field.Id,
-			Type:  field.Type,
-			Name:  field.Name,
-			Notes: field.Notes,
+			Id:          field.Id,
+			Type:        field.Type,
+			Name:        field.Name,
+			Notes:       field.Notes,
 			Type_Number: type_number,
 			Type_Option: type_option,
 		})
@@ -346,7 +370,8 @@ func Tracker_Get_Fields_Deep(db *sql.DB, tracker_name string) ([]Field_Deep, err
 }
 
 func Tracker_Add_Number_Field(db *sql.DB, tracker_name string, field_name string, max_flag bool, max_value int, min_flag bool, min_value int, decimal_places int) (int64, error) {
-	log.Printf("add to tracker '%s' field type 'number' named '%s'", tracker_name, field_name)
+	log.Printf("add to tracker '%s' field '%s' type 'number' max(%t) %d min(%t) %d decimal_places %d",
+		tracker_name, field_name, max_flag, max_value, min_flag, min_value, decimal_places)
 
 	// get tracker_id from tracker_name
 	tracker_id, err1 := Tracker_Get_Id(db, tracker_name)
@@ -404,7 +429,7 @@ func Tracker_Add_Option_Field(db *sql.DB, tracker_name string, field_name string
 
 	// loop though options
 	for i, option_value := range option_values {
-		log.Printf("field_id '%d' option_value '%d' option_name '%s'", field_id, option_value, option_names[i])
+		log.Printf("-> field_id '%d' option_value '%d' option_name '%s'", field_id, option_value, option_names[i])
 
 		// sql call - number
 		_, err4 := db.Exec(`INSERT INTO option (field_id, option_value, option_name)
@@ -422,17 +447,17 @@ func Tracker_Add_Option_Field(db *sql.DB, tracker_name string, field_name string
 // record
 
 type Record_Table struct {
-	tracker Tracker
-	records []Record
-	fields  []Field_Deep
+	Tracker Tracker
+	Records []Record
+	Fields  []Field_Deep
 }
 
 type Record struct {
-	id        int64
-	timestamp string
-	notes     string
+	Id        int64
+	Timestamp string
+	Notes     string
 
-	data []int64
+	Data []int64
 }
 
 func Record_Get_Deep(db *sql.DB, tracker_name string) (Record_Table, error) {
@@ -442,13 +467,13 @@ func Record_Get_Deep(db *sql.DB, tracker_name string) (Record_Table, error) {
 	if err1 != nil {
 		return record_table, err1
 	}
-	record_table.tracker = tracker
+	record_table.Tracker = tracker
 
 	fields, err2 := Tracker_Get_Fields_Deep(db, tracker_name)
 	if err2 != nil {
 		return record_table, err2
 	}
-	record_table.fields = fields
+	record_table.Fields = fields
 
 	var records []Record
 
@@ -479,22 +504,22 @@ func Record_Get_Deep(db *sql.DB, tracker_name string) (Record_Table, error) {
 		// map scan data to record
 		for i, col_name := range cols {
 			if col_name == "id" {
-				record.id, _ = strconv.ParseInt(columns[i], 10, 0)
+				record.Id, _ = strconv.ParseInt(columns[i], 10, 0)
 			} else if col_name == "tracker_id" {
 			} else if col_name == "timestamp" {
-				record.timestamp = columns[i]
+				record.Timestamp = columns[i]
 			} else if col_name == "notes" {
-				record.notes = columns[i]
+				record.Notes = columns[i]
 			} else {
 				col_int, _ := strconv.ParseInt(columns[i], 10, 0)
-				record.data = append(record.data, col_int)
+				record.Data = append(record.Data, col_int)
 			}
 		}
 
 		records = append(records, record)
 	}
 
-	record_table.records = records
+	record_table.Records = records
 
 	return record_table, nil
 }
@@ -505,11 +530,9 @@ func Record_Table_Create(db *sql.DB, tracker_name string) error {
 		return err1
 	}
 
-	log.Printf("create table 'tracker_%d' for tracker %s", tracker_id, tracker_name)
-
-	fields, err2 := Tracker_Get_Fields_Deep(db, "test-1")
+	fields, err2 := Tracker_Get_Fields_Deep(db, tracker_name)
 	if err2 != nil {
-		log.Fatal(err2)
+		return err2
 	}
 
 	custom_fields_string := "-- custom fields from the field table"
@@ -535,12 +558,16 @@ CREATE TABLE IF NOT EXISTS tracker_%d (
 	%s
 
 	PRIMARY KEY(id),
-	FOREIGN KEY(tracker_id) REFERENCES tracker (tracker_id)
+	FOREIGN KEY(tracker_id) REFERENCES tracker (tracker_id) ON DELETE CASCADE
 );`, tracker_id, tracker_id, custom_fields_string)
 
 	// sql call
 	_, err3 := db.Exec(create_table_string)
+	if err3 != nil {
+		return err3
+	}
 
+	log.Printf("create table 'tracker_%d' for tracker '%s'", tracker_id, tracker_name)
 	return err3
 }
 
@@ -556,25 +583,34 @@ func Record_Table_Delete(db *sql.DB, tracker_name string) error {
 }
 
 func Record_Add(db *sql.DB, tracker_name string, notes string, data_names []string, data_values []int) (int64, error) {
-	log.Printf("record in '%s'", tracker_name)
+	log.Printf("record in tracker '%s' with notes '%s'", tracker_name, notes)
+	log.Println(data_names)
+	log.Println(data_values)
 
 	tracker_id, err1 := Tracker_Get_Id(db, tracker_name)
 	if err1 != nil {
 		return 0, err1
 	}
 
-	field_names_string := strings.Join(data_names, ", ")
+	var insert_string string
+	if len(data_names) > 0 {
+		field_names_string := strings.Join(data_names, ", ")
 
-	var field_values []string
-	for _, data_value := range data_values {
-		field_values = append(field_values, strconv.Itoa(data_value))
+		var field_values []string
+		for _, data_value := range data_values {
+			field_values = append(field_values, strconv.Itoa(data_value))
+		}
+
+		field_values_string := strings.Join(field_values, ", ")
+
+		insert_string = fmt.Sprintf(
+			`INSERT INTO tracker_%d (notes, %s) VALUES ("%s", %s);`,
+			tracker_id, field_names_string, notes, field_values_string)
+	} else {
+		insert_string = fmt.Sprintf(
+			`INSERT INTO tracker_%d (notes) VALUES ("%s");`,
+			tracker_id, notes)
 	}
-
-	field_values_string := strings.Join(field_values, ", ")
-
-	insert_string := fmt.Sprintf(
-		`INSERT INTO tracker_%d (notes, %s) VALUES ("%s", %s);`,
-		tracker_id, field_names_string, notes, field_values_string)
 
 	// sql call
 	result, err2 := db.Exec(insert_string)
