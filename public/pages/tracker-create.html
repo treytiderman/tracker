@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en" style="color-scheme: dark;" class="h-full">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="tracker app">
+    <title>Title</title>
+    <script src="https://unpkg.com/htmx.org@2.0.0"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover, 
+        input:-webkit-autofill:focus,
+        textarea:-webkit-autofill,
+        textarea:-webkit-autofill:hover,
+        textarea:-webkit-autofill:focus,
+        select:-webkit-autofill,
+        select:-webkit-autofill:hover,
+        select:-webkit-autofill:focus {
+            /* border: 2px solid #5252aa; */
+            /* outline: 2px solid #5252aa; */
+            -webkit-text-fill-color: #e4e4ff;
+            -webkit-box-shadow: 0 0 0px 1000px #3f3f5a inset;
+        }
+    </style>
+</head>
+
+<body class="h-full font-sans bg-zinc-800 text-zinc-200 flex flex-col">
+
+    <nav x-data="{ trackerDropdownOpen: false, pageDropdownOpen: false }" class="text-zinc-200 bg-zinc-700 border-b-2 border-zinc-600 font-medium text-sm sm:text-base">
+        <div class="max-w-lg mx-auto flex items-center gap-2 p-1">
+
+            <!-- Home -->
+            <a href="#" class="px-3 p-1 rounded-md border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
+                <svg class="w-4 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" fill="currentColor" viewBox="0 0 20 20"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                    <path d="M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.2c0 2.7-.2 5.4-.5 8.1V472c0 22.1-17.9 40-40 40H456c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1H416 392c-22.1 0-40-17.9-40-40V448 384c0-17.7-14.3-32-32-32H256c-17.7 0-32 14.3-32 32v64 24c0 22.1-17.9 40-40 40H160 128.1c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2H104c-22.1 0-40-17.9-40-40V360c0-.9 0-1.9 .1-2.8V287.6H32c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z"/>
+                </svg>
+            </a>
+            
+            <div class="text-zinc-500 font-bold"> / </div>
+            
+            <a href="#" class="px-3 p-1 rounded-md border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
+                Create Tracker
+            </a>
+    </nav>
+
+    <main class="p-4 max-w-lg w-full grow mx-auto flex flex-col gap-4">
+
+        <h1 class="text-2xl font-bold text-violet-300">Create Tracker</h1>
+
+        <form class="flex flex-col gap-4" hx-post="/htmx/tracker/create" hx-target="#response">
+
+            <div class="bg-zinc-700 border-2 border-zinc-600 rounded-lg flex flex-col gap-0.5">
+                <label for="tracker_name" class="sr-only">Tracker Name</label>
+                <input type="text" name="tracker_name" id="tracker_name" placeholder="Tracker Name" value="Commissions" required
+                    class="px-3 py-2 bg-zinc-700 placeholder:text-zinc-500 border-b-2 border-zinc-600 rounded-t-md focus:outline-none focus:ring-2 focus:ring-zinc-300" />
+
+                <label for="tracker_notes" class="sr-only">Notes</label>
+                <textarea name="tracker_notes" id="tracker_notes" placeholder="Tracker Notes..."
+                    class="min-h-12 h-24 px-3 py-2 bg-zinc-700 placeholder:text-zinc-500 rounded-b-md focus:outline-none focus:ring-2 focus:ring-zinc-300">Badger badger badger...</textarea>
+            </div>
+
+            <h2 class="text-xl font-bold text-violet-400">Data Fields</h2>
+
+            <div id="data_fields" class="flex flex-col gap-4">
+
+                <div class="hidden flex flex-col gap-2">
+    
+                    <div class="bg-zinc-700 rounded-lg border-2 border-zinc-600 flex items-center">
+                        <label for="field_type_1" class="sr-only"> Type </label>
+                        <select id="field_type_1" name="field_type_1" 
+                            class="h-9 px-3 cursor-pointer rounded-md bg-zinc-700 font-medium text-sm focus:outline-none focus:ring-2 focus:ring-zinc-300">
+                            <option value="number">Number</option>
+                            <option value="option">Option</option>
+                        </select>
+    
+                        <label for="field_name_1" class="sr-only">
+                            Name
+                        </label>
+                        <input type="text" name="field_name_1" id="field_name_1" placeholder="Field Name" value="Cost"
+                            class="h-9 grow px-3 ml-1 rounded-md bg-transparent placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-300">
+                    </div>
+
+                    <div class="ml-8 bg-zinc-700 rounded-lg border-2 border-zinc-600 flex items-center">
+                        <label for="max_flag_1" class="sr-only">Max Flag</label>
+                        <input type="checkbox" id="max_flag_1" name="max_flag_1"
+                            class="appearance-none min-w-4 h-4 ml-3 rounded-sm zml-4 border-2 border-zinc-500 bg-zinc-800 checked:bg-violet-500 checked:border-violet-400 focus:outline-none focus:border-zinc-300">
+    
+                        <label for="max_value_1" class="px-3 min-w-16 font-medium text-xs text-zinc-400">
+                            Max&nbsp;Value
+                        </label>
+                        <input type="number" name="max_value_1" id="max_value_1" placeholder=1000 value=9001
+                            class="h-9 min-w-16 grow px-3 rounded-md bg-transparent placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-300">
+                    </div>
+                    <div class="ml-8 bg-zinc-700 rounded-lg border-2 border-zinc-600 flex items-center">
+                        <label for="min_flag_1" class="sr-only">Min Flag</label>
+                        <input checked id="min_flag_1" type="checkbox"
+                            class="appearance-none min-w-4 h-4 ml-3 rounded-sm border-2 border-zinc-500 bg-zinc-800 checked:bg-violet-600 checked:border-violet-400 focus:outline-none focus:border-zinc-300">
+    
+                        <label for="min_value_1" class="px-3 min-w-16 font-medium text-xs text-zinc-400">
+                            Min&nbsp;Value
+                        </label>
+                        <input type="number" name="min_value_1" name="min_value_1" id="min_value_1" placeholder="0" value=0
+                            class="h-9 min-w-16 grow px-3 rounded-md bg-transparent placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-300">
+                    </div>
+                    <div class="ml-8 bg-zinc-700 rounded-lg border-2 border-zinc-600 flex items-center">
+                        <label for="decimal_places_1" class="px-3 min-w-24 font-medium text-xs text-zinc-400">
+                            Decimal&nbsp;Places
+                        </label>
+                        <input type="number" name="decimal_places_1" id="decimal_places_1" placeholder=0 value=2
+                            class="h-9 min-w-16 grow px-3 rounded-md bg-transparent placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-300">
+                    </div>
+
+                </div>
+    
+                <div class="hidden flex flex-col gap-2">
+    
+                    <div class="bg-zinc-700 rounded-lg border-2 border-zinc-600 flex items-center">
+                        <label for="field_type_2" class="sr-only">
+                            Type
+                        </label>
+                        <select id="field_type_2" name="field_type_2" 
+                            class="h-9 px-3 cursor-pointer rounded-md bg-zinc-700 font-medium text-sm focus:outline-none focus:ring-2 focus:ring-zinc-300">
+                            <option value="option">Option</option>
+                            <option value="number">Number</option>
+                        </select>
+    
+                        <label for="field_name_2" class="sr-only">
+                            Name
+                        </label>
+                        <input type="text" name="field_name_2" id="field_name_2" placeholder="Field Name" value="Status"
+                            class="h-9 grow px-3 ml-1 rounded-md bg-transparent placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-300">
+                    </div>
+    
+                    <div class="ml-8 bg-zinc-700 rounded-lg border-2 border-zinc-600 flex items-center">
+                        <label for="field_2_option_value_1" class="px-3 py-1 font-medium text-xs text-zinc-400">
+                            #
+                        </label>
+                        <input type="number" name="field_2_option_value_1" id="field_2_option_value_1" placeholder=1 value=-1
+                            class="h-9 min-w-20 w-20 px-3 rounded-md bg-transparent placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-300">
+                        <label for="field_2_option_name_1" class="px-3 font-medium text-xs text-zinc-400">
+                            Name
+                        </label>
+                        <input type="text" name="field_2_option_name_1" id="field_2_option_name_1" placeholder="Option Name" value="Canceled"
+                            class="h-9 w-full px-3 rounded-md bg-transparent placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-300">
+                    </div>
+                    <div class="ml-8 bg-zinc-700 rounded-lg border-2 border-zinc-600 flex items-center">
+                        <label for="field_2_option_value_2" class="px-3 py-1 font-medium text-xs text-zinc-400">
+                            #
+                        </label>
+                        <input type="number" name="field_2_option_value_2" id="field_2_option_value_2" placeholder=1 value=0
+                            class="h-9 min-w-20 w-20 px-3 rounded-md bg-transparent placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-300">
+                        <label for="field_2_option_name_2" class="px-3 font-medium text-xs text-zinc-400">
+                            Name
+                        </label>
+                        <input type="text" name="field_2_option_name_2" id="field_2_option_name_2" placeholder="Option Name" value="Incomplete"
+                            class="h-9 w-full px-3 rounded-md bg-transparent placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-300">
+                    </div>
+                    <div class="ml-8 bg-zinc-700 rounded-lg border-2 border-zinc-600 flex items-center">
+                        <label for="field_2_option_value_3" class="px-3 py-1 font-medium text-xs text-zinc-400">
+                            #
+                        </label>
+                        <input type="number" name="field_2_option_value_3" id="field_2_option_value_3" placeholder=1 value=1
+                            class="h-9 min-w-20 w-20 px-3 rounded-md bg-transparent placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-300">
+                        <label for="field_2_option_name_3" class="px-3 font-medium text-xs text-zinc-400">
+                            Name
+                        </label>
+                        <input type="text" name="field_2_option_name_3" id="field_2_option_name_3" placeholder="Option Name" value="Complete"
+                            class="h-9 w-full px-3 rounded-md bg-transparent placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-300">
+                    </div>
+    
+                    <div class="ml-8">
+                        <button type="button" id="field_2_add_option" class="w-full p-2 text-xs text-zinc-500 rounded-md border-2 border-zinc-700 focus:outline-none focus:border-zinc-300">
+                            Add Option
+                        </button>
+                    </div>
+    
+                </div>
+
+            </div>
+            
+            <div class="flex gap-4 ">
+                <button type="button" id="add_field" class="w-full p-1 bg-zinc-700 rounded-md border-2 border-zinc-600 focus:outline-none focus:border-zinc-300">
+                    Add Field
+                </button>
+                <input type="submit" value="Create" class="w-full p-1 cursor-pointer rounded-md bg-green-800 text-green-200 border-2 border-green-600 focus:outline-none focus:border-zinc-300" />
+            </div>
+        </form>
+
+        <pre id="response" class="font-mono text-xs overflow-auto text-green-300"></pre>
+
+    </main>
+</body>
+
+<script>
+    let field_count = 0
+
+    function create_field_row(id) {
+        const field = document.createElement("div")
+        field.setAttribute("class", "bg-zinc-700 rounded-lg border-2 border-zinc-600 flex items-center")
+        
+        const select_label = document.createElement("label")
+        select_label.setAttribute("for", "field_type_" + id)
+        select_label.setAttribute("class", "sr-only")
+        select_label.innerText = "Type"
+        field.appendChild(select_label)
+
+        const select = document.createElement("select")
+        select.setAttribute("id", "field_type_" + id)
+        select.setAttribute("name", "field_type_" + id)
+        select.setAttribute("class", "h-9 px-3 cursor-pointer rounded-md bg-zinc-700 font-medium text-sm focus:outline-none focus:ring-2 focus:ring-zinc-300")
+        field.appendChild(select)
+
+        const select_option_1 = document.createElement("option")
+        select_option_1.setAttribute("value", "number")
+        select_option_1.innerText = "Number"
+        select.appendChild(select_option_1)
+
+        const select_option_2 = document.createElement("option")
+        select_option_2.setAttribute("value", "option")
+        select_option_2.innerText = "Option"
+        select.appendChild(select_option_2)
+
+        const input_label = document.createElement("label")
+        input_label.setAttribute("for", "field_name_" + id)
+        input_label.setAttribute("class", "sr-only")
+        input_label.innerText = "Name"
+        field.appendChild(input_label)
+
+        const input = document.createElement("input")
+        input.setAttribute("type", "text")
+        input.setAttribute("id", "field_name_" + id)
+        input.setAttribute("name", "field_name_" + id)
+        input.setAttribute("placeholder", "Field Name")
+        input.setAttribute("class", "h-9 grow px-3 ml-1 rounded-md bg-transparent placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-300")
+        field.appendChild(input)
+
+        select.addEventListener("change", event => {
+            // Remove option rows
+            const parent = field.parentElement
+            parent.childElementCount > 1
+            while (parent.childElementCount > 1) {
+                parent.removeChild(parent.lastElementChild);
+            }
+
+            // Add option rows
+            const field_type = event.target.value
+            if (field_type === "number") {
+                const max = create_number_max_row(id)
+                const min = create_number_min_row(id)
+                const dec = create_number_decimal_row(id)
+                parent.appendChild(max)
+                parent.appendChild(min)
+                parent.appendChild(dec)
+            } else if (field_type === "option") {
+                const option = create_option_row(id, 1)
+                parent.appendChild(option)
+                const add_option = create_add_option_button(id)
+                parent.appendChild(add_option)
+            }
+        })
+
+        return field
+    }
+
+    function create_number_max_row(id) {
+        const row = document.createElement("div")
+        row.setAttribute("class", "ml-8 bg-zinc-700 rounded-lg border-2 border-zinc-600 flex items-center")
+
+        const checkbox_label = document.createElement("label")
+        checkbox_label.setAttribute("for", "max_flag_" + id)
+        checkbox_label.setAttribute("class", "sr-only")
+        checkbox_label.innerText = "Max Flag"
+        row.appendChild(checkbox_label)
+
+        const checkbox = document.createElement("input")
+        checkbox.setAttribute("type", "checkbox")
+        checkbox.setAttribute("id", "max_flag_" + id)
+        checkbox.setAttribute("name", "max_flag_" + id)
+        checkbox.setAttribute("class", "appearance-none min-w-4 h-4 ml-3 rounded-sm zml-4 border-2 border-zinc-500 bg-zinc-800 checked:bg-violet-500 checked:border-violet-400 focus:outline-none focus:border-zinc-300")
+        row.appendChild(checkbox)
+
+        const input_label = document.createElement("label")
+        input_label.setAttribute("for", "max_value_" + id)
+        input_label.setAttribute("class", "px-3 min-w-16 font-medium text-xs text-zinc-400")
+        input_label.innerText = "Max Value"
+        row.appendChild(input_label)
+
+        const input = document.createElement("input")
+        input.setAttribute("type", "number")
+        input.setAttribute("id", "max_value_" + id)
+        input.setAttribute("name", "max_value_" + id)
+        input.setAttribute("placeholder", 1000)
+        input.setAttribute("class", "h-9 min-w-16 grow px-3 rounded-md bg-transparent placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-300")
+        row.appendChild(input)
+
+        return row
+    }
+
+    function create_number_min_row(id) {
+        const row = document.createElement("div")
+        row.setAttribute("class", "ml-8 bg-zinc-700 rounded-lg border-2 border-zinc-600 flex items-center")
+
+        const checkbox_label = document.createElement("label")
+        checkbox_label.setAttribute("for", "min_flag_" + id)
+        checkbox_label.setAttribute("class", "sr-only")
+        checkbox_label.innerText = "Min Flag"
+        row.appendChild(checkbox_label)
+
+        const checkbox = document.createElement("input")
+        checkbox.setAttribute("type", "checkbox")
+        checkbox.setAttribute("id", "min_flag_" + id)
+        checkbox.setAttribute("name", "min_flag_" + id)
+        checkbox.setAttribute("class", "appearance-none min-w-4 h-4 ml-3 rounded-sm zml-4 border-2 border-zinc-500 bg-zinc-800 checked:bg-violet-500 checked:border-violet-400 focus:outline-none focus:border-zinc-300")
+        row.appendChild(checkbox)
+
+        const input_label = document.createElement("label")
+        input_label.setAttribute("for", "min_value_" + id)
+        input_label.setAttribute("class", "px-3 min-w-16 font-medium text-xs text-zinc-400")
+        input_label.innerText = "Min Value"
+        row.appendChild(input_label)
+
+        const input = document.createElement("input")
+        input.setAttribute("type", "number")
+        input.setAttribute("id", "min_value_" + id)
+        input.setAttribute("name", "min_value_" + id)
+        input.setAttribute("placeholder", 0)
+        input.setAttribute("class", "h-9 min-w-16 grow px-3 rounded-md bg-transparent placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-300")
+        row.appendChild(input)
+
+        return row
+    }
+
+    function create_number_decimal_row(id) {
+        const row = document.createElement("div")
+        row.setAttribute("class", "ml-8 bg-zinc-700 rounded-lg border-2 border-zinc-600 flex items-center")
+
+        const input_label = document.createElement("label")
+        input_label.setAttribute("for", "decimal_places_" + id)
+        input_label.setAttribute("class", "px-3 min-w-16 font-medium text-xs text-zinc-400")
+        input_label.innerText = "Decimal Places"
+        row.appendChild(input_label)
+
+        const input = document.createElement("input")
+        input.setAttribute("type", "number")
+        input.setAttribute("id", "decimal_places_" + id)
+        input.setAttribute("name", "decimal_places_" + id)
+        input.setAttribute("placeholder", 0)
+        input.setAttribute("class", "h-9 min-w-16 grow px-3 rounded-md bg-transparent placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-300")
+        row.appendChild(input)
+
+        return row
+    }
+
+    function create_option_row(id, option_id) {
+        const row = document.createElement("div")
+        row.setAttribute("class", "ml-8 bg-zinc-700 rounded-lg border-2 border-zinc-600 flex items-center")
+
+        const value_label = document.createElement("label")
+        value_label.setAttribute("for", "field_" + id + "_option_value_" + option_id)
+        value_label.setAttribute("class", "px-3 py-1 font-medium text-xs text-zinc-400")
+        value_label.innerText = "#"
+        row.appendChild(value_label)
+
+        const value = document.createElement("input")
+        value.setAttribute("type", "number")
+        value.setAttribute("id", "field_" + id + "_option_value_" + option_id)
+        value.setAttribute("name", "field_" + id + "_option_value_" + option_id)
+        value.setAttribute("placeholder", option_id)
+        value.setAttribute("value", option_id)
+        value.setAttribute("class", "h-9 min-w-20 w-20 px-3 rounded-md bg-transparent placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-300")
+        row.appendChild(value)
+
+        const name_label = document.createElement("label")
+        name_label.setAttribute("for", "field_" + id + "_option_name_" + option_id)
+        name_label.setAttribute("class", "px-3 font-medium text-xs text-zinc-400")
+        name_label.innerText = "Name"
+        row.appendChild(name_label)
+
+        const name = document.createElement("input")
+        name.setAttribute("type", "text")
+        name.setAttribute("id", "field_" + id + "_option_name_" + option_id)
+        name.setAttribute("name", "field_" + id + "_option_name_" + option_id)
+        name.setAttribute("placeholder", "Option Name")
+        name.setAttribute("class", "h-9 w-full px-3 rounded-md bg-transparent placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-300")
+        row.appendChild(name)
+
+        return row
+    }
+
+    function create_add_option_button(field_count) {
+        let option_counter = 1
+
+        const row = document.createElement("div")
+        row.setAttribute("class", "ml-8")
+
+        const button = document.createElement("button")
+        button.setAttribute("id", "field_2_add_option")
+        button.setAttribute("type", "button")
+        button.setAttribute("class", "w-full p-1 bg-zinc-700 rounded-md border-2 border-zinc-600 focus:outline-none focus:border-zinc-300")
+        button.innerText = "Add Option"
+        row.appendChild(button)
+
+        button.addEventListener("click", event => {
+            option_counter++
+
+            const option = create_option_row(field_count, option_counter)
+            row.insertAdjacentElement("beforebegin", option);
+        })
+
+        return row
+    }
+
+    document.getElementById("add_field").addEventListener("click", event => {
+        field_count++
+
+        const parent = document.createElement("div")
+        parent.setAttribute("class", "flex flex-col gap-2")
+
+        const field = create_field_row(field_count)
+        parent.appendChild(field)
+
+        // Number
+        const max = create_number_max_row(field_count)
+        const min = create_number_min_row(field_count)
+        const dec = create_number_decimal_row(field_count)
+        parent.appendChild(max)
+        parent.appendChild(min)
+        parent.appendChild(dec)
+
+        document.getElementById("data_fields").appendChild(parent)
+    })
+
+</script>
+
+</html>

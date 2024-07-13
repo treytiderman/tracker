@@ -20,14 +20,12 @@
     [&::-webkit-scrollbar-thumb]:rounded-full
 ">
     <main class="p-4 max-w-lg mx-auto flex flex-col gap-4">
-        <div class="flex items-center border-b-2 border-zinc-500 pb-4 mb-4">
-            <h1 class="text-4xl font-bold text-violet-300">Trackers</h1>
-        </div>
+        <h1 class="text-4xl font-bold text-violet-300">Trackers</h1>
 
-        <details class="[&_svg]:open:-rotate-180 p-4 border-2 border-zinc-700 rounded-lg">
-            <summary class="w-full list-none flex cursor-pointer items-center gap-4 [&::-webkit-details-marker]:hidden">
+        <details class="[&_svg]:open:-rotate-180 border-2 border-zinc-700 rounded-lg">
+            <summary class="w-full p-4 list-none flex cursor-pointer items-center gap-4 rounded-lg [&::-webkit-details-marker]:hidden focus:outline-none focus:ring-2 focus:ring-zinc-300">
                 <div>
-                    <h2 class="text-lg font-bold text-violet-300">Walk Dog 🐶</h2>
+                    <h2 class="text-lg font-bold text-violet-400">Walk Dog 🐶</h2>
                     <div class="font-thin text-sm text-zinc-400">Each time I take the dog out</div>
                 </div>
                 <div class="ml-auto text-violet-300">
@@ -36,19 +34,23 @@
                     </svg>
                 </div>
             </summary>
-            <div class="flex flex-col gap-2 mt-4">
+            <div class="flex p-2 px-4 flex-col gap-2">
                 <h3 class="">Data Fields:</h3>
                 <div class="flex flex-wrap items-center gap-4">
                     <div class="w-4"></div>
                     <div class="font-thin text-sm text-zinc-400">None...</div>
                 </div>
             </div>
+            <div class="flex p-4 w-full">
+                <a href="./tracker?id=1" class="block text-sky-200 bg-sky-800 p-1 px-2 rounded-md border-2 border-sky-600 focus:outline-none focus:border-zinc-300">View Records</a>
+                <button class="block ml-auto text-red-300 p-1 px-2 rounded-md focus:outline-none focus:ring-2 focus:ring-zinc-300">Delete Forever</button>
+            </div>
         </details>
 
-        <details class="[&_svg]:open:-rotate-180 p-4 border-2 border-zinc-700 rounded-lg">
-            <summary class="w-full list-none flex cursor-pointer items-center gap-4 [&::-webkit-details-marker]:hidden">
+        <details class="[&_svg]:open:-rotate-180 border-2 border-zinc-700 rounded-lg">
+            <summary class="w-full p-4 list-none flex cursor-pointer items-center gap-4 rounded-lg [&::-webkit-details-marker]:hidden focus:outline-none focus:ring-2 focus:ring-zinc-300">
                 <div>
-                    <h2 class="text-lg font-bold text-violet-300">Brush Teeth 🦷</h2>
+                    <h2 class="text-lg font-bold text-violet-400">Brush Teeth 🦷</h2>
                     <div class="font-thin text-sm text-zinc-400">Each time I brush my teeth</div>
                 </div>
                 <div class="ml-auto text-violet-300">
@@ -57,19 +59,23 @@
                     </svg>
                 </div>
             </summary>
-            <div class="flex flex-col gap-2 mt-4">
+            <div class="flex p-2 px-4 flex-col gap-2">
                 <h3 class="">Data Fields:</h3>
                 <div class="flex flex-wrap items-center gap-4">
                     <div class="w-4"></div>
                     <div class="font-thin text-sm text-zinc-400">None...</div>
                 </div>
             </div>
+            <div class="flex p-4 w-full">
+                <a href="./tracker?id=2" class="block text-sky-200 bg-sky-800 p-1 px-2 rounded-md border-2 border-sky-600 focus:outline-none focus:border-zinc-300">View Records</a>
+                <button class="block ml-auto text-red-300 p-1 px-2 rounded-md focus:outline-none focus:ring-2 focus:ring-zinc-300">Delete Forever</button>
+            </div>
         </details>
 
-        <details class="[&_svg]:open:-rotate-180 p-4 border-2 border-zinc-700 rounded-lg">
-            <summary class="w-full list-none flex cursor-pointer items-center gap-4 [&::-webkit-details-marker]:hidden">
+        <details open class="[&_svg]:open:-rotate-180 border-2 border-zinc-700 rounded-lg">
+            <summary class="w-full p-4 list-none flex cursor-pointer items-center gap-4 rounded-lg [&::-webkit-details-marker]:hidden focus:outline-none focus:ring-2 focus:ring-zinc-300">
                 <div>
-                    <h2 class="text-lg font-bold text-violet-300">My Weight ⚖️</h2>
+                    <h2 class="text-lg font-bold text-violet-400">My Weight ⚖️</h2>
                     <div class="font-thin text-sm text-zinc-400">Weight in pounds</div>
                 </div>
                 <div class="ml-auto text-violet-300">
@@ -78,7 +84,7 @@
                     </svg>
                 </div>
             </summary>
-            <div class="flex flex-col gap-2 mt-4">
+            <div class="flex p-2 px-4 flex-col gap-2">
                 <h3 class="">Data Fields:</h3>
                 <div class="flex flex-wrap items-end gap-4">
                     <div class="w-4"> </div>
@@ -86,12 +92,16 @@
                     <div class="font-thin text-sm text-zinc-400">0.00</div>
                 </div>
             </div>
+            <div class="flex p-4 w-full">
+                <a href="./tracker?id=3" class="block text-sky-200 bg-sky-800 p-1 px-2 rounded-md border-2 border-sky-600 focus:outline-none focus:border-zinc-300">View Records</a>
+                <button class="block ml-auto text-red-300 p-1 px-2 rounded-md focus:outline-none focus:ring-2 focus:ring-zinc-300">Delete Forever</button>
+            </div>
         </details>
 
-        <details class="[&_svg]:open:-rotate-180 p-4 border-2 border-zinc-700 rounded-lg">
-            <summary class="w-full list-none flex cursor-pointer items-center gap-4 [&::-webkit-details-marker]:hidden">
+        <details class="[&_svg]:open:-rotate-180 border-2 border-zinc-700 rounded-lg">
+            <summary class="w-full p-4 list-none flex cursor-pointer items-center gap-4 rounded-lg [&::-webkit-details-marker]:hidden focus:outline-none focus:ring-2 focus:ring-zinc-300">
                 <div>
-                    <h2 class="text-lg font-bold text-violet-300">Lift 🏋️</h2>
+                    <h2 class="text-lg font-bold text-violet-400">Lift 🏋️</h2>
                     <div class="font-thin text-sm text-zinc-400">My Lifting Habits</div>
                 </div>
                 <div class="ml-auto text-violet-300">
@@ -100,7 +110,7 @@
                     </svg>
                 </div>
             </summary>
-            <div class="flex flex-col gap-2 mt-4">
+            <div class="flex p-2 px-4 flex-col gap-2">
                 <h3 class="">Data Fields:</h3>
                 <div class="flex flex-wrap items-center gap-4">
                     <div class="w-4"></div>
@@ -118,7 +128,17 @@
                     <div class="font-thin text-sm text-zinc-400">0</div>
                 </div>
             </div>
+            <div class="flex p-4 w-full">
+                <a href="./tracker?id=4" class="block text-sky-200 bg-sky-800 p-1 px-2 rounded-md border-2 border-sky-600 focus:outline-none focus:border-zinc-300">View Records</a>
+                <button class="block ml-auto text-red-300 p-1 px-2 rounded-md focus:outline-none focus:ring-2 focus:ring-zinc-300">Delete Forever</button>
+            </div>
         </details>
+
+        <div class="w-full">
+            <a href="./tracker-create" class="block p-1 px-2 text-green-300 ml-auto w-fit rounded-md focus:outline-none focus:ring-2 focus:ring-zinc-300">
+                Create Tracker
+            </a>
+        </div>
 
     </main>
 

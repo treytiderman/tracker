@@ -8,10 +8,14 @@ go run .
 
 ## Build - Windows
 
-```
-go build .
-```
+When on windows
 
 ```
 go build -o ./build/app.exe .
+```
+
+When on Linux
+
+```
+GOOS=windows GOARCH=amd64 go build .
 ```

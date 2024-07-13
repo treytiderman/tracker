@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en" style="color-scheme: dark;" class="h-full">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="tracker app">
+    <title>Title</title>
+    <script src="https://unpkg.com/htmx.org@2.0.0"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover, 
+        input:-webkit-autofill:focus,
+        textarea:-webkit-autofill,
+        textarea:-webkit-autofill:hover,
+        textarea:-webkit-autofill:focus,
+        select:-webkit-autofill,
+        select:-webkit-autofill:hover,
+        select:-webkit-autofill:focus {
+            /* border: 2px solid #5252aa; */
+            /* outline: 2px solid #5252aa; */
+            -webkit-text-fill-color: #e4e4ff;
+            -webkit-box-shadow: 0 0 0px 1000px #3f3f5a inset;
+        }
+    </style>
+</head>
+
+<body class="h-full font-sans bg-zinc-800 text-zinc-200 flex flex-col">
+
+    <nav x-data="{ trackerDropdownOpen: false, pageDropdownOpen: false }" class="text-zinc-200 bg-zinc-700 border-b-2 border-zinc-600 font-medium text-sm sm:text-base">
+        <div class="container mx-auto flex items-center gap-2 p-1">
+
+            <!-- Home -->
+            <a href="#" class="px-3 p-1 rounded-md border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
+                <svg class="w-4 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" fill="currentColor" viewBox="0 0 20 20"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                    <path d="M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.2c0 2.7-.2 5.4-.5 8.1V472c0 22.1-17.9 40-40 40H456c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1H416 392c-22.1 0-40-17.9-40-40V448 384c0-17.7-14.3-32-32-32H256c-17.7 0-32 14.3-32 32v64 24c0 22.1-17.9 40-40 40H160 128.1c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2H104c-22.1 0-40-17.9-40-40V360c0-.9 0-1.9 .1-2.8V287.6H32c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z"/>
+                </svg>
+            </a>
+    
+            <div class="text-zinc-500 font-bold"> / </div>
+    
+            <!-- Tracker -->
+            <div class="relative">
+                <button
+                    x-on:click="trackerDropdownOpen = !trackerDropdownOpen"
+                    class="flex items-center gap-2 px-3 p-1 max-w-40 md:max-w-72 rounded-md border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100"
+                >
+                    <span class="whitespace-nowrap truncate">Tracker_Name</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/>
+                    </svg>
+                </button>
+                <div
+                    class="absolute start-0 z-10 mt-1 max-w-40 md:max-w-72 max-h-80 overflow-y-auto rounded-b-md border-x-2 border-b-2 border-zinc-600 bg-zinc-700 shadow-xl shadow-black p-2"
+                    role="menu"
+                    x-show="trackerDropdownOpen"
+                    x-on:click.away="trackerDropdownOpen = false"
+                    x-on:keydown.escape.window="trackerDropdownOpen = false"
+                >
+                    <a href="#" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-300 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100 truncate">
+                        Walk Dog 🐩
+                    </a>
+                    <a href="#" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-300 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100 truncate">
+                        Brush Teeth 🦷
+                    </a>
+                    <a href="#" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-300 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100 truncate">
+                        Workout 🏋️
+                    </a>
+                    <a href="#" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-300 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100 truncate">
+                        Long Name That Keeps Going Past When It Should Probably Stop
+                    </a>
+                </div>
+            </div>
+    
+            <div class="text-zinc-500 font-bold"> / </div>
+            
+            <!-- Page -->
+            <div class="relative">
+                <button
+                    x-on:click="pageDropdownOpen = !pageDropdownOpen"
+                    class="flex items-center gap-2 px-3 p-1 w-32 rounded-md border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100"
+                >
+                    <span class="">Records</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/>
+                    </svg>
+                </button>
+                <div
+                    class="absolute start-0 z-10 mt-1 w-32 rounded-b-md border-x-2 border-b-2 border-zinc-600 bg-zinc-700 shadow-xl shadow-black p-2"
+                    role="menu"
+                    x-cloak
+                    x-show="pageDropdownOpen"
+                    x-on:click.away="pageDropdownOpen = false"
+                    x-on:keydown.escape.window="pageDropdownOpen = false"
+                >
+                    <a href="#" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-300 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
+                        Info
+                    </a>
+                    <a href="#" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-300 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
+                        Log
+                    </a>
+                    <a href="#" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-300 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
+                        Records
+                    </a>
+                    <a href="#" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-300 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
+                        Charts
+                    </a>
+                    <a href="#" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-300 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
+                        Reminders
+                    </a>
+                    <a href="#" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-300 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
+                        Goals
+                    </a>
+                </div>
+        </div>
+    </nav>
+
+    <main class="p-4 container mx-auto flex flex-col gap-4 grow h-full overflow-auto">
+
+        <h1 class="text-2xl font-bold text-violet-300">Records</h1>
+
+        <div class="relative overflow-x-auto rounded-md border-2 border-zinc-600">
+            <table class="w-full text-left">
+                <thead class="border-b-2 border-zinc-600 bg-zinc-700">
+                    <tr>
+                        <th class="px-3 py-2xs"> Timestamp </th>
+                        <th class="px-3 py-2"> Value </th>
+                        <th class="px-3 py-2"> Notes </th>
+                    </tr>
+                </thead>
+                <tbody class="text-sm">
+                    <tr class="border-b border-zinc-600 hover:bg-zinc-700">
+                        <th class="px-3 py-1 whitespace-nowrap font-mono font-normal text-zinc-400 text-xs">
+                            2024-07-07T18:56:44Z
+                        </th>
+                        <td class="px-3 py-1 whitespace-nowrap">
+                            walk dog
+                        </td>
+                        <td class="px-3 py-1 whitespace-nowrap">
+                            each time i take the dog out
+                        </td>
+                    </tr>
+                    <tr class="border-b border-zinc-600 hover:bg-zinc-700">
+                        <th class="px-3 py-1 whitespace-nowrap font-mono font-normal text-zinc-400 text-xs">
+                            2024-07-07T18:56:44Z
+                        </th>
+                        <td class="px-3 py-1 whitespace-nowrap">
+                            brush teeth
+                        </td>
+                        <td class="px-3 py-1 whitespace-nowrap">
+                            each time i brush my teeth
+                        </td>
+                    </tr>
+                    <tr class="border-b border-zinc-600 hover:bg-zinc-700">
+                        <th class="px-3 py-1 whitespace-nowrap font-mono font-normal text-zinc-400 text-xs">
+                            2024-07-07T18:56:44Z
+                        </th>
+                        <td class="px-3 py-1 whitespace-nowrap">
+                            weight
+                        </td>
+                        <td class="px-3 py-1 whitespace-nowrap">
+                            weight in pounds
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</body>
+
+</html>
