@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en" style="color-scheme: dark;">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="tracker app">
+    <title>Title</title>
+    <script src="https://unpkg.com/htmx.org@2.0.0"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover, 
+        input:-webkit-autofill:focus,
+        textarea:-webkit-autofill,
+        textarea:-webkit-autofill:hover,
+        textarea:-webkit-autofill:focus,
+        select:-webkit-autofill,
+        select:-webkit-autofill:hover,
+        select:-webkit-autofill:focus {
+            /* border: 2px solid #5252aa; */
+            /* outline: 2px solid #5252aa; */
+            -webkit-text-fill-color: #e4e4ff;
+            -webkit-box-shadow: 0 0 0px 1000px #3f3f5a inset;
+        }
+    </style>
+</head>
+
+<body class="
+    font-sans
+    bg-zinc-800
+    text-zinc-200
+    [&::-webkit-scrollbar]:w-2
+    [&::-webkit-scrollbar]:h-2
+    [&::-webkit-scrollbar-track]:bg-zinc-800
+    [&::-webkit-scrollbar-thumb]:bg-zinc-700
+    [&::-webkit-scrollbar-thumb]:rounded-fullz
+">
+    <main class="p-4 max-w-lg mx-auto flex flex-col gap-4">
+        <h1 class="text-4xl font-bold text-violet-300">New Tracker</h1>
+
+        <form class="flex flex-col gap-4" hx-post="/htmx/tracker/create" hx-target="#response">
+
+            <div class="bg-zinc-700 border-2 border-zinc-600 rounded-lg flex flex-col gap-0.5">
+                <label for="tracker_name" class="sr-only">Tracker Name</label>
+                <input type="text" name="tracker_name" id="tracker_name" placeholder="Tracker Name" value="" required
+                    class="px-3 py-2 bg-zinc-700 placeholder:text-zinc-500 border-b-2 border-zinc-600 rounded-t-md focus:outline-none focus:ring-2 focus:ring-zinc-300" />
+
+                <label for="tracker_notes" class="sr-only">Notes</label>
+                <textarea name="tracker_notes" id="tracker_notes" placeholder="Tracker Notes..."
+                    class="min-h-12 h-24 px-3 py-2 bg-zinc-700 placeholder:text-zinc-500 rounded-b-md focus:outline-none focus:ring-2 focus:ring-zinc-300"></textarea>
+            </div>
+
+            <h2 class="text-xl font-bold text-violet-300">Data Fields</h2>
+
+            <div id="data_fields" class="flex flex-col gap-4"></div>
+
+            <div class="flex gap-4">
+                <button type="button" id="add_field" class="w-full p-1 bg-zinc-700 rounded-md border-2 border-zinc-600 focus:outline-none focus:border-zinc-300">
+                    Add Field
+                </button>
+                <input type="submit" value="Create" class="w-full p-1 cursor-pointer rounded-md bg-green-800 text-green-100 border-2 border-green-600 focus:outline-none focus:border-zinc-300" />
+            </div>
+        </form>
+
+        <div class="w-full">
+            <a href="./trackers" class="block p-1 px-2 text-zinc-400 ml-auto w-fit rounded-md focus:outline-none focus:ring-2 focus:ring-zinc-300">
+                Return to Trackers
+            </a>
+        </div>
+
+        <pre id="response" class="font-mono text-xs overflow-auto text-green-300"></pre>
+
+    </main>
+</body>
+
+<script>
+    let field_count = 0
+
+    function create_field_row(id) {
+        const field = document.createElement("div")
+        field.setAttribute("class", "bg-zinc-700 rounded-lg border-2 border-zinc-600 flex items-center")
+        
+        const select_label = document.createElement("label")
+        select_label.setAttribute("for", "field_" + id + "_type")
+        select_label.setAttribute("class", "sr-only")
+        select_label.innerText = "Type"
+        field.appendChild(select_label)
+
+        const select = document.createElement("select")
+        select.setAttribute("id", "field_" + id + "_type")
+        select.setAttribute("name", "field_" + id + "_type")
+        select.setAttribute("class", "h-9 px-3 cursor-pointer rounded-md bg-zinc-700 font-medium text-sm focus:outline-none focus:ring-2 focus:ring-zinc-300")
+        field.appendChild(select)
+
+        const select_option_1 = document.createElement("option")
+        select_option_1.setAttribute("value", "number")
+        select_option_1.innerText = "Number"
+        select.appendChild(select_option_1)
+
+        const select_option_2 = document.createElement("option")
+        select_option_2.setAttribute("value", "option")
+        select_option_2.innerText = "Option"
+        select.appendChild(select_option_2)
+
+        const input_label = document.createElement("label")
+        input_label.setAttribute("for", "field_" + id + "_name")
+        input_label.setAttribute("class", "sr-only")
+        input_label.innerText = "Name"
+        field.appendChild(input_label)
+
+        const input = document.createElement("input")
+        input.setAttribute("type", "text")
+        input.setAttribute("required", true)
+        input.setAttribute("id", "field_" + id + "_name")
+        input.setAttribute("name", "field_" + id + "_name")
+        input.setAttribute("placeholder", "Field Name")
+        input.setAttribute("class", "h-9 grow px-3 ml-1 rounded-md bg-transparent placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-300")
+        field.appendChild(input)
+
+        select.addEventListener("change", event => {
+            // Remove option rows
+            const parent = field.parentElement
+            parent.childElementCount > 1
+            while (parent.childElementCount > 1) {
+                parent.removeChild(parent.lastElementChild);
+            }
+
+            // Add option rows
+            const field_type = event.target.value
+            if (field_type === "number") {
+                const max = create_number_max_row(id)
+                const min = create_number_min_row(id)
+                const dec = create_number_decimal_row(id)
+                parent.appendChild(max)
+                parent.appendChild(min)
+                parent.appendChild(dec)
+            } else if (field_type === "option") {
+                const option = create_option_row(id, 1)
+                parent.appendChild(option)
+                const add_option = create_add_option_button(id)
+                parent.appendChild(add_option)
+            }
+        })
+
+        return field
+    }
+
+    function create_number_max_row(id) {
+        const row = document.createElement("div")
+        row.setAttribute("class", "ml-8 bg-zinc-700 rounded-lg border-2 border-zinc-600 flex items-center")
+
+        const checkbox_label = document.createElement("label")
+        checkbox_label.setAttribute("for", "field_" + id + "_max_flag")
+        checkbox_label.setAttribute("class", "sr-only")
+        checkbox_label.innerText = "Max Flag"
+        row.appendChild(checkbox_label)
+
+        const checkbox = document.createElement("input")
+        checkbox.setAttribute("type", "checkbox")
+        checkbox.setAttribute("id", "field_" + id + "_max_flag")
+        checkbox.setAttribute("name", "field_" + id + "_max_flag")
+        checkbox.setAttribute("class", "appearance-none min-w-4 h-4 ml-3 rounded-sm zml-4 border-2 border-zinc-500 bg-zinc-800 checked:bg-violet-500 checked:border-violet-400 focus:outline-none focus:border-zinc-300")
+        row.appendChild(checkbox)
+
+        const input_label = document.createElement("label")
+        input_label.setAttribute("for", "field_" + id + "_max_value")
+        input_label.setAttribute("class", "px-3 min-w-16 font-medium text-xs text-zinc-400 whitespace-nowrap")
+        input_label.innerText = "Max Value"
+        row.appendChild(input_label)
+
+        const input = document.createElement("input")
+        input.setAttribute("type", "number")
+        input.setAttribute("id", "field_" + id + "_max_value")
+        input.setAttribute("name", "field_" + id + "_max_value")
+        input.setAttribute("placeholder", 1000)
+        input.setAttribute("class", "h-9 min-w-16 grow px-3 rounded-md bg-transparent placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-300")
+        row.appendChild(input)
+
+        return row
+    }
+
+    function create_number_min_row(id) {
+        const row = document.createElement("div")
+        row.setAttribute("class", "ml-8 bg-zinc-700 rounded-lg border-2 border-zinc-600 flex items-center")
+
+        const checkbox_label = document.createElement("label")
+        checkbox_label.setAttribute("for", "field_" + id + "_min_flag")
+        checkbox_label.setAttribute("class", "sr-only")
+        checkbox_label.innerText = "Min Flag"
+        row.appendChild(checkbox_label)
+
+        const checkbox = document.createElement("input")
+        checkbox.setAttribute("type", "checkbox")
+        checkbox.setAttribute("id", "field_" + id + "_min_flag")
+        checkbox.setAttribute("name", "field_" + id + "_min_flag")
+        checkbox.setAttribute("class", "appearance-none min-w-4 h-4 ml-3 rounded-sm zml-4 border-2 border-zinc-500 bg-zinc-800 checked:bg-violet-500 checked:border-violet-400 focus:outline-none focus:border-zinc-300")
+        row.appendChild(checkbox)
+
+        const input_label = document.createElement("label")
+        input_label.setAttribute("for", "field_" + id + "_min_value")
+        input_label.setAttribute("class", "px-3 min-w-16 font-medium text-xs text-zinc-400 whitespace-nowrap")
+        input_label.innerText = "Min Value"
+        row.appendChild(input_label)
+
+        const input = document.createElement("input")
+        input.setAttribute("type", "number")
+        input.setAttribute("id", "field_" + id + "_min_value")
+        input.setAttribute("name", "field_" + id + "_min_value")
+        input.setAttribute("placeholder", 0)
+        input.setAttribute("class", "h-9 min-w-16 grow px-3 rounded-md bg-transparent placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-300")
+        row.appendChild(input)
+
+        return row
+    }
+
+    function create_number_decimal_row(id) {
+        const row = document.createElement("div")
+        row.setAttribute("class", "ml-8 bg-zinc-700 rounded-lg border-2 border-zinc-600 flex items-center")
+
+        const input_label = document.createElement("label")
+        input_label.setAttribute("for", "field_" + id + "_decimal_places")
+        input_label.setAttribute("class", "px-3 min-w-16 font-medium text-xs text-zinc-400 whitespace-nowrap")
+        input_label.innerText = "Decimal Places"
+        row.appendChild(input_label)
+
+        const input = document.createElement("input")
+        input.setAttribute("type", "number")
+        input.setAttribute("id", "field_" + id + "_decimal_places")
+        input.setAttribute("name", "field_" + id + "_decimal_places")
+        input.setAttribute("placeholder", 0)
+        input.setAttribute("class", "h-9 min-w-16 grow px-3 rounded-md bg-transparent placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-300")
+        row.appendChild(input)
+
+        return row
+    }
+
+    function create_option_row(id, option_id) {
+        const row = document.createElement("div")
+        row.setAttribute("class", "ml-8 bg-zinc-700 rounded-lg border-2 border-zinc-600 flex items-center")
+
+        const value_label = document.createElement("label")
+        value_label.setAttribute("for", "field_" + id + "_option_" + option_id + "_value")
+        value_label.setAttribute("class", "px-3 py-1 font-medium text-xs text-zinc-400")
+        value_label.innerText = "#"
+        row.appendChild(value_label)
+
+        const value = document.createElement("input")
+        value.setAttribute("type", "number")
+        value.setAttribute("required", true)
+        value.setAttribute("id", "field_" + id + "_option_" + option_id + "_value")
+        value.setAttribute("name", "field_" + id + "_option_" + option_id + "_value")
+        value.setAttribute("placeholder", option_id)
+        value.setAttribute("value", option_id)
+        value.setAttribute("class", "h-9 min-w-20 w-20 px-3 rounded-md bg-transparent placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-300")
+        row.appendChild(value)
+
+        const name_label = document.createElement("label")
+        name_label.setAttribute("for", "field_" + id + "_option_" + option_id + "_name")
+        name_label.setAttribute("class", "px-3 font-medium text-xs text-zinc-400")
+        name_label.innerText = "Name"
+        row.appendChild(name_label)
+
+        const name = document.createElement("input")
+        name.setAttribute("type", "text")
+        name.setAttribute("required", true)
+        name.setAttribute("id", "field_" + id + "_option_" + option_id + "_name")
+        name.setAttribute("name", "field_" + id + "_option_" + option_id + "_name")
+        name.setAttribute("placeholder", "Option Name")
+        name.setAttribute("class", "h-9 w-full px-3 rounded-md bg-transparent placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-300")
+        row.appendChild(name)
+
+        return row
+    }
+
+    function create_add_option_button(field_count) {
+        let option_counter = 1
+
+        const row = document.createElement("div")
+        row.setAttribute("class", "ml-8")
+
+        const button = document.createElement("button")
+        button.setAttribute("id", "field_" + field_count + "_add_option")
+        button.setAttribute("type", "button")
+        button.setAttribute("class", "w-full p-1 bg-zinc-700 rounded-md border-2 border-zinc-600 focus:outline-none focus:border-zinc-300")
+        button.innerText = "Add Option"
+        row.appendChild(button)
+
+        button.addEventListener("click", event => {
+            option_counter++
+
+            const option = create_option_row(field_count, option_counter)
+            row.insertAdjacentElement("beforebegin", option);
+        })
+
+        return row
+    }
+
+    document.getElementById("add_field").addEventListener("click", event => {
+        field_count++
+
+        const parent = document.createElement("div")
+        parent.setAttribute("class", "flex flex-col gap-2")
+
+        const field = create_field_row(field_count)
+        parent.appendChild(field)
+
+        // Number
+        const max = create_number_max_row(field_count)
+        const min = create_number_min_row(field_count)
+        const dec = create_number_decimal_row(field_count)
+        parent.appendChild(max)
+        parent.appendChild(min)
+        parent.appendChild(dec)
+
+        document.getElementById("data_fields").appendChild(parent)
+    })
+
+</script>
+
+</html>
