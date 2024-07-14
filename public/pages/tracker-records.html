@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="tracker app">
-    <title>Title</title>
+    <title>Records</title>
     <script src="https://unpkg.com/htmx.org@2.0.0"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -24,6 +24,7 @@
             -webkit-text-fill-color: #e4e4ff;
             -webkit-box-shadow: 0 0 0px 1000px #3f3f5a inset;
         }
+        [x-cloak] { display: none !important; }
     </style>
 </head>
 
@@ -55,6 +56,7 @@
                 <div
                     class="absolute start-0 z-10 mt-1 max-w-40 md:max-w-72 max-h-80 overflow-y-auto rounded-b-md border-x-2 border-b-2 border-zinc-600 bg-zinc-700 shadow-xl shadow-black p-2"
                     role="menu"
+                    x-cloak
                     x-show="trackerDropdownOpen"
                     x-on:click.away="trackerDropdownOpen = false"
                     x-on:keydown.escape.window="trackerDropdownOpen = false"
@@ -80,7 +82,7 @@
             <div class="relative">
                 <button
                     x-on:click="pageDropdownOpen = !pageDropdownOpen"
-                    class="flex items-center gap-2 px-3 p-1 w-32 rounded-md border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100"
+                    class="flex items-center gap-2 px-3 p-1 max-w-32 rounded-md border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100"
                 >
                     <span class="">Records</span>
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">

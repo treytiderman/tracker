@@ -43,9 +43,10 @@
             <a href="#" class="px-3 p-1 rounded-md border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
                 Create Tracker
             </a>
+        </div>
     </nav>
 
-    <main class="p-4 max-w-lg w-full grow mx-auto flex flex-col gap-4">
+    <main class="p-4 max-w-lg w-full grow mx-auto flex flex-col gap-4 overflow-auto">
 
         <h1 class="text-2xl font-bold text-violet-300">Create Tracker</h1>
 
@@ -63,9 +64,9 @@
 
             <h2 class="text-xl font-bold text-violet-400">Data Fields</h2>
 
-            <div id="data_fields" class="flex flex-col gap-4">
+            <div id="data_fields" class="empty:hidden flex flex-col gap-4">
 
-                <div class="hidden flex flex-col gap-2">
+                <div class="flex flex-col gap-2">
     
                     <div class="bg-zinc-700 rounded-lg border-2 border-zinc-600 flex items-center">
                         <label for="field_type_1" class="sr-only"> Type </label>
@@ -114,7 +115,7 @@
 
                 </div>
     
-                <div class="hidden flex flex-col gap-2">
+                <div class="flex flex-col gap-2">
     
                     <div class="bg-zinc-700 rounded-lg border-2 border-zinc-600 flex items-center">
                         <label for="field_type_2" class="sr-only">
@@ -171,7 +172,7 @@
                     </div>
     
                     <div class="ml-8">
-                        <button type="button" id="field_2_add_option" class="w-full p-2 text-xs text-zinc-500 rounded-md border-2 border-zinc-700 focus:outline-none focus:border-zinc-300">
+                        <button type="button" id="field_2_add_option" class="w-full p-1 bg-zinc-700 rounded-md border-2 border-zinc-600 focus:outline-none focus:border-zinc-300">
                             Add Option
                         </button>
                     </div>
