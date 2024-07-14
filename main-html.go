@@ -45,7 +45,8 @@ func Start_Web_Server(db *sql.DB) {
 
 	Page_Trackers(db)
 	Page_Tracker_Create(db)
-	Page_Tracker_View(db)
+	Page_Tracker_Records(db)
+	Page_Tracker_Log(db)
 	Page_Names()
 
 	port := os.Getenv("PORT")
@@ -55,9 +56,10 @@ func Start_Web_Server(db *sql.DB) {
 	port = fmt.Sprintf(":%s", port)
 
 	hostname, _ := os.Hostname()
-	log.Println("Web Server: started")
-	log.Printf("- http://%s%s\n", "localhost", port)
-	log.Printf("- http://%s%s\n", hostname, port)
+	fmt.Println("Web Server: started")
+	fmt.Printf("- http://%s%s\n", "localhost", port)
+	fmt.Printf("- http://%s%s\n", hostname, port)
+	fmt.Println()
 	log.Fatal(http.ListenAndServe(port, nil))
 }
 
@@ -209,7 +211,7 @@ func Page_Tracker_Create(db *sql.DB) {
 
 		tracker_name := r.Form.Get("tracker_name")
 		tracker_notes := r.Form.Get("tracker_notes")
-		w.Write([]byte(fmt.Sprintf("create tracker '%s' with notes '%s'\n", tracker_name, tracker_notes)))
+		// w.Write([]byte(fmt.Sprintf("create tracker '%s' with notes '%s'\n", tracker_name, tracker_notes)))
 
 		_, err2 := Tracker_New(db, tracker_name)
 		if err2 != nil {
@@ -227,7 +229,7 @@ func Page_Tracker_Create(db *sql.DB) {
 			if r.Form.Has(fmt.Sprintf("field_%d_name", field_id)) {
 				field_name := r.Form.Get(fmt.Sprintf("field_%d_name", field_id))
 				field_type := r.Form.Get(fmt.Sprintf("field_%d_type", field_id))
-				w.Write([]byte(fmt.Sprintf("  create field [%d] '%s' of type '%s'\n", field_id, field_name, field_type)))
+				// w.Write([]byte(fmt.Sprintf("  create field [%d] '%s' of type '%s'\n", field_id, field_name, field_type)))
 
 				if field_type == "number" {
 					max_flag := false
@@ -239,16 +241,16 @@ func Page_Tracker_Create(db *sql.DB) {
 					if r.Form.Has(fmt.Sprintf("field_%d_max_flag", field_id)) {
 						max_flag = true
 						max_value, _ = strconv.Atoi(r.Form.Get(fmt.Sprintf("field_%d_max_value", field_id)))
-						w.Write([]byte(fmt.Sprintf("    max %d\n", max_value)))
+						// w.Write([]byte(fmt.Sprintf("    max %d\n", max_value)))
 					}
 					if r.Form.Has(fmt.Sprintf("field_%d_min_flag", field_id)) {
 						min_flag = true
 						min_value, _ = strconv.Atoi(r.Form.Get(fmt.Sprintf("field_%d_min_value", field_id)))
-						w.Write([]byte(fmt.Sprintf("    min %d\n", min_value)))
+						// w.Write([]byte(fmt.Sprintf("    min %d\n", min_value)))
 					}
 					if r.Form.Has(fmt.Sprintf("field_%d_decimal_places", field_id)) {
 						decimal_places, _ = strconv.Atoi(r.Form.Get(fmt.Sprintf("field_%d_decimal_places", field_id)))
-						w.Write([]byte(fmt.Sprintf("    decimal_places %d\n", decimal_places)))
+						// w.Write([]byte(fmt.Sprintf("    decimal_places %d\n", decimal_places)))
 					}
 
 					_, err4 := Tracker_Add_Number_Field(db, tracker_name, field_name, max_flag, max_value, min_flag, min_value, decimal_places)
@@ -267,7 +269,7 @@ func Page_Tracker_Create(db *sql.DB) {
 							option_value, _ := strconv.Atoi(r.Form.Get(fmt.Sprintf("field_%d_option_%d_value", field_id, option_id)))
 							option_names = append(option_names, option_name)
 							option_values = append(option_values, option_value)
-							w.Write([]byte(fmt.Sprintf("    option [%d] '%s'\n", option_value, option_name)))
+							// w.Write([]byte(fmt.Sprintf("    option [%d] '%s'\n", option_value, option_name)))
 						}
 					}
 
@@ -286,17 +288,19 @@ func Page_Tracker_Create(db *sql.DB) {
 			return
 		}
 
-		w.Write([]byte("\nsuccess"))
+		// w.Write([]byte("\nsuccess"))
+
+		http.Redirect(w, r, "/trackers", http.StatusSeeOther)
 	})
 }
 
-func Page_Tracker_View(db *sql.DB) {
-	t, err1 := template.New("").ParseFS(Templates_Embed, "templates/tracker-view.html")
+func Page_Tracker_Records(db *sql.DB) {
+	t, err1 := template.New("").ParseFS(Templates_Embed, "templates/tracker-records.html")
 	if err1 != nil {
 		log.Fatal(err1)
 	}
 
-	http.HandleFunc("/tracker", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/tracker/records", func(w http.ResponseWriter, r *http.Request) {
 		id, err1 := strconv.Atoi(r.URL.Query().Get("id"))
 		if err1 != nil {
 			log.Fatal(err1)
@@ -318,10 +322,16 @@ func Page_Tracker_View(db *sql.DB) {
 			return
 		}
 
+		trackers, err4 := Tracker_Get_All(db)
+		if err4 != nil {
+			log.Fatal(err4)
+		}
+
 		data := struct {
-			Tracker Tracker
-			Fields  []Field_Deep
-			Records []struct {
+			Trackers []Tracker
+			Tracker  Tracker
+			Fields   []Field_Deep
+			Records  []struct {
 				Id        int
 				Timestamp string
 				Data      []string
@@ -369,6 +379,7 @@ func Page_Tracker_View(db *sql.DB) {
 			// },
 		}
 
+		data.Trackers = trackers
 		data.Tracker = tracker
 		data.Fields = record_table.Fields
 
@@ -379,10 +390,10 @@ func Page_Tracker_View(db *sql.DB) {
 				Data      []string
 				Notes     string
 			}{
-				Id: int(record.Id),
+				Id:        int(record.Id),
 				Timestamp: record.Timestamp,
-				Data: []string{},
-				Notes: record.Notes,
+				Data:      []string{},
+				Notes:     record.Notes,
 			}
 
 			for i, data := range record.Data {
@@ -405,9 +416,62 @@ func Page_Tracker_View(db *sql.DB) {
 			data.Records = append(data.Records, record_to_print)
 		}
 
-		t.ExecuteTemplate(w, "tracker-view.html", data)
+		t.ExecuteTemplate(w, "tracker-records.html", data)
 	})
-	
+}
+
+func Page_Tracker_Log(db *sql.DB) {
+	funcMap := template.FuncMap{
+		"decimal_places_to_step_size": func(x int) float32 {
+            return 1 / float32(math.Pow10(x))
+        },
+	}
+
+	t, err1 := template.New("").Funcs(funcMap).ParseFS(Templates_Embed, "templates/tracker-log.html")
+	if err1 != nil {
+		log.Fatal(err1)
+	}
+
+	http.HandleFunc("/tracker/log", func(w http.ResponseWriter, r *http.Request) {
+		id, err1 := strconv.Atoi(r.URL.Query().Get("id"))
+		if err1 != nil {
+			log.Fatal(err1)
+			w.Write([]byte(err1.Error()))
+			return
+		}
+
+		tracker, err2 := Tracker_By_Id(db, id)
+		if err2 != nil {
+			log.Fatal(err2)
+			w.Write([]byte(err2.Error()))
+			return
+		}
+
+		fields, err3 := Tracker_Get_Fields_Deep(db, tracker.Name)
+		if err3 != nil {
+			log.Fatal(err3)
+			w.Write([]byte(err3.Error()))
+			return
+		}
+
+		trackers, err4 := Tracker_Get_All(db)
+		if err4 != nil {
+			log.Fatal(err4)
+		}
+
+		data := struct {
+			Trackers []Tracker
+			Tracker  Tracker
+			Fields   []Field_Deep
+		}{}
+
+		data.Trackers = trackers
+		data.Tracker = tracker
+		data.Fields = fields
+
+		t.ExecuteTemplate(w, "tracker-log.html", data)
+	})
+
 	http.HandleFunc("/htmx/tracker/record", func(w http.ResponseWriter, r *http.Request) {
 		id, err1 := strconv.Atoi(r.URL.Query().Get("id"))
 		if err1 != nil {
@@ -430,7 +494,7 @@ func Page_Tracker_View(db *sql.DB) {
 		w.Write([]byte(fmt.Sprintf("add record to tracker '%s'\n", tracker.Name)))
 
 		field_names := []string{}
-		field_values := []int{}
+		field_values := []string{}
 
 		for field_id := 0; field_id < 100; field_id++ {
 			if r.Form.Has(fmt.Sprintf("field_%d", field_id)) {
@@ -439,21 +503,34 @@ func Page_Tracker_View(db *sql.DB) {
 					w.Write([]byte(err4.Error()))
 					return
 				}
-
+				
 				field_name := field.Name
 				field_type := field.Type
-				field_value, _ := strconv.Atoi(r.Form.Get(fmt.Sprintf("field_%d", field_id)))
+				field_value_string := r.Form.Get(fmt.Sprintf("field_%d", field_id))
+				
+				
+				field_number_options, err5 := Tracker_Get_Number(db, field_id)
+				if err5 != nil {
+					w.Write([]byte(err5.Error()))
+					return
+				}
 
-				w.Write([]byte(fmt.Sprintf("  record '%s' of type '%s' as '%d'\n", field_name, field_type, field_value)))
+				if field_type == "number" {
+					field_value_float, _ := strconv.ParseFloat(field_value_string, 64)
+					field_value_adjusted := float32(field_value_float) * float32(math.Pow10(field_number_options.Decimal_Places))
+					field_value_string = fmt.Sprintf("%.f", field_value_adjusted)
+				}
+
+				w.Write([]byte(fmt.Sprintf("  record '%s' of type '%s' as '%s'\n", field_name, field_type, field_value_string)))
 
 				field_names = append(field_names, field_name)
-				field_values = append(field_values, field_value)
+				field_values = append(field_values, field_value_string)
 			}
 		}
 
-		_, err5 := Record_Add(db, tracker.Name, "", field_names, field_values)
-		if err5 != nil {
-			w.Write([]byte(err5.Error()))
+		_, err6 := Record_Add(db, tracker.Name, "", field_names, field_values)
+		if err6 != nil {
+			w.Write([]byte(err6.Error()))
 			return
 		}
 
