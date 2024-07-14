@@ -2,7 +2,9 @@
 
 - [ ] Add Tailwind css as a static file
     - https://github.com/tailwindlabs/tailwindcss-from-zero-to-production/tree/main/01-setting-up-tailwindcss
-- [ ] Next
+- [ ] Fix hover sticking on mobile
+	- https://dev.to/truongductri01/solving-the-sticky-hover-effect-on-mobile-with-tailwindcss-i5p
+- [ ] Deleting a tracker causes problems for new trackers?
 
 # Ideas
 
