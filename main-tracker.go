@@ -13,7 +13,7 @@ import (
 // tables
 
 func Tables_Create(db *sql.DB) {
-	log.Println("create tables 'tracker', 'field', 'number', and 'option' if they do not exist")
+	// fmt.Println("create tables 'tracker', 'field', 'number', and 'option' if they do not exist")
 
 	_, err := db.Exec(`
 		-- foreign_keys constraints are not on by default
@@ -25,7 +25,7 @@ func Tables_Create(db *sql.DB) {
 			-- name to identify this tracker
 			tracker_name TEXT NOT NULL UNIQUE,
 
-			-- markdown formated notes
+			-- markdown formatted notes
 			tracker_notes TEXT NOT NULL DEFAULT "",
 
 			PRIMARY KEY (tracker_id)
@@ -40,13 +40,13 @@ func Tables_Create(db *sql.DB) {
 			-- use "number" to track a signed whole number
 			-- examples: weight, height...
 			-- use "option" to a list of options
-			-- examples: exersise, read status
+			-- examples: exercise, read status
 			field_type TEXT CHECK(field_type in ('number', 'option')) NOT NULL DEFAULT 'number',
 
 			-- name to identify this field
 			field_name TEXT NOT NULL,
 
-			-- markdown formated notes
+			-- markdown formatted notes
 			field_notes TEXT NOT NULL DEFAULT "",
 
 			-- a tracker can not have duplicate field_name's
@@ -101,7 +101,7 @@ func Tables_Create(db *sql.DB) {
 }
 
 func Tables_Drop(db *sql.DB) {
-	log.Println("drop tables 'tracker', 'field', 'number', and 'option' if they exist")
+	fmt.Println("drop tables 'tracker', 'field', 'number', and 'option' if they exist")
 
 	_, err := db.Exec(`
 		DROP TABLE IF EXISTS option;
@@ -180,7 +180,7 @@ func Tracker_Get_Id(db *sql.DB, tracker_name string) (int, error) {
 }
 
 func Tracker_New(db *sql.DB, tracker_name string) (int64, error) {
-	log.Printf("create tracker '%s'", tracker_name)
+	fmt.Printf("create tracker '%s'", tracker_name)
 
 	// sql call
 	result, err1 := db.Exec(`INSERT INTO tracker (tracker_name) VALUES (?);`, tracker_name)
@@ -198,7 +198,7 @@ func Tracker_New(db *sql.DB, tracker_name string) (int64, error) {
 }
 
 func Tracker_Delete(db *sql.DB, tracker_name string) error {
-	log.Printf("delete tracker '%s'", tracker_name)
+	fmt.Printf("delete tracker '%s'", tracker_name)
 
 	_, err := db.Exec(`DELETE FROM tracker WHERE tracker_name = ?;`, tracker_name)
 	if err != nil {
@@ -209,7 +209,7 @@ func Tracker_Delete(db *sql.DB, tracker_name string) error {
 }
 
 func Tracker_Update_Notes(db *sql.DB, tracker_name string, notes string) error {
-	log.Printf("update tracker '%s' notes to: %s", tracker_name, notes)
+	fmt.Printf("update tracker '%s' notes to: %s", tracker_name, notes)
 
 	_, err := db.Exec(`UPDATE tracker SET tracker_notes = ? WHERE tracker_name = ?`, notes, tracker_name)
 	if err != nil {
@@ -370,7 +370,7 @@ func Tracker_Get_Fields_Deep(db *sql.DB, tracker_name string) ([]Field_Deep, err
 }
 
 func Tracker_Add_Number_Field(db *sql.DB, tracker_name string, field_name string, max_flag bool, max_value int, min_flag bool, min_value int, decimal_places int) (int64, error) {
-	log.Printf("add to tracker '%s' field '%s' type 'number' max(%t) %d min(%t) %d decimal_places %d",
+	fmt.Printf("add to tracker '%s' field '%s' type 'number' max(%t) %d min(%t) %d decimal_places %d",
 		tracker_name, field_name, max_flag, max_value, min_flag, min_value, decimal_places)
 
 	// get tracker_id from tracker_name
@@ -405,7 +405,7 @@ func Tracker_Add_Number_Field(db *sql.DB, tracker_name string, field_name string
 }
 
 func Tracker_Add_Option_Field(db *sql.DB, tracker_name string, field_name string, option_values []int, option_names []string) (int64, error) {
-	log.Printf("add to tracker '%s' field type 'option' named '%s'", tracker_name, field_name)
+	fmt.Printf("add to tracker '%s' field type 'option' named '%s'", tracker_name, field_name)
 
 	// get tracker_id from tracker_name
 	tracker_id, err1 := Tracker_Get_Id(db, tracker_name)
@@ -429,7 +429,7 @@ func Tracker_Add_Option_Field(db *sql.DB, tracker_name string, field_name string
 
 	// loop though options
 	for i, option_value := range option_values {
-		log.Printf("-> field_id '%d' option_value '%d' option_name '%s'", field_id, option_value, option_names[i])
+		fmt.Printf("-> field_id '%d' option_value '%d' option_name '%s'", field_id, option_value, option_names[i])
 
 		// sql call - number
 		_, err4 := db.Exec(`INSERT INTO option (field_id, option_value, option_name)
@@ -567,7 +567,7 @@ CREATE TABLE IF NOT EXISTS tracker_%d (
 		return err3
 	}
 
-	log.Printf("create table 'tracker_%d' for tracker '%s'", tracker_id, tracker_name)
+	fmt.Printf("create table 'tracker_%d' for tracker '%s'", tracker_id, tracker_name)
 	return err3
 }
 
@@ -582,10 +582,10 @@ func Record_Table_Delete(db *sql.DB, tracker_name string) error {
 	return nil
 }
 
-func Record_Add(db *sql.DB, tracker_name string, notes string, data_names []string, data_values []int) (int64, error) {
-	log.Printf("record in tracker '%s' with notes '%s'", tracker_name, notes)
-	log.Println(data_names)
-	log.Println(data_values)
+func Record_Add(db *sql.DB, tracker_name string, notes string, data_names []string, data_values []string) (int64, error) {
+	fmt.Printf("record in tracker '%s' with notes '%s'", tracker_name, notes)
+	fmt.Println(data_names)
+	fmt.Println(data_values)
 
 	tracker_id, err1 := Tracker_Get_Id(db, tracker_name)
 	if err1 != nil {
@@ -596,12 +596,12 @@ func Record_Add(db *sql.DB, tracker_name string, notes string, data_names []stri
 	if len(data_names) > 0 {
 		field_names_string := strings.Join(data_names, ", ")
 
-		var field_values []string
-		for _, data_value := range data_values {
-			field_values = append(field_values, strconv.Itoa(data_value))
-		}
+		// var field_values []string
+		// for _, data_value := range data_values {
+		// 	field_values = append(field_values, strconv.Itoa(data_value))
+		// }
 
-		field_values_string := strings.Join(field_values, ", ")
+		field_values_string := strings.Join(data_values, ", ")
 
 		insert_string = fmt.Sprintf(
 			`INSERT INTO tracker_%d (notes, %s) VALUES ("%s", %s);`,
@@ -613,6 +613,7 @@ func Record_Add(db *sql.DB, tracker_name string, notes string, data_names []stri
 	}
 
 	// sql call
+	fmt.Println("SQL:", insert_string)
 	result, err2 := db.Exec(insert_string)
 	if err2 != nil {
 		return 0, err2
