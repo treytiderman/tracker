@@ -2,7 +2,9 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
+
 	_ "modernc.org/sqlite"
 )
 
@@ -11,7 +13,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("SQLITE file ./data.db opened")
+	fmt.Println("Database file (SQLite) './data.db' opened")
+	fmt.Println()
 	defer db.Close()
 
 	Tables_Create(db)
