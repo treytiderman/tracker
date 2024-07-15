@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en" style="color-scheme: dark;" class="h-full">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="tracker app">
+    <title>{{ .Tracker.Name }} - Log</title>
+    <script src="https://unpkg.com/htmx.org@2.0.0"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
+</head>
+
+<body class="h-full font-sans bg-zinc-800 text-zinc-200 flex flex-col">
+
+    <nav x-data="{ trackerDropdownOpen: false, pageDropdownOpen: false }" class="text-zinc-200 bg-zinc-700 border-b-2 border-zinc-600 font-medium text-sm sm:text-base">
+        <div class="container mx-auto flex items-center gap-2 p-1">
+
+            <!-- Home -->
+            <a href="./trackers" class="px-3 p-1 rounded-md border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
+                <svg class="w-4 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" fill="currentColor" viewBox="0 0 20 20"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                    <path d="M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.2c0 2.7-.2 5.4-.5 8.1V472c0 22.1-17.9 40-40 40H456c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1H416 392c-22.1 0-40-17.9-40-40V448 384c0-17.7-14.3-32-32-32H256c-17.7 0-32 14.3-32 32v64 24c0 22.1-17.9 40-40 40H160 128.1c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2H104c-22.1 0-40-17.9-40-40V360c0-.9 0-1.9 .1-2.8V287.6H32c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z"/>
+                </svg>
+            </a>
+
+            <div class="text-zinc-500 font-bold"> / </div>
+
+            <!-- Tracker -->
+            <div class="relative">
+                <button
+                    x-on:click="trackerDropdownOpen = !trackerDropdownOpen"
+                    class="flex items-center gap-2 px-3 p-1 max-w-40 md:max-w-72 rounded-md border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100"
+                >
+                    <span class="whitespace-nowrap truncate">{{ .Tracker.Name }}</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/>
+                    </svg>
+                </button>
+                <div
+                    class="absolute start-0 z-10 mt-1 max-w-40 md:max-w-72 max-h-80 overflow-y-auto rounded-b-md border-x-2 border-b-2 border-zinc-600 bg-zinc-700 shadow-xl shadow-black p-2"
+                    role="menu"
+                    x-cloak
+                    x-show="trackerDropdownOpen"
+                    x-on:click.away="trackerDropdownOpen = false"
+                    x-on:keydown.escape.window="trackerDropdownOpen = false"
+                >
+                    {{ range .Trackers }}
+                    <a href="./chart?id={{.Id}}" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-300 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100 truncate">
+                        {{ .Name }}
+                    </a>
+                    {{ end }}
+                </div>
+            </div>
+
+            <div class="text-zinc-500 font-bold"> / </div>
+            
+            <!-- Page -->
+            <div class="relative">
+                <button
+                    x-on:click="pageDropdownOpen = !pageDropdownOpen"
+                    class="flex items-center gap-2 px-3 p-1 max-w-32 rounded-md border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100"
+                >
+                    <span class="">Chart</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/>
+                    </svg>
+                </button>
+                <div
+                    class="absolute start-0 z-10 mt-1 w-32 rounded-b-md border-x-2 border-b-2 border-zinc-600 bg-zinc-700 shadow-xl shadow-black p-2"
+                    role="menu"
+                    x-cloak
+                    x-show="pageDropdownOpen"
+                    x-on:click.away="pageDropdownOpen = false"
+                    x-on:keydown.escape.window="pageDropdownOpen = false"
+                >
+                    <a href="#" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-500 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
+                        Info
+                    </a>
+                    <a href="./log?id={{.Tracker.Id}}" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-300 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
+                        Log
+                    </a>
+                    <a href="./records?id={{.Tracker.Id}}" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-300 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
+                        Records
+                    </a>
+                    <a href="./chart?id={{.Tracker.Id}}" role="menuitem" class=" disabled block rounded-md px-3 p-1 text-zinc-300 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
+                        Chart
+                    </a>
+                    <a href="#" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-500 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
+                        Reminders
+                    </a>
+                    <a href="#" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-500 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
+                        Goals
+                    </a>
+                </div>
+        </div>
+    </nav>
+
+    <main class="p-4 zcontainer mx-auto flex flex-col gap-4 grow h-full w-full overflow-auto">
+
+        <h1 class="text-2xl font-bold text-violet-300 sr-only">Chart</h1>
+
+        <div class="w-full min-h-64 lg:grow bg-zinc-700 rounded-lg border-2 border-zinc-600 overflow-hidden">
+            <div id="area-chart" class=""></div>
+        </div>
+
+        <details class="[&_svg]:open:-rotate-180 text-zinc-300 border-2 border-zinc-700 rounded-lg">
+            <summary class="w-full p-4 list-none flex cursor-pointer items-center gap-4 rounded-lg [&::-webkit-details-marker]:hidden focus:outline-none focus:ring-2 focus:ring-zinc-300">
+                <h2 class="">Settings</h2>
+                <div class="ml-auto">
+                    <svg class="rotate-0 transform transition-all duration-200" fill="none" height="24" width="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+            </summary>
+            <div class="grid gap-4 justify-items-start p-4 max-h-96 overflow-auto">
+                <button class="p-2 rounded-md bg-zinc-600">Press</button>
+            </div>
+        </details>
+
+    </main>
+</body>
+
+<script>
+    const options = {
+        theme: { mode: 'dark' },
+        colors: ['#8b5cf6', '#0ea5e9', '#f97316', '#22c55e'],
+        fill: {
+            type: "solid",
+            // type: "gradient",
+            colors: ['#8b5cf622', '#0ea5e922', '#f9731622', '#22c55e22'],
+            gradient: {
+                shadeIntensity: 1,
+                opacityFrom: 0.9,
+                opacityTo: 0.0,
+            }
+        },
+        chart: {
+            height: "100%",
+            width: "100%",
+            type: "heatmap",
+            type: "area",
+            type: "line",
+            background: '#3f3f46',
+            animations: { enabled: false },
+            toolbar: {
+                show: false,
+                offsetX: -12,
+                offsetY: 8,
+                autoSelected: 'pan',
+                autoSelected: 'zoom',
+                tools: {
+                    download: true,
+                    selection: true,
+                    zoom: true,
+                    zoomin: true,
+                    zoomout: true,
+                    pan: true,
+                },
+            },
+        },
+        tooltip: {
+            enabled: true,
+            // custom: function({series, seriesIndex, dataPointIndex, w}) {
+            //     return '<div class="p-1 px-2 bg-zinc-800 text-zinc-300 rounded-lg border-2 border-zinc-500">' +
+            //     '<span>' + series[seriesIndex][dataPointIndex] + '</span>' +
+            //     '</div>'
+            // },
+            // followCursor: true,
+            // enabledOnSeries: undefined,
+            onDatasetHover: {
+                highlightDataSeries: true,
+            },
+            x: {
+                show: true,
+                format: 'MM/dd HH:mm:ss',
+                format: 'M-dd-yy h:mm tt',
+                formatter: undefined,
+            },
+            y: {
+                show: false,
+                formatter: undefined,
+            },
+            z: {
+                show: false,
+                formatter: undefined,
+                title: 'Size: '
+            },
+        },
+        stroke: {
+            width: 2,
+            curve: 'smooth',
+            curve: 'monotoneCubic',
+            curve: 'straight',
+        },
+        grid: {
+            show: true,
+            strokeDashArray: 0,
+            strokeDashArray: 4,
+            borderColor: '#3f3f46', // bg-zinc-700
+            borderColor: '#71717a', // bg-zinc-500
+            borderColor: '#52525b', // bg-zinc-600
+            padding: {
+                left: 16,
+                right: 16,
+                top: 12,
+                bottom: 12,
+            },
+        },
+        legend: {
+            position: 'top',
+            // offsetX: -120,
+            offsetY: 12,
+            markers: {
+                size: 4,
+            },
+            itemMargin: {
+                horizontal: 8,
+                vertical: 0
+            },
+            labels: {
+                colors: "#e4e4e7", // text-zinc-200
+                colors: "#d4d4d8", // text-zinc-300
+                colors: "#a1a1aa", // text-zinc-400
+                useSeriesColors: false
+            },
+        },
+        markers: {
+            size: 3,
+            colors: ['#a78bfa', '#38bdf8', '#fb923c', '#4ade80'],
+            strokeColors: '#FFFFFF77',
+            strokeWidth: 0,
+            strokeOpacity: 1,
+            shape: "square",
+            shape: "circle",
+            showNullDataPoints: true,
+            hover: {
+                size: 4,
+                sizeOffset: 3
+            }
+        },
+        // dataLabels: {
+        //     enabled: true,
+        //     style: {
+        //         fontSize: '9px',
+        //         fontWeight: 'medium',
+        //         colors: ['#c4b5fd', '#7dd3fc', '#fdba74', '#86efac']
+        //     },
+        //     background: {
+        //         enabled: true,
+        //         foreColor: '#000',
+        //         borderRadius: 4,
+        //         padding: 3,
+        //         opacity: 1,
+        //         borderWidth: 0,
+        //     },
+        // },
+        // dataLabels: {
+        //     enabled: true,
+        //     offsetY: -4,
+        //     style: {
+        //         fontWeight: 'medium',
+        //         colors: ["#CCC"],
+        //         colors: ['#ddd6fe', '#bae6fd', '#fed7aa', '#bbf7d0'], // text-xxx-200
+        //     },
+        //     background: { enabled: false },
+        // },
+        series: [
+            {
+                name: "{{ (index .Fields 0).Name }}",
+                data: [
+                    // {
+                    //     x: "2024-07-13T20:28:21Z",
+                    //     y: 57
+                    // },
+                    {{ range .Records }}
+                    {
+                        x: "{{ .Timestamp }}",
+                        y: {{ index .Data 0 }}
+                    },
+                    {{ end }}
+                ]
+            },
+        ],
+        xaxis: {
+            type: "datetime",
+            // min: new Date("2024-07-13T20:00:00Z").getTime(),
+            // max: new Date("2024-07-14T06:00:00Z").getTime(),
+            lines: {
+                show: true,
+            },
+            tooltip: {
+                enabled: false,
+            },
+            labels: {
+                show: true,
+                // format: 'h:mm tt',
+                datetimeFormatter: {
+                    year: 'yyyy',
+                    month: 'MMM',
+                    day: 'M-dd',
+                    hour: 'h tt'
+                },
+                style: {
+                    colors: ['#a1a1aa', '#a1a1aa', '#a1a1aa', '#a1a1aa', '#a1a1aa', '#a1a1aa', '#a1a1aa', '#a1a1aa', '#a1a1aa', '#a1a1aa', '#a1a1aa', '#a1a1aa'],
+                },
+            },
+            axisBorder: {
+                show: false,
+                show: true,
+                color: '#3f3f46', // bg-zinc-700
+                color: '#71717a', // bg-zinc-500
+                color: '#52525b', // bg-zinc-600
+            },
+            axisTicks: {
+                show: false,
+                show: true,
+                color: '#3f3f46', // bg-zinc-700
+                color: '#71717a', // bg-zinc-500
+                color: '#52525b', // bg-zinc-600
+            },
+        },
+        yaxis: {
+            show: false,
+            // min: 30,
+            // max: 110,
+            // stepSize: 10,
+            // forceNiceScale: false,
+            labels: {
+                show: true,
+                style: {
+                    colors: ['#a1a1aa', '#a1a1aa', '#a1a1aa', '#a1a1aa', '#a1a1aa', '#a1a1aa', '#a1a1aa', '#a1a1aa', '#a1a1aa', '#a1a1aa', '#a1a1aa', '#a1a1aa'],
+                },
+            },
+            axisBorder: {
+                show: true,
+                color: '#3f3f46', // bg-zinc-700
+                color: '#71717a', // bg-zinc-500
+                color: '#52525b', // bg-zinc-600
+                offsetX: 3,
+                offsetY: -2
+            },
+            axisTicks: {
+                show: true,
+                color: '#3f3f46', // bg-zinc-700
+                color: '#71717a', // bg-zinc-500
+                color: '#52525b', // bg-zinc-600
+                offsetX: -3,
+                offsetY: 0
+            },
+        },
+    };
+
+    if (document.body.offsetWidth > 900) {
+        options.yaxis.show = true
+        options.chart.toolbar.show = true
+    }
+
+    if (document.getElementById("area-chart") && typeof ApexCharts !== 'undefined') {
+        const chart = new ApexCharts(document.getElementById("area-chart"), options);
+        chart.render();
+    }
+
+</script>
+
+</html>
