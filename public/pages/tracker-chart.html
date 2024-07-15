@@ -125,7 +125,7 @@
 
         <h1 class="text-2xl font-bold text-violet-300 sr-only">Chart</h1>
 
-        <div class="w-full min-h-64 lg:grow bg-zinc-700 rounded-lg border-2 border-zinc-600">
+        <div class="w-full min-h-64 lg:grow bg-zinc-700 rounded-lg border-2 border-zinc-600 overflow-hidden">
             <div id="area-chart" class=""></div>
         </div>
 
@@ -139,30 +139,6 @@
                 </div>
             </summary>
             <div class="grid gap-4 justify-items-start p-4 max-h-96 overflow-auto">
-                <button class="p-2 rounded-md bg-zinc-600">Press</button>
-
-                <button class="p-2 rounded-md bg-zinc-600">Press</button>
-                <button class="p-2 rounded-md bg-zinc-600">Press</button>
-                <button class="p-2 rounded-md bg-zinc-600">Press</button>
-                <button class="p-2 rounded-md bg-zinc-600">Press</button>
-                <button class="p-2 rounded-md bg-zinc-600">Press</button>
-                <button class="p-2 rounded-md bg-zinc-600">Press</button>
-                <button class="p-2 rounded-md bg-zinc-600">Press</button>
-                <button class="p-2 rounded-md bg-zinc-600">Press</button>
-                <button class="p-2 rounded-md bg-zinc-600">Press</button>
-                <button class="p-2 rounded-md bg-zinc-600">Press</button>
-                <button class="p-2 rounded-md bg-zinc-600">Press</button>
-                <button class="p-2 rounded-md bg-zinc-600">Press</button>
-                <button class="p-2 rounded-md bg-zinc-600">Press</button>
-                <button class="p-2 rounded-md bg-zinc-600">Press</button>
-                <button class="p-2 rounded-md bg-zinc-600">Press</button>
-                <button class="p-2 rounded-md bg-zinc-600">Press</button>
-                <button class="p-2 rounded-md bg-zinc-600">Press</button>
-                <button class="p-2 rounded-md bg-zinc-600">Press</button>
-                <button class="p-2 rounded-md bg-zinc-600">Press</button>
-                <button class="p-2 rounded-md bg-zinc-600">Press</button>
-                <button class="p-2 rounded-md bg-zinc-600">Press</button>
-                <button class="p-2 rounded-md bg-zinc-600">Press</button>
                 <button class="p-2 rounded-md bg-zinc-600">Press</button>
             </div>
         </details>
@@ -182,7 +158,6 @@
                 shadeIntensity: 1,
                 opacityFrom: 0.9,
                 opacityTo: 0.0,
-                // stops: [0, 90, 100]
             }
         },
         chart: {
@@ -191,12 +166,8 @@
             type: "heatmap",
             type: "area",
             type: "line",
-            background: 'transparent',
+            background: '#3f3f46',
             animations: { enabled: false },
-            // dropShadow: { enabled: true },
-            sparkline: {
-                enabled: false,
-            },
             toolbar: {
                 show: false,
                 offsetX: -12,
@@ -273,9 +244,9 @@
                 vertical: 0
             },
             labels: {
-                colors: "#a1a1aa", // text-zinc-400
                 colors: "#e4e4e7", // text-zinc-200
                 colors: "#d4d4d8", // text-zinc-300
+                colors: "#a1a1aa", // text-zinc-400
                 useSeriesColors: false
             },
         },
