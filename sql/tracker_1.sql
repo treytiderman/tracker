@@ -1,35 +1,27 @@
-DROP TABLE IF EXISTS tracker_1;
-DELETE FROM tracker WHERE tracker_name = "walk dog";
+-- Delete Tracker
+DELETE FROM tracker WHERE tracker_name = "Walk Dog";
 
+-- Create Tracker
 INSERT INTO tracker (tracker_name, tracker_notes)
-VALUES ("walk dog", "each time i take the dog out");
+VALUES ("Walk Dog", "idk yet");
 
-SELECT tracker_id FROM tracker WHERE tracker_name = "walk dog";
+-- Update Tracker Notes
+UPDATE tracker
+SET tracker_notes = "Take the dog out"
+WHERE tracker_name = "Walk Dog";
 
-CREATE TABLE IF NOT EXISTS tracker_1 (
-    id INTEGER NOT NULL UNIQUE,
+UPDATE tracker
+SET tracker_notes = "Every time I take the dog out"
+WHERE tracker_id = 1;
 
-    -- parent tracker
-    tracker_id INTEGER NOT NULL DEFAULT 1,
+-- Log values
+INSERT INTO entry (tracker_id, entry_notes) VALUES (1, "Dog found a turtle");
 
-    -- timestamp when this was set
-    timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+INSERT INTO entry (tracker_id, entry_notes) VALUES (1, "Dog learned to fly");
 
-    -- markdown formated notes
-    notes TEXT NOT NULL DEFAULT "",
+INSERT INTO entry (tracker_id, entry_notes) VALUES (1, "Dog ran away");
 
-    PRIMARY KEY(id),
-    FOREIGN KEY(tracker_id) REFERENCES tracker (tracker_id)
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
-);
+INSERT INTO entry (tracker_id, entry_notes) VALUES (1, "No dog still walk");
 
-INSERT INTO tracker_1
-    (notes)
-VALUES
-    ("dog found a turtle"),
-    ("dog learned to fly"),
-    ("dog ran away"),
-    ("no dog still walk");
-
-SELECT * FROM tracker_1;
+-- Select All entries
+SELECT * FROM entry;

@@ -19,3 +19,15 @@ When on Linux
 ```
 GOOS=windows GOARCH=amd64 go build .
 ```
+
+## Test
+
+```
+go test
+```
+
+Verbose
+
+```
+go test -v
+```
