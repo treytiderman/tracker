@@ -3,12 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
-
-	// "fmt"
 	"log"
-	// 	"strconv"
-	// 	"strings"
-
 	_ "modernc.org/sqlite"
 )
 
@@ -37,14 +32,6 @@ type Db_Option struct {
 	Id    int
 	Value int
 	Name  string
-}
-
-type Db_Tracker_Entries struct {
-	Id      int
-	Name    string
-	Notes   string
-	Fields  []Db_Field
-	Entries []Db_Entry
 }
 
 type Db_Entry struct {
@@ -254,6 +241,7 @@ func Get_Tracker_By_Id(db *sql.DB, tracker_id int) (Db_Tracker, error) {
 	defer rows.Close()
 
 	var tracker Db_Tracker
+	var field_scan_last_id = 0
 
 	for rows.Next() {
 		var tracker_scan Db_Tracker
@@ -280,7 +268,7 @@ func Get_Tracker_By_Id(db *sql.DB, tracker_id int) (Db_Tracker, error) {
 		} else if field_scan.Type == "option" {
 
 			// Field already added
-			if tracker.Fields[len(tracker.Fields)-1].Id == field_scan.Id {
+			if field_scan_last_id == field_scan.Id {
 				tracker.Fields[len(tracker.Fields)-1].Options =
 					append(tracker.Fields[len(tracker.Fields)-1].Options, option_scan)
 			} else {
@@ -288,6 +276,8 @@ func Get_Tracker_By_Id(db *sql.DB, tracker_id int) (Db_Tracker, error) {
 				tracker.Fields = append(tracker.Fields, field_scan)
 			}
 		}
+
+		field_scan_last_id = field_scan.Id
 	}
 
 	if err := rows.Err(); err != nil {
@@ -341,7 +331,9 @@ func Get_Trackers(db *sql.DB) ([]Db_Tracker, error) {
 	}
 	defer rows.Close()
 
-	var trackers_map = make(map[int]*Db_Tracker)
+	var trackers []Db_Tracker
+	var tracker_scan_last_id = 0
+	var field_scan_last_id = 0
 
 	for rows.Next() {
 		var tracker_scan Db_Tracker
@@ -358,40 +350,28 @@ func Get_Trackers(db *sql.DB) ([]Db_Tracker, error) {
 			log.Fatal(err)
 		}
 
-		tracker_existing, found := trackers_map[tracker_scan.Id]
-		if !found {
-			trackers_map[tracker_scan.Id] = &tracker_scan
-
-			if field_scan.Type == "number" {
-				field_scan.Number = number_scan
-				trackers_map[tracker_scan.Id].Fields = append(trackers_map[tracker_scan.Id].Fields, field_scan)
-			} else if field_scan.Type == "option" {
-				field_scan.Options = append(field_scan.Options, option_scan)
-				trackers_map[tracker_scan.Id].Fields = append(trackers_map[tracker_scan.Id].Fields, field_scan)
-			}
-		} else {
-			if field_scan.Type == "number" {
-				field_scan.Number = number_scan
-				tracker_existing.Fields = append(tracker_existing.Fields, field_scan)
-			} else if field_scan.Type == "option" {
-				if field_scan.Id == tracker_existing.Fields[len(tracker_existing.Fields)-1].Id {
-					tracker_existing.Fields[len(tracker_existing.Fields)-1].Options =
-						append(tracker_existing.Fields[len(tracker_existing.Fields)-1].Options, option_scan)
-				} else {
-					field_scan.Options = append(field_scan.Options, option_scan)
-					trackers_map[tracker_scan.Id].Fields = append(trackers_map[tracker_scan.Id].Fields, field_scan)
-				}
+		// New
+		if tracker_scan_last_id != tracker_scan.Id {
+			trackers = append(trackers, tracker_scan)
+		}
+		if field_scan.Id > 0 {
+			if field_scan_last_id != field_scan.Id {
+				trackers[len(trackers)-1].Fields = append(trackers[len(trackers)-1].Fields, field_scan)
+				trackers[len(trackers)-1].Fields[len(trackers[len(trackers)-1].Fields)-1].Number = number_scan
+				trackers[len(trackers)-1].Fields[len(trackers[len(trackers)-1].Fields)-1].Options =
+					append(trackers[len(trackers)-1].Fields[len(trackers[len(trackers)-1].Fields)-1].Options, option_scan)
+			} else {
+				trackers[len(trackers)-1].Fields[len(trackers[len(trackers)-1].Fields)-1].Options =
+					append(trackers[len(trackers)-1].Fields[len(trackers[len(trackers)-1].Fields)-1].Options, option_scan)
 			}
 		}
+
+		tracker_scan_last_id = tracker_scan.Id
+		field_scan_last_id = field_scan.Id
 	}
 
 	if err := rows.Err(); err != nil {
 		log.Fatal(err)
-	}
-
-	var trackers []Db_Tracker
-	for _, tracker := range trackers_map {
-		trackers = append(trackers, *tracker)
 	}
 
 	return trackers, nil
@@ -426,7 +406,7 @@ func Get_Entries_By_Tracker_Id(db *sql.DB, tracker_id int) ([]Db_Entry, error) {
 		LEFT JOIN number USING (field_id)
 		LEFT JOIN option ON log.log_value = option.option_value
 		WHERE entry.tracker_id = %d
-		ORDER BY entry.entry_id, log.log_id;`,
+		ORDER BY entry.entry_id, field.field_id;`,
 		tracker_id)
 
 	rows, err := db.Query(sql_string)
@@ -435,8 +415,9 @@ func Get_Entries_By_Tracker_Id(db *sql.DB, tracker_id int) ([]Db_Entry, error) {
 	}
 	defer rows.Close()
 
+	var entries []Db_Entry
 	var log_scan_last_id = 0
-	var entries_map = make(map[int]*Db_Entry)
+	var entry_scan_last_id = 0
 
 	for rows.Next() {
 		var entry_scan Db_Entry
@@ -449,37 +430,28 @@ func Get_Entries_By_Tracker_Id(db *sql.DB, tracker_id int) ([]Db_Entry, error) {
 		if err != nil {
 			log.Fatal(err)
 		}
+		// fmt.Println("entry_scan", entry_scan)
+		// fmt.Println("log_scan", log_scan)
+
+		if entry_scan_last_id != entry_scan.Id {
+			entries = append(entries, entry_scan)
+		}
 
 		// Why am I getting duplicate log_scan ids?
 		// This check for log_scan_last_id should not be needed
-		// fmt.Println("entry_scan", entry_scan)
-		// fmt.Println("log_scan", log_scan)
 		if log_scan_last_id != log_scan.Id {
 
-			entry_existing, found := entries_map[entry_scan.Id]
-			if !found {
-				entries_map[entry_scan.Id] = &entry_scan
-				if log_scan.Id > 0 {
-					entries_map[entry_scan.Id].Logs = append(entries_map[entry_scan.Id].Logs, log_scan)
-				}
-			} else {
-				if log_scan.Id > 0 {
-					entry_existing.Logs = append(entry_existing.Logs, log_scan)
-				}
+			if log_scan.Id > 0 {
+				entries[len(entries)-1].Logs = append(entries[len(entries)-1].Logs, log_scan)
 			}
-
 		}
 
+		entry_scan_last_id = entry_scan.Id
 		log_scan_last_id = log_scan.Id
 	}
 
 	if err := rows.Err(); err != nil {
 		log.Fatal(err)
-	}
-
-	var entries []Db_Entry
-	for _, entry := range entries_map {
-		entries = append(entries, *entry)
 	}
 
 	return entries, nil
@@ -662,7 +634,21 @@ func Update_Log() {
 
 // Delete Data
 
-func Delete_Tracker(db *sql.DB, tracker_name string) error {
+func Delete_Tracker_By_Id(db *sql.DB, tracker_id int) error {
+	sql_string := fmt.Sprintf(
+		`DELETE FROM tracker WHERE tracker_id = "%d";`,
+		tracker_id)
+
+	fmt.Println("SQL:", sql_string)
+	_, err := db.Exec(sql_string)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func Delete_Tracker_By_Name(db *sql.DB, tracker_name string) error {
 	sql_string := fmt.Sprintf(
 		`DELETE FROM tracker WHERE tracker_name = "%s";`,
 		tracker_name)
@@ -676,10 +662,10 @@ func Delete_Tracker(db *sql.DB, tracker_name string) error {
 	return nil
 }
 
-func Delete_Field() {
+func Delete_Field_By_Id() {
 	// TODO
 }
 
-func Delete_Entry() {
+func Delete_Entry_By_Id() {
 	// TODO
 }

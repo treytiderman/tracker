@@ -12,7 +12,7 @@ import (
 
 // tables
 
-func Tables_Create(db *sql.DB) {
+func xTables_Create(db *sql.DB) {
 	// fmt.Println("create tables 'tracker', 'field', 'number', and 'option' if they do not exist")
 
 	_, err := db.Exec(`
@@ -100,7 +100,7 @@ func Tables_Create(db *sql.DB) {
 	}
 }
 
-func Tables_Drop(db *sql.DB) {
+func xTables_Drop(db *sql.DB) {
 	fmt.Println("drop tables 'tracker', 'field', 'number', and 'option' if they exist")
 
 	_, err := db.Exec(`
@@ -117,22 +117,22 @@ func Tables_Drop(db *sql.DB) {
 
 // trackers
 
-type Tracker struct {
+type xTracker struct {
 	Id    int
 	Name  string
 	Notes string
 }
 
-func Tracker_Get_All(db *sql.DB) ([]Tracker, error) {
+func xTracker_Get_All(db *sql.DB) ([]xTracker, error) {
 	rows, err1 := db.Query(`SELECT * FROM tracker;`)
 	if err1 != nil {
 		return nil, err1
 	}
 	defer rows.Close()
 
-	var trackers []Tracker
+	var trackers []xTracker
 	for rows.Next() {
-		var tracker Tracker
+		var tracker xTracker
 		err2 := rows.Scan(&tracker.Id, &tracker.Name, &tracker.Notes)
 		if err2 != nil {
 			return nil, err2
@@ -143,10 +143,10 @@ func Tracker_Get_All(db *sql.DB) ([]Tracker, error) {
 	return trackers, nil
 }
 
-func Tracker_By_Name(db *sql.DB, tracker_name string) (Tracker, error) {
+func xTracker_By_Name(db *sql.DB, tracker_name string) (xTracker, error) {
 	row := db.QueryRow(`SELECT * FROM tracker WHERE tracker_name = ?;`, tracker_name)
 
-	var tracker Tracker
+	var tracker xTracker
 	err := row.Scan(&tracker.Id, &tracker.Name, &tracker.Notes)
 	if err != nil {
 		return tracker, err
@@ -155,10 +155,10 @@ func Tracker_By_Name(db *sql.DB, tracker_name string) (Tracker, error) {
 	return tracker, nil
 }
 
-func Tracker_By_Id(db *sql.DB, tracker_id int) (Tracker, error) {
+func xTracker_By_Id(db *sql.DB, tracker_id int) (xTracker, error) {
 	row := db.QueryRow(`SELECT * FROM tracker WHERE tracker_id = ?;`, tracker_id)
 
-	var tracker Tracker
+	var tracker xTracker
 	err := row.Scan(&tracker.Id, &tracker.Name, &tracker.Notes)
 	if err != nil {
 		return tracker, err
@@ -167,7 +167,7 @@ func Tracker_By_Id(db *sql.DB, tracker_id int) (Tracker, error) {
 	return tracker, nil
 }
 
-func Tracker_Get_Id(db *sql.DB, tracker_name string) (int, error) {
+func xTracker_Get_Id(db *sql.DB, tracker_name string) (int, error) {
 	row := db.QueryRow(`SELECT tracker_id FROM tracker WHERE tracker_name = ?;`, tracker_name)
 
 	var id int
@@ -179,7 +179,7 @@ func Tracker_Get_Id(db *sql.DB, tracker_name string) (int, error) {
 	return id, nil
 }
 
-func Tracker_New(db *sql.DB, tracker_name string) (int64, error) {
+func xTracker_New(db *sql.DB, tracker_name string) (int64, error) {
 	fmt.Printf("create tracker '%s'", tracker_name)
 
 	// sql call
@@ -197,7 +197,7 @@ func Tracker_New(db *sql.DB, tracker_name string) (int64, error) {
 	return id, nil
 }
 
-func Tracker_Delete(db *sql.DB, tracker_name string) error {
+func xTracker_Delete(db *sql.DB, tracker_name string) error {
 	fmt.Printf("delete tracker '%s'", tracker_name)
 
 	_, err := db.Exec(`DELETE FROM tracker WHERE tracker_name = ?;`, tracker_name)
@@ -208,7 +208,7 @@ func Tracker_Delete(db *sql.DB, tracker_name string) error {
 	return nil
 }
 
-func Tracker_Update_Notes(db *sql.DB, tracker_name string, notes string) error {
+func xTracker_Update_Notes(db *sql.DB, tracker_name string, notes string) error {
 	fmt.Printf("update tracker '%s' notes to: %s", tracker_name, notes)
 
 	_, err := db.Exec(`UPDATE tracker SET tracker_notes = ? WHERE tracker_name = ?`, notes, tracker_name)
@@ -221,23 +221,23 @@ func Tracker_Update_Notes(db *sql.DB, tracker_name string, notes string) error {
 
 // field
 
-type Field struct {
+type xField struct {
 	Id    int
 	Type  string
 	Name  string
 	Notes string
 }
 
-type Field_Deep struct {
+type xField_Deep struct {
 	Id          int
 	Type        string
 	Name        string
 	Notes       string
-	Type_Number Field_Number
-	Type_Option Field_Option
+	Type_Number xField_Number
+	Type_Option xField_Option
 }
 
-type Field_Number struct {
+type xField_Number struct {
 	Max_Flag       bool
 	Max_Value      int
 	Min_Flag       bool
@@ -245,15 +245,15 @@ type Field_Number struct {
 	Decimal_Places int
 }
 
-type Field_Option struct {
+type xField_Option struct {
 	Option_Values []int
 	Option_Names  []string
 }
 
-func Field_By_Id(db *sql.DB, field_id int) (Field, error) {
+func xField_By_Id(db *sql.DB, field_id int) (xField, error) {
 	row := db.QueryRow(`SELECT field_id, field_type, field_name, field_notes FROM field WHERE field_id = ?;`, field_id)
 
-	var field Field
+	var field xField
 	err := row.Scan(&field.Id, &field.Type, &field.Name, &field.Notes)
 	if err != nil {
 		return field, err
@@ -262,10 +262,10 @@ func Field_By_Id(db *sql.DB, field_id int) (Field, error) {
 	return field, nil
 }
 
-func Tracker_Get_Fields(db *sql.DB, tracker_name string) ([]Field, error) {
+func xTracker_Get_Fields(db *sql.DB, tracker_name string) ([]xField, error) {
 
 	// get tracker_id from tracker_name
-	tracker_id, err1 := Tracker_Get_Id(db, tracker_name)
+	tracker_id, err1 := xTracker_Get_Id(db, tracker_name)
 	if err1 != nil {
 		return nil, err1
 	}
@@ -277,9 +277,9 @@ func Tracker_Get_Fields(db *sql.DB, tracker_name string) ([]Field, error) {
 	}
 	defer rows.Close()
 
-	var fields []Field
+	var fields []xField
 	for rows.Next() {
-		var field Field
+		var field xField
 		err2 := rows.Scan(&field.Id, &field.Type, &field.Name, &field.Notes)
 		if err2 != nil {
 			return nil, err2
@@ -290,11 +290,11 @@ func Tracker_Get_Fields(db *sql.DB, tracker_name string) ([]Field, error) {
 	return fields, nil
 }
 
-func Tracker_Get_Number(db *sql.DB, field_id int) (Field_Number, error) {
+func xTracker_Get_Number(db *sql.DB, field_id int) (xField_Number, error) {
 	row := db.QueryRow(`SELECT max_flag, max_value, min_flag, min_value, decimal_places 
 		FROM number WHERE field_id = ?;`, field_id)
 
-	var number Field_Number
+	var number xField_Number
 	err := row.Scan(&number.Max_Flag, &number.Max_Value, &number.Min_Flag, &number.Min_Value, &number.Decimal_Places)
 	if err != nil {
 		return number, err
@@ -303,8 +303,8 @@ func Tracker_Get_Number(db *sql.DB, field_id int) (Field_Number, error) {
 	return number, nil
 }
 
-func Tracker_Get_Option(db *sql.DB, field_id int) (Field_Option, error) {
-	var option Field_Option
+func xTracker_Get_Option(db *sql.DB, field_id int) (xField_Option, error) {
+	var option xField_Option
 
 	rows, err1 := db.Query(`SELECT option_value, option_name
 		FROM option WHERE field_id = ?;`, field_id)
@@ -328,27 +328,27 @@ func Tracker_Get_Option(db *sql.DB, field_id int) (Field_Option, error) {
 	return option, nil
 }
 
-func Tracker_Get_Fields_Deep(db *sql.DB, tracker_name string) ([]Field_Deep, error) {
-	var fields_deep []Field_Deep
+func xTracker_Get_Fields_Deep(db *sql.DB, tracker_name string) ([]xField_Deep, error) {
+	var fields_deep []xField_Deep
 
-	fields, err1 := Tracker_Get_Fields(db, tracker_name)
+	fields, err1 := xTracker_Get_Fields(db, tracker_name)
 	if err1 != nil {
 		return fields_deep, err1
 	}
 
 	for _, field := range fields {
-		type_number := Field_Number{}
-		type_option := Field_Option{}
+		type_number := xField_Number{}
+		type_option := xField_Option{}
 
 		// get fields
 		if field.Type == "number" {
-			field_number, err2 := Tracker_Get_Number(db, field.Id)
+			field_number, err2 := xTracker_Get_Number(db, field.Id)
 			if err2 != nil {
 				return fields_deep, err1
 			}
 			type_number = field_number
 		} else if field.Type == "option" {
-			field_option, err2 := Tracker_Get_Option(db, field.Id)
+			field_option, err2 := xTracker_Get_Option(db, field.Id)
 			if err2 != nil {
 				return fields_deep, err1
 			}
@@ -356,7 +356,7 @@ func Tracker_Get_Fields_Deep(db *sql.DB, tracker_name string) ([]Field_Deep, err
 		}
 
 		// build up return object
-		fields_deep = append(fields_deep, Field_Deep{
+		fields_deep = append(fields_deep, xField_Deep{
 			Id:          field.Id,
 			Type:        field.Type,
 			Name:        field.Name,
@@ -369,12 +369,12 @@ func Tracker_Get_Fields_Deep(db *sql.DB, tracker_name string) ([]Field_Deep, err
 	return fields_deep, nil
 }
 
-func Tracker_Add_Number_Field(db *sql.DB, tracker_name string, field_name string, max_flag bool, max_value int, min_flag bool, min_value int, decimal_places int) (int64, error) {
+func xTracker_Add_Number_Field(db *sql.DB, tracker_name string, field_name string, max_flag bool, max_value int, min_flag bool, min_value int, decimal_places int) (int64, error) {
 	fmt.Printf("add to tracker '%s' field '%s' type 'number' max(%t) %d min(%t) %d decimal_places %d",
 		tracker_name, field_name, max_flag, max_value, min_flag, min_value, decimal_places)
 
 	// get tracker_id from tracker_name
-	tracker_id, err1 := Tracker_Get_Id(db, tracker_name)
+	tracker_id, err1 := xTracker_Get_Id(db, tracker_name)
 	if err1 != nil {
 		return 0, err1
 	}
@@ -404,11 +404,11 @@ func Tracker_Add_Number_Field(db *sql.DB, tracker_name string, field_name string
 	return field_id, nil
 }
 
-func Tracker_Add_Option_Field(db *sql.DB, tracker_name string, field_name string, option_values []int, option_names []string) (int64, error) {
+func xTracker_Add_Option_Field(db *sql.DB, tracker_name string, field_name string, option_values []int, option_names []string) (int64, error) {
 	fmt.Printf("add to tracker '%s' field type 'option' named '%s'", tracker_name, field_name)
 
 	// get tracker_id from tracker_name
-	tracker_id, err1 := Tracker_Get_Id(db, tracker_name)
+	tracker_id, err1 := xTracker_Get_Id(db, tracker_name)
 	if err1 != nil {
 		return 0, err1
 	}
@@ -446,13 +446,13 @@ func Tracker_Add_Option_Field(db *sql.DB, tracker_name string, field_name string
 
 // record
 
-type Record_Table struct {
-	Tracker Tracker
-	Records []Record
-	Fields  []Field_Deep
+type xRecord_Table struct {
+	Tracker xTracker
+	Records []xRecord
+	Fields  []xField_Deep
 }
 
-type Record struct {
+type xRecord struct {
 	Id        int64
 	Timestamp string
 	Notes     string
@@ -460,22 +460,22 @@ type Record struct {
 	Data []int64
 }
 
-func Record_Get_Deep(db *sql.DB, tracker_name string) (Record_Table, error) {
-	var record_table Record_Table
+func xRecord_Get_Deep(db *sql.DB, tracker_name string) (xRecord_Table, error) {
+	var record_table xRecord_Table
 
-	tracker, err1 := Tracker_By_Name(db, tracker_name)
+	tracker, err1 := xTracker_By_Name(db, tracker_name)
 	if err1 != nil {
 		return record_table, err1
 	}
 	record_table.Tracker = tracker
 
-	fields, err2 := Tracker_Get_Fields_Deep(db, tracker_name)
+	fields, err2 := xTracker_Get_Fields_Deep(db, tracker_name)
 	if err2 != nil {
 		return record_table, err2
 	}
 	record_table.Fields = fields
 
-	var records []Record
+	var records []xRecord
 
 	records_query := fmt.Sprintf("SELECT * FROM tracker_%d;", tracker.Id)
 	rows, err3 := db.Query(records_query)
@@ -490,7 +490,7 @@ func Record_Get_Deep(db *sql.DB, tracker_name string) (Record_Table, error) {
 			return record_table, err4
 		}
 
-		var record Record
+		var record xRecord
 
 		// make an object based on the number columns
 		columns := make([]string, len(cols))
@@ -524,13 +524,13 @@ func Record_Get_Deep(db *sql.DB, tracker_name string) (Record_Table, error) {
 	return record_table, nil
 }
 
-func Record_Table_Create(db *sql.DB, tracker_name string) error {
-	tracker_id, err1 := Tracker_Get_Id(db, tracker_name)
+func xRecord_Table_Create(db *sql.DB, tracker_name string) error {
+	tracker_id, err1 := xTracker_Get_Id(db, tracker_name)
 	if err1 != nil {
 		return err1
 	}
 
-	fields, err2 := Tracker_Get_Fields_Deep(db, tracker_name)
+	fields, err2 := xTracker_Get_Fields_Deep(db, tracker_name)
 	if err2 != nil {
 		return err2
 	}
@@ -578,16 +578,16 @@ CREATE TABLE IF NOT EXISTS tracker_%d (
 // 	// re-lock the tracker
 // }
 
-func Record_Table_Delete(db *sql.DB, tracker_name string) error {
+func xRecord_Table_Delete(db *sql.DB, tracker_name string) error {
 	return nil
 }
 
-func Record_Add(db *sql.DB, tracker_name string, notes string, data_names []string, data_values []string) (int64, error) {
+func xRecord_Add(db *sql.DB, tracker_name string, notes string, data_names []string, data_values []string) (int64, error) {
 	fmt.Printf("record in tracker '%s' with notes '%s'", tracker_name, notes)
 	fmt.Println(data_names)
 	fmt.Println(data_values)
 
-	tracker_id, err1 := Tracker_Get_Id(db, tracker_name)
+	tracker_id, err1 := xTracker_Get_Id(db, tracker_name)
 	if err1 != nil {
 		return 0, err1
 	}

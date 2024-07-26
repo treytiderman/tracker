@@ -20,7 +20,8 @@
         <div class="container mx-auto flex items-center gap-2 p-1">
 
             <!-- Home -->
-            <a href="./trackers" class="px-3 p-1 rounded-md border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
+            <a href="./trackers" aria-label="Home" class="px-3 p-1 rounded-md border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
+                <span class="sr-only">Home</span>
                 <svg class="w-4 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" fill="currentColor" viewBox="0 0 20 20"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
                     <path d="M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.2c0 2.7-.2 5.4-.5 8.1V472c0 22.1-17.9 40-40 40H456c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1H416 392c-22.1 0-40-17.9-40-40V448 384c0-17.7-14.3-32-32-32H256c-17.7 0-32 14.3-32 32v64 24c0 22.1-17.9 40-40 40H160 128.1c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2H104c-22.1 0-40-17.9-40-40V360c0-.9 0-1.9 .1-2.8V287.6H32c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z"/>
                 </svg>
@@ -104,17 +105,16 @@
 
         <form class="flex flex-col gap-4" hx-post="/htmx/tracker/record?id={{.Tracker.Id}}" hx-target="#response">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
-                {{ range .Fields }}
+                {{ range .Tracker.Fields }}
 
                 {{ if eq .Type "option" }}
                 <div class="flex flex-col gap-1">
                     <label for="field_{{.Id}}" class="block">{{ .Name }}</label>
                     <select id="field_{{.Id}}" name="field_{{.Id}}" 
                         class="h-10 px-3 py-1 rounded-md bg-zinc-700 border-2 border-zinc-600 cursor-pointer focus:outline-none focus:border-zinc-300">
-                        {{ $values := .Type_Option.Option_Values }}
-                        {{ range $index, $name := .Type_Option.Option_Names }}
-                        <option value="{{index $values $index}}">
-                            {{index $values $index}} : {{$name}}
+                        {{ range .Options }}
+                        <option value="{{ .Value }}">
+                            {{ .Value }} = {{ .Name }}
                         </option>
                         {{ end }}
                     </select>
@@ -122,7 +122,7 @@
                 {{ else }}
                 <div class="grow flex flex-col gap-1">
                     <label for="field_{{.Id}}" class="block">{{ .Name }}</label>
-                    <input type="number" name="field_{{.Id}}" id="field_{{.Id}}" step="{{ decimal_places_to_step_size .Type_Number.Decimal_Places }}" placeholder="0" value="" required
+                    <input type="number" name="field_{{.Id}}" id="field_{{.Id}}" step="{{ decimal_places_to_step_size .Number.Decimal_Places }}" placeholder="0" value="" required
                         class="h-10 px-3 py-1 rounded-md bg-zinc-700 border-2 border-zinc-600 placeholder:text-zinc-500 focus:outline-none focus:border-zinc-300" />
                 </div>
                 {{ end }}
@@ -132,12 +132,17 @@
                     <div class="font-thin text-sm text-zinc-400">No data fields...</div>
                 </div>
                 {{ end }}
-
-                <div class="flex gap-4">
-                    <input type="submit" value="Submit Record" class="h-10 p-1 px-3 cursor-pointer rounded-md bg-yellow-800 text-yellow-100 border-2 border-yellow-600 focus:outline-none focus:border-zinc-300" />
-                </div>
             </div>
-            
+
+            <div class="grow flex flex-col gap-1">
+                <label for="entry_notes" class="block">Entry Notes</label>
+                <textarea name="entry_notes" id="entry_notes" placeholder="Entry Notes..."
+                    class="min-h-12 h-24 px-3 py-1 rounded-md bg-zinc-700 border-2 border-zinc-600 placeholder:text-zinc-500 focus:outline-none focus:border-zinc-300"></textarea>
+            </div>
+
+            <div class="flex gap-4">
+                <input type="submit" value="Submit Record" class="h-10 p-1 px-3 cursor-pointer rounded-md bg-yellow-800 text-yellow-100 border-2 border-yellow-600 focus:outline-none focus:border-zinc-300" />
+            </div>
         </form>
 
         <pre id="response" class="font-mono text-xs overflow-auto text-green-300"></pre>

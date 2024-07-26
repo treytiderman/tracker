@@ -85,4 +85,5 @@ LEFT JOIN field USING (field_id)
 LEFT JOIN number USING (field_id)
 LEFT JOIN option ON log.log_value = option.option_value
 WHERE entry.tracker_id = 8
-ORDER BY entry.entry_id, log.log_id;
+-- ORDER BY entry.entry_id, log.log_id;
+ORDER BY entry.entry_id, field.field_id;

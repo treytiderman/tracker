@@ -17,7 +17,7 @@ func main() {
 	fmt.Println()
 	defer db.Close()
 
-	Tables_Create(db)
+	Create_Tables(db)
 
 	Start_Web_Server(db)
 }

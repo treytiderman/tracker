@@ -329,7 +329,7 @@ func Test_Update_Tracker_Notes(t *testing.T) {
 
 // Delete Data
 
-func Test_Delete_Tracker(t *testing.T) {
+func Test_Delete_Tracker_By_Name(t *testing.T) {
 	var tests = []struct {
 		tracker_name string
 	}{
@@ -337,7 +337,7 @@ func Test_Delete_Tracker(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.tracker_name, func(t *testing.T) {
-			err := Delete_Tracker(db, tt.tracker_name)
+			err := Delete_Tracker_By_Name(db, tt.tracker_name)
 			if err != nil {
 				t.Fatalf("Failed to delete tracker")
 			}

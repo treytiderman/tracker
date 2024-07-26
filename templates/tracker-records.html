@@ -107,23 +107,35 @@
                 <thead class="uppercase border-b-2 border-zinc-600 bg-zinc-700">
                     <tr>
                         <th class="px-3 py-2"> Timestamp </th>
-                        {{ range .Fields }}
+                        {{ range .Tracker.Fields }}
+                        {{ if eq .Type "option" }}
                         <th class="px-3 py-2"> {{ .Name }} </th>
+                        {{ else }}
+                        <th class="px-3 py-2 text-right"> {{ .Name }} </th>
+                        {{ end }}
                         {{ end }}
                         <th class="px-3 py-2"> Notes </th>
                     </tr>
                 </thead>
                 <tbody class="text-base">
-                    {{ range .Records }}
+                    {{ range .Entries }}
                     {{ block "row" . }}
                     <tr class="border-b border-zinc-600 hover:bg-zinc-700">
-                        <th class="px-3 py-1 whitespace-nowrap font-mono font-normal text-zinc-400 text-sm">{{ .Timestamp }}</th>
-                        {{ range .Data }}
-                        <td class="px-3 py-1 whitespace-nowrap">{{ . }}</td>
+                        <td class="px-3 py-1 whitespace-nowrap font-mono zfont-normal text-zinc-400 text-sm">{{ .Timestamp }}</td>
+                        {{ range .Logs }}
+                        {{ if eq .Field_Type "option" }}
+                        <td class="px-3 py-1 whitespace-nowrap" title="{{ .Value }} = {{ .Present }}">{{ .Present }}</td>
+                        {{ else }}
+                        <td class="px-3 py-1 whitespace-nowrap text-right" title="{{ .Value }} = {{ .Present }}">{{ .Present }}</td>
+                        {{ end }}
                         {{ end }}
                         <td class="px-3 py-1 whitespace-nowrap">{{ .Notes }}</td>
                     </tr>
                     {{ end }}
+                    {{ else }}
+                    <tr class="border-b border-zinc-600 hover:bg-zinc-700">
+                        <td class="px-3 py-1 whitespace-nowrap font-mono zfont-normal text-zinc-400 text-sm">No Logs...</td>
+                    </tr>
                     {{ end }}
                 </tbody>
             </table>

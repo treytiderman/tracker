@@ -28,11 +28,11 @@
 
         {{ range . }}
         {{ block "tracker-info" . }}
-        <details id="details{{.Tracker.Id}}" class="[&_svg]:open:-rotate-180 border-2 border-zinc-700 rounded-lg">
+        <details id="details{{.Id}}" class="[&_svg]:open:-rotate-180 border-2 border-zinc-700 rounded-lg">
             <summary class="w-full p-4 list-none flex cursor-pointer items-center gap-4 rounded-lg [&::-webkit-details-marker]:hidden focus:outline-none focus:ring-2 focus:ring-zinc-300">
                 <div>
-                    <h2 class="text-xl font-bold text-violet-300">{{ .Tracker.Name }}</h2>
-                    <div class="font-thin text-sm text-zinc-400">{{ .Tracker.Notes }}</div>
+                    <h2 class="text-xl font-bold text-violet-300">{{ .Name }}</h2>
+                    <div class="font-thin text-sm text-zinc-400">{{ .Notes }}</div>
                 </div>
                 <div class="ml-auto text-violet-300">
                     <svg class="rotate-0 transform transition-all duration-200" fill="none" height="24" width="24"
@@ -58,13 +58,13 @@
                 {{ end }}
             </div>
             <div class="flex p-4 w-full">
-                <a href="./tracker/records?id={{.Tracker.Id}}"
+                <a href="./tracker/records?id={{.Id}}"
                     class="block text-sky-200 bg-sky-800 p-1 px-2 rounded-md border-2 border-sky-600 focus:outline-none focus:border-zinc-300">
                     View Records
                 </a>
                 <button
-                    hx-get="/htmx/tracker/delete?id={{.Tracker.Id}}"
-                    hx-target="#details{{.Tracker.Id}}"
+                    hx-get="/htmx/tracker/delete?id={{.Id}}"
+                    hx-target="#details{{.Id}}"
                     hx-swap="outerHTML"
                     hx-confirm="Are you sure you want to delete this tracker?"
                     class="block ml-auto text-red-300 p-1 px-2 rounded-md focus:outline-none focus:ring-2 focus:ring-zinc-300"

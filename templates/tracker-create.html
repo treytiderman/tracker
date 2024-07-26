@@ -134,11 +134,11 @@
             // Add option rows
             const field_type = event.target.value
             if (field_type === "number") {
-                const max = create_number_max_row(id)
-                const min = create_number_min_row(id)
+                // const max = create_number_max_row(id)
+                // const min = create_number_min_row(id)
                 const dec = create_number_decimal_row(id)
-                parent.appendChild(max)
-                parent.appendChild(min)
+                // parent.appendChild(max)
+                // parent.appendChild(min)
                 parent.appendChild(dec)
             } else if (field_type === "option") {
                 const option = create_option_row(id, 1)
@@ -314,11 +314,11 @@
         parent.appendChild(field)
 
         // Number
-        const max = create_number_max_row(field_count)
-        const min = create_number_min_row(field_count)
+        // const max = create_number_max_row(field_count)
+        // const min = create_number_min_row(field_count)
         const dec = create_number_decimal_row(field_count)
-        parent.appendChild(max)
-        parent.appendChild(min)
+        // parent.appendChild(max)
+        // parent.appendChild(min)
         parent.appendChild(dec)
 
         document.getElementById("data_fields").appendChild(parent)
