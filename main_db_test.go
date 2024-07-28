@@ -248,7 +248,8 @@ func Test_Get_Tracker_By_Name(t *testing.T) {
 				t.Fatalf("Failed to Get_Tracker_By_Name")
 			}
 			s, _ := json.Marshal(tracker)
-			fmt.Println("JSON:", string(s))
+			fmt.Sprintln("JSON:", string(s))
+			// fmt.Println("JSON:", string(s))
 		})
 	}
 }
@@ -266,7 +267,8 @@ func Test_Get_Tracker_By_Id(t *testing.T) {
 				t.Fatalf("Failed to Get_Tracker_By_Id")
 			}
 			s, _ := json.Marshal(tracker)
-			fmt.Println("JSON:", string(s))
+			fmt.Sprintln("JSON:", string(s))
+			// fmt.Println("JSON:", string(s))
 		})
 	}
 }
@@ -277,7 +279,8 @@ func Test_Get_Trackers(t *testing.T) {
 		t.Fatalf("Failed to Get_Trackers")
 	}
 	s, _ := json.Marshal(trackers)
-	fmt.Println("JSON:", string(s))
+	fmt.Sprintln("JSON:", string(s))
+	// fmt.Println("JSON:", string(s))
 }
 
 func Test_Get_Entries_By_Tracker_Id(t *testing.T) {
@@ -303,7 +306,8 @@ func Test_Get_Entries_By_Tracker_Id(t *testing.T) {
 			}
 
 			s, _ := json.Marshal(entries)
-			fmt.Println("JSON:", string(s))
+			fmt.Sprintln("JSON:", string(s))
+			// fmt.Println("JSON:", string(s))
 		})
 	}
 }

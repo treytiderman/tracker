@@ -109,7 +109,7 @@
 
         <details class="[&_svg]:open:-rotate-180 text-zinc-300 border-2 border-zinc-700 rounded-lg">
             <summary class="w-full p-4 list-none flex cursor-pointer items-center gap-4 rounded-lg [&::-webkit-details-marker]:hidden focus:outline-none focus:ring-2 focus:ring-zinc-300">
-                <h2 class="">Settings</h2>
+                <h2 class="">Settings *TODO*</h2>
                 <div class="ml-auto">
                     <svg class="rotate-0 transform transition-all duration-200" fill="none" height="24" width="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
                         <polyline points="6 9 12 15 18 9"></polyline>
@@ -268,23 +268,6 @@
         //     },
         //     background: { enabled: false },
         // },
-        series: [
-            {
-                name: "{{ (index .Fields 0).Name }}",
-                data: [
-                    // {
-                    //     x: "2024-07-13T20:28:21Z",
-                    //     y: 57
-                    // },
-                    {{ range .Records }}
-                    {
-                        x: "{{ .Timestamp }}",
-                        y: {{ index .Data 0 }}
-                    },
-                    {{ end }}
-                ]
-            },
-        ],
         xaxis: {
             type: "datetime",
             // min: new Date("2024-07-13T20:00:00Z").getTime(),
@@ -352,6 +335,23 @@
                 offsetY: 0
             },
         },
+        series: [
+            {
+                name: "{{ (index .Tracker.Fields 0).Name }}",
+                data: [
+                    // {
+                    //     x: "2024-07-13T20:28:21Z",
+                    //     y: 57
+                    // },
+                    {{ range .Entries }}
+                    {
+                        x: "{{ .Timestamp }}",
+                        y: {{ (index .Logs 0).Value }}
+                    },
+                    {{ end }}
+                ]
+            },
+        ],
     };
 
     if (document.body.offsetWidth > 900) {

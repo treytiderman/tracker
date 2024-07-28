@@ -139,7 +139,7 @@ func Page_Trackers(db *sql.DB) {
 			return
 		}
 
-		w.Write([]byte(fmt.Sprintf("<div class='text-red-300'>Deleted</div>")))
+		w.Write([]byte("<div class='text-red-300'>Deleted</div>"))
 	})
 }
 
@@ -306,7 +306,7 @@ func Page_Tracker_Records(db *sql.DB) {
 		}
 		data.Trackers = trackers
 
-		// j, _ := json.Marshal(data.Tracker)
+		// j, _ := json.Marshal(data.Entries)
 		// fmt.Println("- DATA:", string(j))
 		t.ExecuteTemplate(w, "tracker-records.html", data)
 	})
@@ -343,14 +343,13 @@ func Page_Tracker_Log(db *sql.DB) {
 			w.Write([]byte(err2.Error()))
 			return
 		}
+		data.Tracker = tracker
 
 		trackers, err4 := Get_Trackers(db)
 		if err4 != nil {
 			log.Fatal(err4)
 		}
-
 		data.Trackers = trackers
-		data.Tracker = tracker
 
 		t.ExecuteTemplate(w, "tracker-log.html", data)
 	})
@@ -436,127 +435,46 @@ func Page_Tracker_Log(db *sql.DB) {
 }
 
 func Page_Tracker_Chart(db *sql.DB) {
-	t, err1 := template.New("").ParseFS(Templates_Embed, "templates/tracker-chart.html")
-	if err1 != nil {
-		log.Fatal(err1)
+	t, err := template.New("").ParseFS(Templates_Embed, "templates/tracker-chart.html")
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	http.HandleFunc("/tracker/chart", func(w http.ResponseWriter, r *http.Request) {
-		id, err1 := strconv.Atoi(r.URL.Query().Get("id"))
-		if err1 != nil {
-			w.Write([]byte(err1.Error()))
+		id, err := strconv.Atoi(r.URL.Query().Get("id"))
+		if err != nil {
+			w.Write([]byte(err.Error()))
 			return
 		}
 		fmt.Printf("GET: /tracker/chart?id=%d\n", id)
 
-		// tracker, err2 := Tracker_By_Id(db, id)
-		// if err2 != nil {
-		// 	log.Fatal(err2)
-		// 	w.Write([]byte(err2.Error()))
-		// 	return
-		// }
-
-		// record_table, err3 := Record_Get_Deep(db, tracker.Name)
-		// if err3 != nil {
-		// 	log.Fatal(err3)
-		// 	w.Write([]byte(err3.Error()))
-		// 	return
-		// }
-
-		// trackers, err4 := Tracker_Get_All(db)
-		// if err4 != nil {
-		// 	log.Fatal(err4)
-		// }
-
 		data := struct {
-			Trackers []xTracker
-			Tracker  xTracker
-			Fields   []xField_Deep
-			Records  []struct {
-				Id        int
-				Timestamp string
-				Data      []string
-				Notes     string
-			}
-		}{
-			Tracker: xTracker{
-				Id:    1,
-				Name:  "Commissions",
-				Notes: "Badger badger badger",
-			},
-			Fields: []xField_Deep{
-				{
-					Id: 1, Type: "number", Name: "Cost", Notes: "",
-					Type_Number: xField_Number{Decimal_Places: 2},
-					Type_Option: xField_Option{},
-				},
-				{
-					Id: 1, Type: "option", Name: "Status", Notes: "",
-					Type_Number: xField_Number{},
-					Type_Option: xField_Option{
-						Option_Values: []int{-1, 0, 1},
-						Option_Names:  []string{"Canceled", "In Progress", "Complete"},
-					},
-				},
-			},
-			Records: []struct {
-				Id        int
-				Timestamp string
-				Data      []string
-				Notes     string
-			}{
-				{
-					Id:        1,
-					Timestamp: "2024-05-07T18:56:44Z",
-					Data:      []string{"1000.00", "Complete"},
-					Notes:     "notes...",
-				},
-				{
-					Id:        2,
-					Timestamp: "2024-06-24T19:05:12Z",
-					Data:      []string{"250.50", "In Progress"},
-					Notes:     "notes 2...",
-				},
-			},
+			Trackers []Db_Tracker
+			Tracker  Db_Tracker
+			Entries  []Db_Entry
+		}{}
+
+		tracker, err := Get_Tracker_By_Id(db, id)
+		if err != nil {
+			log.Fatal(err)
+			w.Write([]byte(err.Error()))
+			return
 		}
+		data.Tracker = tracker
 
-		// data.Trackers = trackers
-		// data.Tracker = tracker
-		// data.Fields = record_table.Fields
+		trackers, err := Get_Trackers(db)
+		if err != nil {
+			log.Fatal(err)
+		}
+		data.Trackers = trackers
 
-		// for _, record := range record_table.Records {
-		// 	record_to_print := struct {
-		// 		Id        int
-		// 		Timestamp string
-		// 		Data      []string
-		// 		Notes     string
-		// 	}{
-		// 		Id:        int(record.Id),
-		// 		Timestamp: record.Timestamp,
-		// 		Data:      []string{},
-		// 		Notes:     record.Notes,
-		// 	}
-
-		// 	for i, data := range record.Data {
-		// 		field := record_table.Fields[i]
-		// 		if field.Type == "number" {
-		// 			data_moved := float32(data) / float32(math.Pow10(field.Type_Number.Decimal_Places))
-		// 			data_string := fmt.Sprintf("%.2f", data_moved)
-		// 			record_to_print.Data = append(record_to_print.Data, data_string)
-		// 		} else if field.Type == "option" {
-		// 			for _, val := range field.Type_Option.Option_Values {
-		// 				if val == int(data) {
-		// 					// data_string := fmt.Sprintf("%s", field.Type_Option.Option_Names[j])
-		// 					data_string := fmt.Sprintf("%d", data)
-		// 					record_to_print.Data = append(record_to_print.Data, data_string)
-		// 					break
-		// 				}
-		// 			}
-		// 		}
-		// 	}
-
-		// 	data.Records = append(data.Records, record_to_print)
-		// }
+		entries, err := Get_Entries_By_Tracker_Id(db, id)
+		if err != nil {
+			log.Fatal(err)
+			w.Write([]byte(err.Error()))
+			return
+		}
+		data.Entries = entries
 
 		t.ExecuteTemplate(w, "tracker-chart.html", data)
 	})

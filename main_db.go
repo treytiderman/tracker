@@ -302,7 +302,7 @@ func Get_Tracker_By_Name(db *sql.DB, tracker_name string) (Db_Tracker, error) {
 }
 
 func Get_Trackers(db *sql.DB) ([]Db_Tracker, error) {
-	sql_string := fmt.Sprintf(
+	sql_string :=
 		`SELECT
 			tracker_id, tracker_name, tracker_notes,
 		
@@ -323,7 +323,7 @@ func Get_Trackers(db *sql.DB) ([]Db_Tracker, error) {
 		) AS tf
 		LEFT JOIN number AS n USING (field_id)
 		LEFT JOIN option AS o USING (field_id)
-		ORDER BY tf.tracker_id, tf.field_id, n.number_id, o.option_id;`)
+		ORDER BY tf.tracker_id, tf.field_id, n.number_id, o.option_id;`
 
 	rows, err := db.Query(sql_string)
 	if err != nil {
@@ -404,7 +404,7 @@ func Get_Entries_By_Tracker_Id(db *sql.DB, tracker_id int) ([]Db_Entry, error) {
 		LEFT JOIN log USING (entry_id)
 		LEFT JOIN field USING (field_id)
 		LEFT JOIN number USING (field_id)
-		LEFT JOIN option ON log.log_value = option.option_value
+		LEFT JOIN option ON log.field_id = option.field_id AND log.log_value = option.option_value
 		WHERE entry.tracker_id = %d
 		ORDER BY entry.entry_id, field.field_id;`,
 		tracker_id)
