@@ -22,18 +22,6 @@ var Public_Embed embed.FS
 //go:embed templates
 var Templates_Embed embed.FS
 
-func Get_Embed_Templates() *template.Template {
-	t, err := template.New("").
-		ParseFS(Templates_Embed,
-			"templates/*.html",
-			"templates/*/*.html",
-		)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return t
-}
-
 func Start_Web_Server(db *sql.DB) {
 	Setup_Public_Routes()
 	Setup_Test_Routes()
@@ -52,8 +40,8 @@ func Start_Web_Server(db *sql.DB) {
 	if port == "" {
 		port = "8000"
 	}
-	port = fmt.Sprintf(":%s", port)
 
+	port = fmt.Sprintf(":%s", port)
 	hostname, _ := os.Hostname()
 	fmt.Println("Web Server: started")
 	fmt.Printf("- http://%s%s\n", "localhost", port)
