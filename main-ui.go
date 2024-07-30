@@ -23,34 +23,8 @@ var Public_Embed embed.FS
 var Templates_Embed embed.FS
 
 func Start_Web_Server(db *sql.DB) {
-	Setup_Public_Routes()
-	Setup_Test_Routes()
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "/trackers", http.StatusSeeOther)
-	})
-
-	Page_Trackers(db)
-	Page_Tracker_Create(db)
-	Page_Tracker_Records(db)
-	Page_Tracker_Log(db)
-	Page_Tracker_Chart(db)
-
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8000"
-	}
-
-	port = fmt.Sprintf(":%s", port)
-	hostname, _ := os.Hostname()
-	fmt.Println("Web Server: started")
-	fmt.Printf("- http://%s%s\n", "localhost", port)
-	fmt.Printf("- http://%s%s\n", hostname, port)
-	fmt.Println()
-	log.Fatal(http.ListenAndServe(port, nil))
-}
-
-func Setup_Public_Routes() {
+	// Setup Public Routes
 	var public_fs = fs.FS(Public_Embed)
 	public_files, err := fs.Sub(public_fs, "public")
 	if err != nil {
@@ -59,15 +33,45 @@ func Setup_Public_Routes() {
 	fs := http.FileServer(http.FS(public_files))
 	// http.Handle("/", fs)
 	http.Handle("/public/", http.StripPrefix("/public/", fs))
-}
 
-func Setup_Test_Routes() {
+	// Base URL Redirect
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/trackers", http.StatusSeeOther)
+	})
+
+	// Test Route
 	http.HandleFunc("/time", func(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, time.Now().Format(time.UnixDate))
 	})
+
+	// All Other Routes
+	routes(db)
+
+	// Start Web Server
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8000"
+	}
+	port = fmt.Sprintf(":%s", port)
+	hostname, _ := os.Hostname()
+
+	fmt.Println("Web Server: started")
+	fmt.Printf("- http://%s%s\n", "localhost", port)
+	fmt.Printf("- http://%s%s\n", hostname, port)
+	fmt.Println()
+
+	log.Fatal(http.ListenAndServe(port, nil))
 }
 
-func Page_Trackers(db *sql.DB) {
+func routes(db *sql.DB) {
+	page_Trackers(db)
+	page_Tracker_Create(db)
+	page_Tracker_Records(db)
+	page_Tracker_Log(db)
+	page_Tracker_Chart(db)
+}
+
+func page_Trackers(db *sql.DB) {
 	t, err1 := template.New("").ParseFS(Templates_Embed, "templates/trackers.html")
 	if err1 != nil {
 		log.Fatal(err1)
@@ -131,7 +135,7 @@ func Page_Trackers(db *sql.DB) {
 	})
 }
 
-func Page_Tracker_Create(db *sql.DB) {
+func page_Tracker_Create(db *sql.DB) {
 	page, err1 := template.New("").ParseFS(Templates_Embed, "templates/tracker-create.html")
 	if err1 != nil {
 		log.Fatal(err1)
@@ -211,7 +215,7 @@ func Page_Tracker_Create(db *sql.DB) {
 	})
 }
 
-func Page_Tracker_Records(db *sql.DB) {
+func page_Tracker_Records(db *sql.DB) {
 	t, err := template.New("").ParseFS(Templates_Embed, "templates/tracker-records.html")
 	if err != nil {
 		log.Fatal(err)
@@ -300,7 +304,7 @@ func Page_Tracker_Records(db *sql.DB) {
 	})
 }
 
-func Page_Tracker_Log(db *sql.DB) {
+func page_Tracker_Log(db *sql.DB) {
 	funcMap := template.FuncMap{
 		"decimal_places_to_step_size": func(x int) float32 {
 			return 1 / float32(math.Pow10(x))
@@ -422,7 +426,7 @@ func Page_Tracker_Log(db *sql.DB) {
 	})
 }
 
-func Page_Tracker_Chart(db *sql.DB) {
+func page_Tracker_Chart(db *sql.DB) {
 	t, err := template.New("").ParseFS(Templates_Embed, "templates/tracker-chart.html")
 	if err != nil {
 		log.Fatal(err)
