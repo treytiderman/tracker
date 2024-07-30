@@ -79,43 +79,44 @@ func page_Trackers(db *sql.DB) {
 
 	http.HandleFunc("/trackers", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("GET: /trackers")
-		data := []Db_Tracker{
-			{
-				1, "Walk Dog 🐶", "Each time I take the dog out", nil,
-			},
-			{
-				2, "Brush Teeth 🦷", "Each time I brush my teeth", nil,
-			},
-			{
-				3, "Money 💰", "Money used by different cards", []Db_Field{
-					{1, "number", "Transactions", "Money Spent", Db_Number{1, 2}, nil},
-					{2, "option", "Card", "Which Credit or Debit Card was used?", Db_Number{0, 0}, []Db_Option{
-						{1, -1, "Discover"},
-						{2, 0, "Visa"},
-						{3, 2, "American Express"},
-					}},
-				},
-			},
-			{
-				4, "Lift 🏋️", "My Lifting Habits", []Db_Field{
-					{2, "option", "Exercise", "", Db_Number{0, 0}, []Db_Option{
-						{1, 1, "Bench Press"},
-						{2, 3, "Squat"},
-						{3, 5, "Deadlift"},
-					}},
-					{3, "number", "Weight", "", Db_Number{2, 0}, nil},
-					{4, "number", "Reps", "", Db_Number{3, 0}, nil},
-				},
-			},
-		}
+
+		// Test Data
+		// trackers := []Db_Tracker{
+		// 	{
+		// 		1, "Walk Dog 🐶", "Each time I take the dog out", nil,
+		// 	},
+		// 	{
+		// 		2, "Brush Teeth 🦷", "Each time I brush my teeth", nil,
+		// 	},
+		// 	{
+		// 		3, "Money 💰", "Money used by different cards", []Db_Field{
+		// 			{1, "number", "Transactions", "Money Spent", Db_Number{1, 2}, nil},
+		// 			{2, "option", "Card", "Which Credit or Debit Card was used?", Db_Number{0, 0}, []Db_Option{
+		// 				{1, -1, "Discover"},
+		// 				{2, 0, "Visa"},
+		// 				{3, 2, "American Express"},
+		// 			}},
+		// 		},
+		// 	},
+		// 	{
+		// 		4, "Lift 🏋️", "My Lifting Habits", []Db_Field{
+		// 			{2, "option", "Exercise", "", Db_Number{0, 0}, []Db_Option{
+		// 				{1, 1, "Bench Press"},
+		// 				{2, 3, "Squat"},
+		// 				{3, 5, "Deadlift"},
+		// 			}},
+		// 			{3, "number", "Weight", "", Db_Number{2, 0}, nil},
+		// 			{4, "number", "Reps", "", Db_Number{3, 0}, nil},
+		// 		},
+		// 	},
+		// }
 
 		trackers, err2 := Get_Trackers(db)
 		if err2 != nil {
 			log.Fatal(err2)
 		}
-		data = trackers
 
-		t.ExecuteTemplate(w, "trackers.html", data)
+		t.ExecuteTemplate(w, "trackers.html", trackers)
 	})
 
 	http.HandleFunc("/htmx/tracker/delete", func(w http.ResponseWriter, r *http.Request) {
