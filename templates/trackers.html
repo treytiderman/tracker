@@ -28,7 +28,7 @@
 
         {{ range . }}
         {{ block "tracker-info" . }}
-        <details id="details{{.Id}}" class="[&_svg]:open:-rotate-180 border-2 border-zinc-700 rounded-lg">
+        <details id="details{{.Id}}" class="[&_svg]:open:-rotate-180 bg-zinc-700 border-2 border-zinc-600 rounded-lg">
             <summary class="w-full p-4 list-none flex cursor-pointer items-center gap-4 rounded-lg [&::-webkit-details-marker]:hidden focus:outline-none focus:ring-2 focus:ring-zinc-300">
                 <div>
                     <h2 class="text-xl font-bold text-violet-300">{{ .Name }}</h2>

@@ -1,0 +1,17 @@
+/* Reset | Clear most default styles and spacing */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* Base */
+html {
+    color-scheme: dark;
+    font-family: 'Rubik', helvetica, arial, sans-serif;
+}
+
+/* body {
+    height: 100%;
+    height: 100svh;
+} */

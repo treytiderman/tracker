@@ -79,8 +79,9 @@
             <!-- Page -->
             <div class="relative">
                 <button
+                    title="Selected Page"
                     x-on:click="pageDropdownOpen = !pageDropdownOpen"
-                    class="flex items-center gap-2 px-3 p-1 w-32 rounded-md border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100"
+                    class="flex items-center gap-2 px-3 p-1 max-w-32 rounded-md border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100"
                 >
                     <span class="">Log</span>
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -95,44 +96,46 @@
                     x-on:click.away="pageDropdownOpen = false"
                     x-on:keydown.escape.window="pageDropdownOpen = false"
                 >
-                    <a href="#" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-300 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
+                    <div class="px-3 pb-2 mb-2 text-zinc-400 text-sm border-b-2 border-zinc-500">Pages</div>
+                    <a href="./tracker-info.html" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-300 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
                         Info
                     </a>
-                    <a href="#" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-300 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
+                    <a href="./tracker-log.html" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-300 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
                         Log
                     </a>
-                    <a href="#" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-300 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
+                    <a href="./tracker-records.html" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-300 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
                         Records
                     </a>
-                    <a href="#" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-300 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
+                    <a href="./tracker-chart.html" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-300 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
                         Charts
                     </a>
-                    <a href="#" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-300 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
+                    <a href="#" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-500 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
                         Reminders
                     </a>
-                    <a href="#" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-300 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
+                    <a href="#" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-500 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
                         Goals
                     </a>
                 </div>
+            </div>
         </div>
     </nav>
 
     <main class="p-4 container mx-auto flex flex-col gap-4 grow h-full overflow-auto">
 
-        <h1 class="text-2xl font-bold text-violet-300">Log</h1>
+        <h1 class="text-2xl font-bold text-violet-300 sr-only">Log</h1>
 
         <form class="flex flex-col gap-4" hx-post="/htmx/tracker/create" hx-target="#response">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
                 <!-- {{ range .Fields }} -->
                 <div class="grow flex flex-col gap-1">
-                    <label for="field_1" class="block">Field Name 1</label>
+                    <label for="field_1" class="block py-1 text-sm font-thin text-zinc-400 grow">Field Name 1</label>
                     <input type="number" name="field_1" id="field_1" placeholder="0" value="" required
-                        class="h-10 px-3 py-1 rounded-md bg-zinc-700 border-2 border-zinc-600 placeholder:text-zinc-500 focus:outline-none focus:border-zinc-300" />
+                        class="h-10 px-3 py-1 rounded-md bg-zinc-700 border-2 border-transparent placeholder:text-zinc-500 hover:bg-zinc-600 focus:bg-zinc-600 focus:outline-none focus:border-zinc-300" />
                 </div>
                 <div class="flex flex-col gap-1">
-                    <label for="field_2" class="block">Field Name 2</label>
+                    <label for="field_1" class="block py-1 text-sm font-thin text-zinc-400 grow">Field Name 2</label>
                     <select id="field_2" name="field_2" 
-                        class="h-10 px-3 py-1 rounded-md bg-zinc-700 border-2 border-zinc-600 cursor-pointer focus:outline-none focus:border-zinc-300">
+                        class="h-10 px-3 py-1 rounded-md bg-zinc-700 border-2 border-transparent cursor-pointer hover:bg-zinc-600 focus:bg-zinc-600 focus:outline-none focus:border-zinc-300">
                         <option value="Option 1">Option 1</option>
                         <option value="Option 2">Option 2</option>
                     </select>
@@ -143,13 +146,14 @@
                 </div>
                 <!-- {{ end }} -->
                 <div class="flex gap-4">
-                    <input type="submit" value="Submit New Record" class="h-10 p-1 px-3 cursor-pointer rounded-md bg-yellow-800 text-yellow-100 border-2 border-yellow-600 focus:outline-none focus:border-zinc-300" />
+                    <input type="submit" value="Submit New Record" class="h-10 p-1 px-3 cursor-pointer rounded-md bg-violet-700 text-violet-100 hover:bg-violet-600 focus:bg-violet-600 border-2 border-transparent focus:outline-none focus:border-violet-300" />
                 </div>
             </div>
 
         </form>
 
     </main>
+
 </body>
 
 </html>
