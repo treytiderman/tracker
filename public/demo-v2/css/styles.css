@@ -1,17 +1,350 @@
-/* Reset | Clear most default styles and spacing */
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
+/* --- --- --- Themes --- --- --- */
+
+:root {
+
+    --font-size: 16px;
+    --font-size-sm: 14px;
+    --font-size-mono: var(--font-size-sm);
+    --font-family: 'Rubik', helvetica, arial, sans-serif;
+    --font-family-mono: 'Fira Code', Menlo, Consolas, monospace;
+
+    --line-height: 1.6;
+    --max-p-width: 80ch;
+
+    --border-width: 1.5px;
+    --border-radius: 0.4rem;
+    --border-radius-lg: 1.0rem;
+    --border: var(--border-width) solid var(--color-border);
+    --outline: var(--border-width) solid var(--color-outline);
+
+    --padding-x: 0.8rem;
+    --padding-y: 0.4rem;
+    --padding: var(--padding-y) var(--padding-x);
+
+    /* Light */
+    --color-bg: var(--color-zinc-100);
+    --color-text: var(--color-zinc-800);
+    --color-border: var(--color-zinc-300);
+    --color-outline: var(--color-zinc-900);
+
+    --color-bg-header: var(--color-zinc-300);
+    --color-text-heading: var(--color-zinc-950);
+
+    --color-bg-button: var(--color-zinc-200);
+    --color-text-button: var(--color-zinc-900);
+    --color-border-button: var(--color-zinc-400);
+
+    --color-bg-input: var(--color-zinc-50);
+    --color-text-input: var(--color-zinc-800);
+    --color-border-input: var(--color-border);
+    --color-placeholder: var(--color-zinc-500);
+
+    --color-text-link: var(--color-purple-600);
+
+    --color-bg-primary: var(--color-purple-200);
+    --color-text-primary: var(--color-purple-900);
+    --color-border-primary: var(--color-purple-400);
+
+    --color-bg-green: var(--color-green-200);
+    --color-text-green: var(--color-green-900);
+    --color-border-green: var(--color-green-400);
+
+    --color-bg-red: var(--color-red-200);
+    --color-text-red: var(--color-red-900);
+    --color-border-red: var(--color-red-400);
+
+    --color-bg-yellow: var(--color-yellow-200);
+    --color-text-yellow: var(--color-yellow-900);
+    --color-border-yellow: var(--color-yellow-400);
+
+    --filter-brightness-disable: brightness(75%);
+    --filter-brightness-active: brightness(85%);
 }
 
-/* Base */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-bg: var(--color-zinc-800);
+        --color-text: var(--color-zinc-300);
+        --color-border: var(--color-zinc-700);
+        --color-outline: var(--color-zinc-200);
+
+        --color-bg-header: var(--color-zinc-700);
+        --color-text-heading: var(--color-zinc-200);
+
+        --color-bg-button: color-mix(in oklab, var(--color-bg) 92%, white);
+        --color-text-button: var(--color-zinc-200);
+        --color-border-button: var(--color-zinc-600);
+
+        --color-bg-input: color-mix(in oklab, var(--color-bg) 90%, black);
+        --color-text-input: var(--color-zinc-300);
+        --color-border-input: var(--color-border);
+        --color-placeholder: var(--color-zinc-500);
+
+        --color-text-link: var(--color-purple-300);
+
+        --color-bg-primary: var(--color-purple-900);
+        --color-text-primary: var(--color-purple-100);
+        --color-border-primary: var(--color-purple-600);
+
+        --color-bg-green: var(--color-green-900);
+        --color-text-green: var(--color-green-100);
+        --color-border-green: var(--color-green-600);
+
+        --color-bg-red: var(--color-red-900);
+        --color-text-red: var(--color-red-100);
+        --color-border-red: var(--color-red-600);
+
+        --color-bg-yellow: var(--color-yellow-900);
+        --color-text-yellow: var(--color-yellow-100);
+        --color-border-yellow: var(--color-yellow-600);
+
+        --filter-brightness-disable: brightness(75%);
+        --filter-brightness-active: brightness(85%);
+    }
+}
+
+/* --- --- --- Base --- --- --- */
+
 html {
-    color-scheme: dark;
-    font-family: 'Rubik', helvetica, arial, sans-serif;
+    width: 100%;
+    height: 100%;
+    font-size: var(--font-size);
+    font-family: var(--font-family);
+    color-scheme: light dark;
 }
 
-/* body {
+body {
     height: 100%;
-    height: 100svh;
-} */
+    height: 100dvh;
+    color: var(--color-text);
+    background-color: var(--color-bg);
+    line-height: inherit;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    line-height: 1;
+    color: var(--color-text-heading);
+    overflow-wrap: break-word;
+    text-wrap: balance;
+}
+
+h1 {
+    font-size: 2rem;
+}
+
+h2 {
+    font-size: 1.6rem;
+}
+
+h3 {
+    font-size: 1.2rem;
+}
+
+h4,
+h5,
+h6 {
+    font-size: 1rem;
+}
+
+p {
+    max-width: var(--max-p-width);
+    line-height: var(--line-height);
+    overflow-wrap: break-word;
+    text-wrap: pretty;
+}
+
+mark {
+    color: var(--color-text-primary);
+    background-color: var(--color-bg-primary);
+    border-left: 3px solid var(--color-bg-primary);
+    border-right: 3px solid var(--color-bg-primary);
+}
+
+::selection {
+    color: var(--color-text-primary);
+    background-color: var(--color-bg-primary);
+}
+
+hr {
+    width: 100%;
+    border: none;
+    border-radius: 99px;
+    height: var(--border-width);
+    background-color: var(--color-border);
+}
+
+[hidden] {
+    display: none !important;
+}
+
+/* --- --- --- Inputs --- --- --- */
+
+a {
+    color: var(--color-text-link);
+    text-underline-position: under left;
+    text-decoration: none;
+    border-radius: 1px;
+}
+
+label {
+    display: block;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+}
+
+a,
+input,
+button,
+select,
+textarea {
+    appearance: none;
+    background-color: transparent;
+
+    border: var(--border);
+    border-color: transparent;
+
+    /* stop double click zoom on iOS */
+    touch-action: manipulation;
+    /* stop browser click feedback */
+    -webkit-tap-highlight-color: transparent;
+}
+
+button,
+select,
+input[type=file],
+input[type=reset],
+input[type=button],
+input[type=range],
+input[type=radio],
+input[type=date],
+input[type=time],
+input[type=checkbox],
+input[type=submit] {
+    cursor: pointer;
+
+    /* prevent selecting text */
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+input[type=date],
+input[type=time] {
+    appearance: none;
+}
+
+input[type=file] {
+    padding: 0;
+    font-size: var(--font-size-sm);
+    padding-right: var(--padding-x);
+}
+
+::file-selector-button {
+    cursor: pointer;
+    border: none;
+    font: inherit;
+    font-size: 1rem;
+    padding: var(--padding);
+    margin-right: var(--padding-x);
+    border-radius: var(--border-radius);
+
+    color: var(--color-text-button);
+    background-color: var(--color-bg-button);
+}
+
+select option,
+optgroup {
+    background: var(--color-bg);
+}
+
+a:hover,
+a:focus-visible {
+    text-decoration: underline;
+}
+
+a:focus-visible,
+input:focus-visible,
+button:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: none;
+    border: var(--outline) !important;
+    /* outline: var(--outline);
+    outline-offset: calc(-1*var(--border-width)); */
+}
+
+a:active,
+button:active,
+select:active,
+input[type=file]:active,
+input[type=reset]:active,
+input[type=button]:active,
+input[type=range]:active,
+input[type=radio]:active,
+input[type=date]:active,
+input[type=time]:active,
+input[type=checkbox]:active,
+input[type=submit]:active {
+    filter: var(--filter-brightness-active);
+}
+
+::placeholder {
+    color: var(--color-placeholder) !important;
+}
+
+:disabled,
+:disabled:hover {
+    filter: var(--filter-brightness-disable) grayscale(1);
+    cursor: not-allowed;
+}
+
+
+/* Date + Time if iOS */
+
+@supports (-webkit-touch-callout: none) {
+
+    input[type="date"]::after,
+    input[type="datetime-local"]::after,
+    input[type="month"]::after,
+    input[type="week"]::after {
+        padding-left: var(--pad-x);
+        content: "📅";
+    }
+
+    input[type="time"]::after {
+        padding-left: var(--pad-x);
+        content: "🕘";
+    }
+}
+
+/* Scrollbar for Chrome and Safari */
+
+::-webkit-scrollbar {
+    width: 1rem;
+    height: 1rem;
+}
+
+::-webkit-scrollbar-thumb {
+    /* background-color: var(--color-border-grey); */
+    box-shadow: inset 0 0 10px 10px var(--color-border-button);
+    border: solid 0.25rem transparent;
+    border-radius: 99px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-resizer {
+    /* background: linear-gradient(135deg, transparent 0% 50%, var(--color-bg-header) 50% 100%); */
+    /* background: var(--color-text-dim); */
+    background: transparent;
+}
+
+::-webkit-scrollbar-corner {
+    background: transparent;
+}

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="tracker app">
+    <title>Create Tracker</title>
+
+    <link rel="stylesheet" href="./css/palette.css">
+
+    <link rel="stylesheet" href="./css/reset.css">
+    <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="./css/layout.css">
+    <link rel="stylesheet" href="./css/app.css">
+
+    <script src="./js/htmx-v2.0.0.js"></script>
+</head>
+
+<body class="tt-layout">
+
+    <header class="tt-header">
+        <button id="navShowButton"> 
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="4" x2="20" y1="12" y2="12"/>
+                <line x1="4" x2="20" y1="6" y2="6"/>
+                <line x1="4" x2="20" y1="18" y2="18"/>
+            </svg>
+        </button>
+        <div> Log </div>
+        <div class="caret"> > </div>
+        <div class="title"> Brush Teeth 🦷 </div>
+        <button id="navSearchButton" hidden> 
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.3-4.3"/>
+            </svg>
+        </button>
+    </header>
+
+    <div>
+
+        <nav id="navElement">
+            <div class="tt-nav-heading">
+                <h4> Page </h4>
+            </div>
+
+            <div class="tt-nav-links">
+                <a href="#">Info</a>
+                <a href="#" class="active">Log</a>
+                <a href="#">Records</a>
+                <a href="#" class="disabled">Charts</a>
+                <a href="#" class="disabled" hidden>Reminders</a>
+                <a href="#" class="disabled" hidden>Goals</a>
+            </div>
+            
+            <hr>
+
+            <div class="tt-nav-heading">
+                <h4> Tracker </h4>
+                <a href="#" id="navCreateTracker" title="Create New Tracker">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 12h14"/>
+                        <path d="M12 5v14"/>
+                    </svg>
+                </a>
+            </div>
+
+            <div class="tt-nav-filter">
+                <input type="text" id="navTrackerFilter" name="navTrackerFilter" placeholder="filter...">
+                <label for="navTrackerFilter" title="Filter Tracker List">
+                    <span hidden>Filter Trackers</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+                    </svg>
+                </label>
+            </div>
+
+            <div id="navTrackerList" class="tt-nav-links">
+                <a href="#">Money 💰</a>
+                <a href="#">Walk Dog 🐩</a>
+                <a href="#" class="active">Brush Teeth 🦷</a>
+                <a href="#">Workout 🏋️</a>
+            </div>
+
+            <script>
+                const navElement = document.getElementById("navElement")
+                const navShowButton = document.getElementById("navShowButton")
+                navShowButton.addEventListener("click", () => navElement.hidden = !navElement.hidden)
+                if (document.body.offsetWidth < 800) navElement.hidden = true
+            </script>
+
+            <script>
+                const navTrackerList = document.getElementById("navTrackerList")
+                const navTrackerFilter = document.getElementById("navTrackerFilter")
+                navTrackerFilter.addEventListener("input", (event) => {
+                    const filterText = event.target.value.toLowerCase()
+                    for (const link of navTrackerList.children) {
+                        const hide = !link.innerText.toLowerCase().includes(filterText)
+                        link.hidden = hide
+                    }
+                })
+            </script>
+
+        </nav>
+
+        <main id="mainElement">
+            <section class="grid gap-4 pad-4">
+
+                <h1>Heading 1</h1>
+                <h2>Heading 2</h2>
+                <h3>Heading 3</h3>
+        
+                <p>
+                    Lorem <i>ipsum</i> dolor <b>sit</b> amet consectetur, <mark>adipisicing</mark> elit.
+                    <a href="#">Numquam amet facilis</a> vero ipsam illo ipsa ducimus, suscipit expedita.
+                    Sunt veniam similique, pariatur maxime mollitia quam nisi sapiente omnis facilis ea!
+                </p>
+
+                <hr>
+        
+                <form class="grid gap-4">
+        
+                    <div class="flex-wrap flex-even break-md items-end gap-4">
+                        <div class="tt-input">
+                            <label for="text-1">Text</label>
+                            <input type="text" id="text-1" name="text-1" placeholder="Text" required>
+                        </div>
+                
+                        <div class="tt-input">
+                            <label for="select-1">Select</label>
+                            <select id="select-1" name="select-1" required>
+                                <option value="option-1">Option 1</option>
+                                <option value="option-2">Option 2</option>
+                            </select>
+                        </div>
+                    </div>
+        
+                    <div class="flex-wrap flex-even break-md items-end gap-4">
+                        <div class="tt-input">
+                            <label for="num-1">Number</label>
+                            <input type="number" id="num-1" name="num-1" placeholder="Number" max=4 min=0 step=0.5 required>
+                        </div>
+        
+                        <div class="tt-input">
+                            <label for="button-1">Button</label>
+                            <button type="button" id="button-1" name="button-1">Button</button>
+                        </div>
+                    </div>
+        
+                    <div class="flex-wrap flex-even break-md items-end gap-4">
+        
+                        <div class="tt-input">
+                            <label for="time-1">Time</label>
+                            <input type="time" id="time-1" name="time-1" placeholder="Email address">
+                        </div>
+        
+                        <div class="tt-input">
+                            <label for="date-1">Date</label>
+                            <input type="date" id="date-1" name="date-1" placeholder="Email address">
+                        </div>
+        
+                    </div>
+        
+                    <div class="flex-wrap flex-even break-md items-end gap-4">
+        
+                        <div class="tt-input">
+                            <label for="file-1">File</label>
+                            <input type="file" id="file-1" name="file-1" placeholder="Email address">
+                        </div>
+        
+                        <div class="tt-input">
+                            <label for="button-2">Disabled</label>
+                            <button type="button" id="button-2" name="button-2" disabled>Disabled Button</button>
+                        </div>
+        
+                    </div>
+        
+                    <div class="tt-input">
+                        <label for="textarea-1">Comment</label>
+                        <textarea id="textarea-1" name="textarea-1" rows="3" placeholder="Leave your comment here..."></textarea>
+                    </div>
+        
+                    <div class="tt-input-inline">
+                        <input type="checkbox" name="check-1" id="check-1" checked>
+                        <label for="check-1">Checkbox</label>
+                    </div>
+        
+                    <div class="tt-input-inline">
+                        <input type="radio" name="radio-1" id="radio-1-1" checked>
+                        <label for="radio-1-1">Radio</label>
+                    </div>
+        
+                    <div class="tt-input-inline">
+                        <input type="radio" name="radio-1" id="radio-1-2">
+                        <label for="radio-1-2">Radio 2</label>
+                    </div>
+    
+                    <div class="tt-input">
+                        <button type="submit">Submit</button>
+                    </div>
+
+                </form>
+                <br><br>
+                
+            </section>
+        </main>
+
+    </div>
+
+</body>
+
+
+
+</html>
