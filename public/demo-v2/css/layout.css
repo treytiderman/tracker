@@ -2,6 +2,10 @@
     overflow: auto;
 }
 
+.m-auto {
+    margin: auto;
+}
+
 .w-full {
     width: 100%;
 }
@@ -144,19 +148,29 @@
 
 /* Alignment for both Flex and Grid */
 
-/* Vertical center */
+/* Vertical Center */
 .items-center {
     align-items: center;
 }
 
-/* Vertical end */
+/* Vertical End */
 .items-end {
     align-items: end;
 }
 
-/* Vertical + Horizontal center */
+/* Vertical Baseline */
+.items-baseline {
+    align-items: baseline;
+}
+
+/* Vertical + Horizontal Center */
 .place-items-center {
     place-items: center;
+}
+
+/* Horizontal End */
+.justify-end {
+    justify-content: flex-end;
 }
 
 /* Spacing for both Flex and Grid */
