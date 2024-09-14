@@ -1,3 +1,6 @@
+/* @import url(./theme-black.css); */
+/* @import url(./theme-pink.css); */
+
 @view-transition {
     navigation: auto;
 }
@@ -83,46 +86,24 @@
 }
 
 dialog {
-    width: 100%;
+    width: calc(100% - 1rem);
     max-width: 80ch;
-    padding: 0.25rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
 }
 
 /* Header */
 
 .tt-header {
-    padding: 0.5rem;
-
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-
     border-bottom: var(--border);
-    background-color: var(--color-bg-button);
-    background-color: var(--color-bg-input);
-}
-
-.tt-header button {
-    padding: 0.25rem;
-
-    color: var(--color-text-input);
-    background-color: var(--color-bg-input);
-
-    border: var(--border);
-    border-radius: var(--border-radius);
-    border-color: var(--color-bg-input);
+    background-color: var(--color-bg-header);
+    color: var(--color-text-heading);
 }
 
 .tt-header .title {
-    text-wrap: nowrap;
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    flex-grow: 1;
-}
-
-.tt-header .caret {
-    font-family: var(--font-family-mono);
-    color: var(--color-placeholder);
 }
 
 /* Nav */
@@ -130,8 +111,7 @@ dialog {
 .tt-layout>div>nav {
     display: flex;
     flex-direction: column;
-    background-color: var(--color-bg);
-    background-color: var(--color-bg-input);
+    background-color: var(--color-bg-header);
 }
 
 
@@ -298,6 +278,8 @@ input[type=file].tt-input {
 
     background-color: transparent;
     border-color: transparent;
+
+    width: fit-content;
 }
 
 /* Checkboxes / Radio */

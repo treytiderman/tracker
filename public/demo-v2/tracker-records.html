@@ -29,7 +29,7 @@
         <form method="dialog" class="tt-dialog grid gap-4 pad-4">
 
             <div class="grid">
-                <label class="tt-label" for="num-1">Transactions</label>
+                <label class="tt-label" for="num-1">Transaction</label>
                 <input type="number" class="tt-input" id="num-1" name="num-1" placeholder="2000" value=2000 required>
             </div>
 
@@ -59,8 +59,8 @@
             </div>
 
             <div class="grid">
-                <label for="tracker_notes" class="tt-label">Notes</label>
-                <textarea id="tracker_notes" name="tracker_notes" placeholder="Tracker Notes..." rows="3"
+                <label for="tracker_note" class="tt-label">Note</label>
+                <textarea id="tracker_note" name="tracker_note" placeholder="Tracker Note..." rows="3"
                     class="tt-input">Pay Day</textarea>
             </div>
 
@@ -74,8 +74,8 @@
         </form>
     </dialog>
 
-    <header class="tt-header">
-        <button id="navShowButton" title="Toggle Sidebar / Nav (Ctrl+B)">
+    <header class="tt-header flex items-center gap-4 pad-2">
+        <button id="navShowButton" title="Toggle Sidebar / Nav (Ctrl+B)" class="tt-icon-button">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="4" x2="20" y1="12" y2="12" />
@@ -84,8 +84,8 @@
             </svg>
         </button>
         <div> Records </div>
-        <div class="caret"> / </div>
-        <div class="title"> Money 💰 </div>
+        <div class="mono dim"> / </div>
+        <div class="title grow"> Money 💰 </div>
         <button id="navSearchButton" hidden>
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -185,20 +185,20 @@
                         <thead>
                             <tr>
                                 <th class=""> Timestamp </th>
-                                <th class="text-right"> Transactions </th>
+                                <th class="text-right"> Transaction </th>
                                 <th class=""> Card </th>
-                                <th class=""> Notes </th>
+                                <th class=""> Note </th>
                                 <th class=""> </th>
                             </tr>
                         </thead>
 
                         <tbody>
                             <tr>
-                                <td class="mono text-sm"> 07/07/2024 08:57 PM </td>
-                                <td class="text-right"> 2000.00 </td>
-                                <td class=""> Visa </td>
-                                <td class=""> Pay Day </td>
-                                <td class="text-right">
+                                <td data-cell="Timestamp"> <span class="mono text-sm">07/07/2024 08:57 PM</span> </td>
+                                <td data-cell="Transaction" class="text-right"> 2000.00 </td>
+                                <td data-cell="Card" class=""> Visa </td>
+                                <td data-cell="Note" class=""> Pay Day </td>
+                                <td data-cell="Action" class="text-right">
                                     <button id="edit_row_1" class="tt-icon-button dim tt-color-yellow-hover"
                                         title="Edit Log" onclick="document.getElementById('dialog1').showModal()">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -212,11 +212,11 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="mono text-sm"> 07/07/2024 08:58 PM </td>
-                                <td class="text-right"> -50.00 </td>
-                                <td class=""> Discover </td>
-                                <td class=""> Amazon </td>
-                                <td class="text-right">
+                                <td data-cell="Timestamp"> <span class="mono text-sm">07/07/2024 08:58 PM</span> </td>
+                                <td data-cell="Transaction" class="text-right"> -50.00 </td>
+                                <td data-cell="Card" class=""> Discover </td>
+                                <td data-cell="Note" class=""> Amazon </td>
+                                <td data-cell="Action" class="text-right">
                                     <button id="edit_row_1" class="tt-icon-button dim tt-color-yellow-hover"
                                         title="Edit Log" onclick="document.getElementById('dialog1').showModal()">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -230,11 +230,11 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="mono text-sm"> 07/07/2024 08:59 PM </td>
-                                <td class="text-right"> 20000.00 </td>
-                                <td class=""> Bitcoin </td>
-                                <td class=""> Sell the coin </td>
-                                <td class="text-right">
+                                <td data-cell="Timestamp"> <span class="mono text-sm">07/07/2024 08:59 PM</span> </td>
+                                <td data-cell="Transaction" class="text-right"> 20000.00 </td>
+                                <td data-cell="Card" class=""> Bitcoin </td>
+                                <td data-cell="Note" class=""> Sell the coin </td>
+                                <td data-cell="Action" class="text-right">
                                     <button id="edit_row_1" class="tt-icon-button dim tt-color-yellow-hover"
                                         title="Edit Log" onclick="document.getElementById('dialog1').showModal()">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -248,11 +248,11 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="mono text-sm"> 07/07/2024 09:00 PM </td>
-                                <td class="text-right"> -350.00 </td>
-                                <td class=""> Discover </td>
-                                <td class=""> Amazon </td>
-                                <td class="text-right">
+                                <td data-cell="Timestamp"> <span class="mono text-sm">07/07/2024 09:00 PM</span> </td>
+                                <td data-cell="Transaction" class="text-right"> -350.00 </td>
+                                <td data-cell="Card" class=""> Discover </td>
+                                <td data-cell="Note" class=""> Amazon </td>
+                                <td data-cell="Action" class="text-right">
                                     <button id="edit_row_1" class="tt-icon-button dim tt-color-yellow-hover"
                                         title="Edit Log" onclick="document.getElementById('dialog1').showModal()">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -269,6 +269,7 @@
 
                     </table>
                 </div>
+                <br><br>
 
             </section>
 

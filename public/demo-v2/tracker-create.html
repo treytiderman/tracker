@@ -19,8 +19,8 @@
 
 <body class="tt-layout">
 
-    <header class="tt-header">
-        <button id="navShowButton" title="Toggle Sidebar / Nav (Ctrl+B)">
+    <header class="tt-header flex items-center gap-4 pad-2">
+        <button id="navShowButton" title="Toggle Sidebar / Nav (Ctrl+B)" class="tt-icon-button">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="4" x2="20" y1="12" y2="12" />
@@ -29,8 +29,8 @@
             </svg>
         </button>
         <div> Create Tracker </div>
-        <div class="caret"> </div>
-        <div class="title"> </div>
+        <div class="mono dim"> </div>
+        <div class="title grow"> </div>
         <button id="navSearchButton" hidden>
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -302,8 +302,10 @@
             field_params.appendChild(decimal_places)
         } else if (type === "option") {
             const option_1 = create_option_element(id, 1)
+            const option_2 = create_option_element(id, 2)
             const add_option = create_option_add_button_element(id)
             field_params.appendChild(option_1)
+            field_params.appendChild(option_2)
             field_params.appendChild(add_option)
         }
 
@@ -497,7 +499,7 @@
         button.style = "margin: auto;"
         button.innerText = "Add Option"
 
-        let option_counter = 1
+        let option_counter = 2
         button.addEventListener("click", () => {
             option_counter++
             const option = create_option_element(id, option_counter)
