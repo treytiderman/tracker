@@ -9,12 +9,12 @@ import (
 )
 
 func main() {
-	db, err := sql.Open("sqlite", "./data.db")
+	db_path := "./data.db"
+	db, err := sql.Open("sqlite", db_path)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("Database file (SQLite) './data.db' opened")
-	fmt.Println()
+	fmt.Printf("DATABASE SQLite: %s\n", db_path)
 	defer db.Close()
 
 	Create_Tables(db)

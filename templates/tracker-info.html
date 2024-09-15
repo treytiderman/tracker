@@ -5,16 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="tracker app">
-    <title>Info / Money 💰</title>
+    <title>Info / {{ .Tracker.Name }}</title>
 
-    <link rel="stylesheet" href="./css/palette.css">
+    <link rel="stylesheet" href="../public/css/palette.css">
 
-    <link rel="stylesheet" href="./css/reset.css">
-    <link rel="stylesheet" href="./css/styles.css">
-    <link rel="stylesheet" href="./css/layout.css">
-    <link rel="stylesheet" href="./css/app.css">
+    <link rel="stylesheet" href="../public/css/reset.css">
+    <link rel="stylesheet" href="../public/css/styles.css">
+    <link rel="stylesheet" href="../public/css/layout.css">
+    <link rel="stylesheet" href="../public/css/app.css">
 
-    <script src="./js/htmx-v2.0.0.js"></script>
+    <script src="../public/js/htmx-v2.0.0.js"></script>
 </head>
 
 <body class="tt-layout">
@@ -30,7 +30,7 @@
         </button>
         <div> Info </div>
         <div class="mono dim"> / </div>
-        <div class="title grow"> Money 💰 </div>
+        <div class="title grow"> {{ .Tracker.Name }} </div>
         <button id="navSearchButton" hidden>
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -48,19 +48,19 @@
             </div>
 
             <div class="tt-nav-links">
-                <a href="./tracker-info.html" class="active">Info</a>
-                <a href="./tracker-log.html">Log</a>
-                <a href="./tracker-records.html">Records</a>
-                <a href="./tracker-chart.html" hidden>Chart</a>
-                <a href="./tracker-log.html" hidden>Reminders</a>
-                <a href="./tracker-log.html" hidden>Goals</a>
+                <a href="./info?id={{.Tracker.Id}}" class="active">Info</a>
+                <a href="./log?id={{.Tracker.Id}}">Log</a>
+                <a href="./records?id={{.Tracker.Id}}">Records</a>
+                <a href="./chart?id={{.Tracker.Id}}" hidden>Chart</a>
+                <a href="./log?id={{.Tracker.Id}}" hidden>Reminders</a>
+                <a href="./log?id={{.Tracker.Id}}" hidden>Goals</a>
             </div>
 
             <hr>
 
             <div class="tt-nav-heading">
                 <h4> Tracker </h4>
-                <a href="./tracker-create.html" id="navCreateTracker" title="Create New Tracker"
+                <a href="./create" id="navCreateTracker" title="Create New Tracker"
                     class="dim tt-icon-button tt-color-green-hover">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
@@ -83,16 +83,24 @@
             </div>
 
             <div id="navTrackerList" class="tt-nav-links">
-                <a href="./tracker-info.html">Walk Dog 🐩</a>
-                <a href="./tracker-info.html">Brush Teeth 🦷</a>
-                <a href="./tracker-info.html" class="active">Money 💰</a>
-                <a href="./tracker-info.html">Workout 🏋️</a>
+                {{ range .Trackers }}
+                {{ if eq $.Tracker.Id .Id }}
+                <a href="./info?id={{.Id}}" class="active"> {{ .Name }} </a>
+                {{ else }}
+                <a href="./info?id={{.Id}}"> {{ .Name }} </a>
+                {{ end }}
+                {{ end }}
             </div>
 
             <script>
                 const navElement = document.getElementById("navElement")
                 const navShowButton = document.getElementById("navShowButton")
-                navShowButton.addEventListener("click", () => navElement.hidden = !navElement.hidden)
+                navShowButton.addEventListener("click", () => {
+                    localStorage.setItem("nav_hide", !navElement.hidden)
+                    navElement.hidden = !navElement.hidden
+                })
+
+                if (localStorage.getItem("nav_hide") === "true") navElement.hidden = true
                 if (document.body.offsetWidth < 800) navElement.hidden = true
 
                 document.addEventListener('keydown', (event) => {
@@ -125,9 +133,10 @@
             <section class="grid gap-8 pad-4">
 
                 <!-- Tracker Name -->
-                <form class="flex-col gap-1">
+                <form class="flex-col gap-1" id="tracker_name_form" action="/htmx/tracker/name?id={{.Tracker.Id}}"
+                    method="post">
                     <div class="flex items-center gap-4">
-                        <label for="tracker-name" class="tt-label dim grow">Tracker Name</label>
+                        <label for="tracker_name" class="tt-label dim grow">Tracker Name</label>
 
                         <button type="submit" id="trackerNameConfirmButton"
                             class="tt-icon-button dim tt-color-green-hover" hidden title="Confirm Tracker Name Update">
@@ -138,8 +147,8 @@
                             </svg>
                         </button>
 
-                        <button id="trackerNameEditButton" class="tt-icon-button dim tt-color-yellow-hover"
-                            title="Toggle Tracker Name Edit">
+                        <button type="button" id="trackerNameEditButton"
+                            class="tt-icon-button dim tt-color-yellow-hover" title="Toggle Tracker Name Edit">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                 stroke-linejoin="round">
@@ -149,10 +158,8 @@
                             </svg>
                         </button>
 
-                        <button id="trackerNameDeleteButton" class="tt-icon-button dim tt-color-red-hover"
-                            title="Delete Tracker Permanently" hx-get="/htmx/tracker/delete?id=1"
-                            hx-target="#trackerNameResponse" hx-swap="outerHTML"
-                            hx-confirm="Are you sure you want to delete this tracker? All data will be erased.">
+                        <a href="/htmx/tracker/delete?id={{.Tracker.Id}}" class="tt-icon-button dim tt-color-red-hover"
+                            onclick="return confirm('Are you sure you want to delete this tracker? All data will be erased.')">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                 stroke-linejoin="round">
@@ -160,15 +167,18 @@
                                 <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
                                 <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
                             </svg>
-                        </button>
+                        </a>
+                        <!-- <button id="trackerNameDeleteButton" class="tt-icon-button dim tt-color-red-hover"
+                            title="Delete Tracker Permanently" hx-post="/htmx/tracker/delete?id={{.Tracker.Id}}" hx-target="#tracker_name_form"
+                            hx-confirm="Are you sure you want to delete this tracker? All data will be erased.">
+                        </button> -->
                     </div>
 
-                    <h2 id="trackerNameH2">Money 💰</h2>
+                    <h2 id="trackerNameH2">{{ .Tracker.Name }}</h2>
 
-                    <input type="text" id="trackerNameInput" name="tracker-name" value="Money 💰" placeholder="Money 💰"
-                        class="tt-input" style="font-size: 1.6rem; font-weight: bold;" required hidden>
-
-                    <div id="trackerNameResponse"></div>
+                    <input type="text" id="trackerNameInput" name="tracker_name" value="{{ .Tracker.Name }}"
+                        placeholder="{{ .Tracker.Name }}" class="tt-input" style="font-size: 1.6rem; font-weight: bold;"
+                        required hidden>
 
                     <script>
                         const trackerNameH2 = document.getElementById("trackerNameH2")
@@ -185,12 +195,12 @@
                 </form>
 
                 <!-- Tracker Notes -->
-                <form class="flex-col gap-1">
+                <form class="flex-col gap-1" action="/htmx/tracker/notes?id={{.Tracker.Id}}" method="post">
                     <div class="flex items-center gap-4">
-                        <label for="tracker-notes" class="tt-label dim grow">Notes</label>
+                        <label for="tracker_notes" class="tt-label dim grow">Notes</label>
 
                         <button type="submit" id="trackerNotesConfirmButton"
-                            class="tt-icon-button dim tt-color-green-hover" hidden title="Confirm Notes Update">
+                            class="tt-icon-button dim tt-color-green-hover" title="Confirm Notes Update" hidden>
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                 stroke-linejoin="round">
@@ -210,18 +220,10 @@
                         </button>
                     </div>
 
-                    <p id="trackerNotesP">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi impedit molestias nobis ducimus
-                        mollitia
-                        expedita possimus repudiandae. Repellat sint voluptatem mollitia consequatur repudiandae maiores
-                        dolores
-                        numquam accusantium. Quae, sit impedit.
-                    </p>
+                    <p id="trackerNotesP">{{ .Tracker.Notes }}</p>
 
-                    <textarea id="trackerNotesInput" name="tracker-notes" placeholder="Money 💰" rows="4"
-                        class="tt-input" required
-                        hidden>Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi impedit molestias nobis ducimus mollitia expedita possimus repudiandae. Repellat sint voluptatem mollitia consequatur repudiandae maiores dolores numquam accusantium. Quae, sit impedit.</textarea>
-
+                    <textarea id="trackerNotesInput" name="tracker_notes" placeholder="{{ .Tracker.Notes }}" rows="4"
+                        class="tt-input" hidden>{{ .Tracker.Notes }}</textarea>
 
                     <div id="trackerNameResponse"></div>
 
@@ -245,6 +247,10 @@
 
                     <div class="grid gap-4">
 
+                        {{ range .Tracker.Fields }}
+
+                        <!-- Type Number -->
+                        {{ if eq .Type "number" }}
                         <div class="grid gap-1">
                             <div class="flex items-center gap-4">
                                 <div title="field_type: number" class="p-1.5 text-blue-300">
@@ -257,10 +263,11 @@
                                         <line x1="16" x2="14" y1="3" y2="21" />
                                     </svg>
                                 </div>
-                                <div title="field_id: 1">Transactions</div>
+                                <div title="field_id: {{ .Id }}">{{ .Name }}</div>
                             </div>
                             <div class="flex items-center gap-4">
-                                <div title="decimal_places: 2" style="width: 4rem;" class="grid justify-end dim">
+                                <div title="decimal_places: {{ .Number.Decimal_Places }}" style="width: 4rem;"
+                                    class="grid justify-end dim">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                         stroke-linejoin="round">
@@ -271,10 +278,13 @@
                                         <line x1="12" x2="12" y1="22" y2="18" />
                                     </svg>
                                 </div>
-                                <div>0.00</div>
+                                <div>{{ decimal_places_to_step_size .Number.Decimal_Places }}</div>
                             </div>
                         </div>
+                        {{ end }}
 
+                        <!-- Type Option -->
+                        {{ if eq .Type "option" }}
                         <div class="grid gap-1">
                             <div class="flex items-center gap-4">
                                 <div title="field_type: option" class="p-1.5 p text-orange-300">
@@ -289,21 +299,23 @@
                                         <line x1="3" x2="3.01" y1="18" y2="18" />
                                     </svg>
                                 </div>
-                                <div title="field_id: 2">Card</div>
+                                <div title="field_id: {{ .Id }}">{{ .Name }}</div>
                             </div>
+
+                            {{ range .Options }}
                             <div class="flex items-baseline gap-4">
-                                <div style="width: 4rem;" class="grid justify-end dim mono"> 35 </div>
-                                <div title="option_id: 1">Discover</div>
+                                <div style="width: 4rem;" class="grid justify-end dim mono"> {{ .Value }} </div>
+                                <div title="option_id: {{ .Id }}"> {{ .Name }} </div>
                             </div>
-                            <div class="flex items-baseline gap-4">
-                                <div style="width: 4rem;" class="grid justify-end dim mono"> 1 </div>
-                                <div title="option_id: 2">Visa</div>
-                            </div>
-                            <div class="flex items-baseline gap-4">
-                                <div style="width: 4rem;" class="grid justify-end dim mono"> 5000 </div>
-                                <div title="option_id: 3">Bitcoin</div>
-                            </div>
+                            {{ end }}
+
                         </div>
+                        {{ end }}
+
+                        {{ else }}
+                        <div>No Fields...</div>
+
+                        {{ end }}
 
                     </div>
                 </div>

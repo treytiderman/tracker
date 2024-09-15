@@ -1,153 +1,222 @@
 <!DOCTYPE html>
-<html lang="en" style="color-scheme: dark;" class="h-full">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="tracker app">
-    <title>{{ .Tracker.Name }} - Log</title>
-    <script src="https://unpkg.com/htmx.org@2.0.0"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <style>
-        [x-cloak] { display: none !important; }
-    </style>
+    <title>Log / {{ .Tracker.Name }}</title>
+
+    <link rel="stylesheet" href="../public/css/palette.css">
+
+    <link rel="stylesheet" href="../public/css/reset.css">
+    <link rel="stylesheet" href="../public/css/styles.css">
+    <link rel="stylesheet" href="../public/css/layout.css">
+    <link rel="stylesheet" href="../public/css/app.css">
+
+    <script src="../public/js/htmx-v2.0.0.js"></script>
 </head>
 
-<body class="h-full font-sans bg-zinc-800 text-zinc-200 flex flex-col">
+<body class="tt-layout">
 
-    <nav x-data="{ trackerDropdownOpen: false, pageDropdownOpen: false }" class="text-zinc-200 bg-zinc-700 border-b-2 border-zinc-600 font-medium text-sm sm:text-base">
-        <div class="container mx-auto flex items-center gap-2 p-1">
+    <header class="tt-header flex items-center gap-4 pad-2">
+        <button id="navShowButton" title="Toggle Sidebar / Nav (Ctrl+B)" class="tt-icon-button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="4" x2="20" y1="12" y2="12" />
+                <line x1="4" x2="20" y1="6" y2="6" />
+                <line x1="4" x2="20" y1="18" y2="18" />
+            </svg>
+        </button>
+        <div> Log </div>
+        <div class="mono dim"> / </div>
+        <div class="title grow"> {{ .Tracker.Name }} </div>
+        <button id="navSearchButton" hidden>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+            </svg>
+        </button>
+    </header>
 
-            <!-- Home -->
-            <a href="./trackers" aria-label="Home" class="px-3 p-1 rounded-md border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
-                <span class="sr-only">Home</span>
-                <svg class="w-4 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" fill="currentColor" viewBox="0 0 20 20"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
-                    <path d="M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.2c0 2.7-.2 5.4-.5 8.1V472c0 22.1-17.9 40-40 40H456c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1H416 392c-22.1 0-40-17.9-40-40V448 384c0-17.7-14.3-32-32-32H256c-17.7 0-32 14.3-32 32v64 24c0 22.1-17.9 40-40 40H160 128.1c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2H104c-22.1 0-40-17.9-40-40V360c0-.9 0-1.9 .1-2.8V287.6H32c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z"/>
-                </svg>
-            </a>
+    <div>
 
-            <div class="text-zinc-500 font-bold"> / </div>
+        <nav id="navElement">
+            <div class="tt-nav-heading">
+                <h4> Page </h4>
+            </div>
 
-            <!-- Tracker -->
-            <div class="relative">
-                <button
-                    x-on:click="trackerDropdownOpen = !trackerDropdownOpen"
-                    class="flex items-center gap-2 px-3 p-1 max-w-40 md:max-w-72 rounded-md border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100"
-                >
-                    <span class="whitespace-nowrap truncate">{{ .Tracker.Name }}</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/>
+            <div class="tt-nav-links">
+                <a href="./info?id={{.Tracker.Id}}">Info</a>
+                <a href="./log?id={{.Tracker.Id}}" class="active">Log</a>
+                <a href="./records?id={{.Tracker.Id}}">Records</a>
+                <a href="./chart?id={{.Tracker.Id}}" hidden>Chart</a>
+                <a href="./log?id={{.Tracker.Id}}" hidden>Reminders</a>
+                <a href="./log?id={{.Tracker.Id}}" hidden>Goals</a>
+            </div>
+
+            <hr>
+
+            <div class="tt-nav-heading">
+                <h4> Tracker </h4>
+                <a href="./create" id="navCreateTracker" title="Create New Tracker"
+                    class="dim tt-icon-button tt-color-green-hover">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 12h14" />
+                        <path d="M12 5v14" />
                     </svg>
-                </button>
-                <div
-                    class="absolute start-0 z-10 mt-1 max-w-40 md:max-w-72 max-h-80 overflow-y-auto rounded-b-md border-x-2 border-b-2 border-zinc-600 bg-zinc-700 shadow-xl shadow-black p-2"
-                    role="menu"
-                    x-cloak
-                    x-show="trackerDropdownOpen"
-                    x-on:click.away="trackerDropdownOpen = false"
-                    x-on:keydown.escape.window="trackerDropdownOpen = false"
-                >
-                    {{ range .Trackers }}
-                    <a href="./log?id={{.Id}}" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-300 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100 truncate">
-                        {{ .Name }}
-                    </a>
+                </a>
+            </div>
+
+            <div class="tt-nav-filter">
+                <input type="search" id="navTrackerFilter" name="navTrackerFilter" placeholder="filter...">
+                <label for="navTrackerFilter" title="Filter Tracker List">
+                    <span hidden>Filter Trackers</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                        fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+                    </svg>
+                </label>
+            </div>
+
+            <div id="navTrackerList" class="tt-nav-links">
+                {{ range .Trackers }}
+                {{ if eq $.Tracker.Id .Id }}
+                <a href="./log?id={{.Id}}" class="active"> {{ .Name }} </a>
+                {{ else }}
+                <a href="./log?id={{.Id}}"> {{ .Name }} </a>
+                {{ end }}
+                {{ end }}
+            </div>
+
+            <script>
+                const navElement = document.getElementById("navElement")
+                const navShowButton = document.getElementById("navShowButton")
+                navShowButton.addEventListener("click", () => {
+                    localStorage.setItem("nav_hide", !navElement.hidden)
+                    navElement.hidden = !navElement.hidden
+                })
+
+                if (localStorage.getItem("nav_hide") === "true") navElement.hidden = true
+                if (document.body.offsetWidth < 800) navElement.hidden = true
+
+                document.addEventListener('keydown', (event) => {
+                    if (event.code === 'KeyB' && event.ctrlKey === true) {
+                        event.preventDefault()
+                        navElement.hidden = !navElement.hidden
+                    }
+                })
+            </script>
+
+            <script>
+                const navTrackerList = document.getElementById("navTrackerList")
+                const navTrackerFilter = document.getElementById("navTrackerFilter")
+                if (navTrackerList.children.length < 12) {
+                    navTrackerFilter.parentElement.hidden = true
+                }
+                navTrackerFilter.addEventListener("input", (event) => {
+                    const filterText = event.target.value.toLowerCase()
+                    for (const link of navTrackerList.children) {
+                        const hide = !link.innerText.toLowerCase().includes(filterText)
+                        link.hidden = hide
+                    }
+                })
+            </script>
+
+        </nav>
+
+        <main id="mainElement">
+
+            <section>
+
+                <form class="grid gap-8 pad-4" action="/htmx/tracker/log?id={{.Tracker.Id}}" method="post">
+
+                    {{ range .Tracker.Fields }}
+
+                    {{ if eq .Type "number" }}
+                    <div class="grid">
+                        <label class="tt-label" for="field_{{.Id}}">{{ .Name }}</label>
+                        <input type="number" class="tt-input" id="field_{{.Id}}" name="field_{{.Id}}" placeholder="0" value=""
+                            step="{{ decimal_places_to_step_size .Number.Decimal_Places }}" required>
+                    </div>
                     {{ end }}
-                </div>
-            </div>
 
-            <div class="text-zinc-500 font-bold"> / </div>
-            
-            <!-- Page -->
-            <div class="relative">
-                <button
-                    x-on:click="pageDropdownOpen = !pageDropdownOpen"
-                    class="flex items-center gap-2 px-3 p-1 max-w-32 rounded-md border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100"
-                >
-                    <span class="">Log</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/>
-                    </svg>
-                </button>
-                <div
-                    class="absolute start-0 z-10 mt-1 w-32 rounded-b-md border-x-2 border-b-2 border-zinc-600 bg-zinc-700 shadow-xl shadow-black p-2"
-                    role="menu"
-                    x-cloak
-                    x-show="pageDropdownOpen"
-                    x-on:click.away="pageDropdownOpen = false"
-                    x-on:keydown.escape.window="pageDropdownOpen = false"
-                >
-                    <a href="#" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-500 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
-                        Info
-                    </a>
-                    <a href="./log?id={{.Tracker.Id}}" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-300 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
-                        Log
-                    </a>
-                    <a href="./records?id={{.Tracker.Id}}" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-300 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
-                        Records
-                    </a>
-                    <a href="./chart?id={{.Tracker.Id}}" role="menuitem" class=" disabled block rounded-md px-3 p-1 text-zinc-300 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
-                        Chart
-                    </a>
-                    <a href="#" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-500 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
-                        Reminders
-                    </a>
-                    <a href="#" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-500 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
-                        Goals
-                    </a>
-                </div>
-        </div>
-    </nav>
+                    {{ if eq .Type "option" }}
+                    <div class="grid">
+                        <label class="tt-label" for="field_{{.Id}}">{{ .Name }}</label>
+                        <select class="tt-input" id="field_{{.Id}}" name="field_{{.Id}}" required>
+                            {{ range .Options }}
+                            <option value="{{ .Value }}">{{ .Value }}: {{ .Name }}</option>
+                            {{ end }}
+                        </select>
+                    </div>
+                    {{ end }}
 
-    <main class="p-4 container mx-auto flex flex-col gap-4 grow h-full overflow-auto">
-        
-        <h1 class="text-2xl font-bold text-violet-300 sr-only">Log</h1>
+                    {{ end }}
 
-        <form class="flex flex-col gap-4" hx-post="/htmx/tracker/record?id={{.Tracker.Id}}" hx-target="#response">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
-                {{ range .Tracker.Fields }}
+                    <div class="flex-wrap flex-even break-md items-end gap-8" hidden>
+                        <div class="grid">
+                            <label class="tt-label" for="entry_date">Date</label>
+                            <input type="date" class="tt-input" id="entry_date" name="entry_date">
+                        </div>
 
-                {{ if eq .Type "option" }}
-                <div class="flex flex-col gap-1">
-                    <label for="field_{{.Id}}" class="block">{{ .Name }}</label>
-                    <select id="field_{{.Id}}" name="field_{{.Id}}" 
-                        class="h-10 px-3 py-1 rounded-md bg-zinc-700 border-2 border-zinc-600 cursor-pointer focus:outline-none focus:border-zinc-300">
-                        {{ range .Options }}
-                        <option value="{{ .Value }}">
-                            {{ .Value }} = {{ .Name }}
-                        </option>
-                        {{ end }}
-                    </select>
-                </div>
-                {{ else }}
-                <div class="grow flex flex-col gap-1">
-                    <label for="field_{{.Id}}" class="block">{{ .Name }}</label>
-                    <input type="number" name="field_{{.Id}}" id="field_{{.Id}}" step="{{ decimal_places_to_step_size .Number.Decimal_Places }}" placeholder="0" value="" required
-                        class="h-10 px-3 py-1 rounded-md bg-zinc-700 border-2 border-zinc-600 placeholder:text-zinc-500 focus:outline-none focus:border-zinc-300" />
-                </div>
-                {{ end }}
+                        <div class="grid gap-1">
+                            <label class="flex gap-2 w-full" for="entry_time">
+                                <div>Time</div>
+                                <div id="entry_timezone" class="dim" style="margin-left: auto;">GMT-0500 (Central Daylight
+                                    Time)</div>
+                            </label>
+                            <input type="time" class="tt-input" id="entry_time" name="entry_time">
+                        </div>
 
-                {{ else }}
-                <div class="hidden grow flex flex-col gap-1">
-                    <div class="font-thin text-sm text-zinc-400">No data fields...</div>
-                </div>
-                {{ end }}
-            </div>
+                        <script>
+                            const date = new Date()
 
-            <div class="grow flex flex-col gap-1">
-                <label for="entry_notes" class="block">Entry Notes</label>
-                <textarea name="entry_notes" id="entry_notes" placeholder="Entry Notes..."
-                    class="min-h-12 h-24 px-3 py-1 rounded-md bg-zinc-700 border-2 border-zinc-600 placeholder:text-zinc-500 focus:outline-none focus:border-zinc-300"></textarea>
-            </div>
+                            let yyyy = date.getFullYear()
+                            let dd = date.getDate()
+                            let mm = date.getMonth() + 1 // january is 0
 
-            <div class="flex gap-4">
-                <input type="submit" value="Submit Record" class="h-10 p-1 px-3 cursor-pointer rounded-md bg-yellow-800 text-yellow-100 border-2 border-yellow-600 focus:outline-none focus:border-zinc-300" />
-            </div>
-        </form>
+                            if (dd < 10) dd = '0' + dd
+                            if (mm < 10) mm = '0' + mm
 
-        <pre id="response" class="font-mono text-xs overflow-auto text-green-300"></pre>
+                            const today_date = yyyy + '-' + mm + '-' + dd
+                            document.getElementById("entry_date").value = today_date
 
-    </main>
+                            let hh = date.getHours()
+                            let mmm = date.getMinutes()
+
+                            if (hh < 10) hh = '0' + hh
+                            if (mmm < 10) mmm = '0' + mmm
+
+                            const today_time = hh + ':' + mmm
+                            document.getElementById("entry_time").value = today_time
+
+                            const today_timezone = date.toTimeString().substring(9)
+                            document.getElementById("entry_timezone").innerText = today_timezone
+
+                        </script>
+                    </div>
+
+                    <div class="grid">
+                        <label for="entry_notes" class="tt-label">Notes</label>
+                        <textarea id="entry_notes" name="entry_notes" placeholder="Log Notes..." rows="3"
+                            class="tt-input"></textarea>
+                    </div>
+
+                    <div class="flex flex-even gap-4">
+                        <button type="submit" class="tt-button tt-color-green">Submit</button>
+                    </div>
+                </form>
+
+            </section>
+
+        </main>
+
+    </div>
+
 </body>
 
 </html>

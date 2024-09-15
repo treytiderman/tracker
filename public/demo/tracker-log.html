@@ -1,158 +1,204 @@
 <!DOCTYPE html>
-<html lang="en" style="color-scheme: dark;" class="h-full">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="tracker app">
-    <title>Title</title>
-    <script src="https://unpkg.com/htmx.org@2.0.0"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <style>
-        input:-webkit-autofill,
-        input:-webkit-autofill:hover, 
-        input:-webkit-autofill:focus,
-        textarea:-webkit-autofill,
-        textarea:-webkit-autofill:hover,
-        textarea:-webkit-autofill:focus,
-        select:-webkit-autofill,
-        select:-webkit-autofill:hover,
-        select:-webkit-autofill:focus {
-            /* border: 2px solid #5252aa; */
-            /* outline: 2px solid #5252aa; */
-            -webkit-text-fill-color: #e4e4ff;
-            -webkit-box-shadow: 0 0 0px 1000px #3f3f5a inset;
-        }
-    </style>
+    <title>Log / Money 💰</title>
+
+    <link rel="stylesheet" href="./css/palette.css">
+
+    <link rel="stylesheet" href="./css/reset.css">
+    <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="./css/layout.css">
+    <link rel="stylesheet" href="./css/app.css">
+
+    <script src="./js/htmx-v2.0.0.js"></script>
 </head>
 
-<body class="h-full font-sans bg-zinc-800 text-zinc-200 flex flex-col">
+<body class="tt-layout">
 
-    <nav x-data="{ trackerDropdownOpen: false, pageDropdownOpen: false }" class="text-zinc-200 bg-zinc-700 border-b-2 border-zinc-600 font-medium text-sm sm:text-base">
-        <div class="container mx-auto flex items-center gap-2 p-1">
+    <header class="tt-header flex items-center gap-4 pad-2">
+        <button id="navShowButton" title="Toggle Sidebar / Nav (Ctrl+B)" class="tt-icon-button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="4" x2="20" y1="12" y2="12" />
+                <line x1="4" x2="20" y1="6" y2="6" />
+                <line x1="4" x2="20" y1="18" y2="18" />
+            </svg>
+        </button>
+        <div> Log </div>
+        <div class="mono dim"> / </div>
+        <div class="title grow"> Money 💰 </div>
+        <button id="navSearchButton" hidden>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+            </svg>
+        </button>
+    </header>
 
-            <!-- Home -->
-            <a href="#" class="px-3 p-1 rounded-md border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
-                <svg class="w-4 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" fill="currentColor" viewBox="0 0 20 20"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
-                    <path d="M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.2c0 2.7-.2 5.4-.5 8.1V472c0 22.1-17.9 40-40 40H456c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1H416 392c-22.1 0-40-17.9-40-40V448 384c0-17.7-14.3-32-32-32H256c-17.7 0-32 14.3-32 32v64 24c0 22.1-17.9 40-40 40H160 128.1c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2H104c-22.1 0-40-17.9-40-40V360c0-.9 0-1.9 .1-2.8V287.6H32c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z"/>
-                </svg>
-            </a>
-    
-            <div class="text-zinc-500 font-bold"> / </div>
-    
-            <!-- Tracker -->
-            <div class="relative">
-                <button
-                    x-on:click="trackerDropdownOpen = !trackerDropdownOpen"
-                    class="flex items-center gap-2 px-3 p-1 max-w-40 md:max-w-72 rounded-md border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100"
-                >
-                    <span class="whitespace-nowrap truncate">Tracker_Name</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/>
+    <div>
+
+        <nav id="navElement">
+            <div class="tt-nav-heading">
+                <h4> Page </h4>
+            </div>
+
+            <div class="tt-nav-links">
+                <a href="./tracker-info.html">Info</a>
+                <a href="./tracker-log.html" class="active">Log</a>
+                <a href="./tracker-records.html">Records</a>
+                <a href="./tracker-chart.html" hidden>Chart</a>
+                <a href="./tracker-log.html" hidden>Reminders</a>
+                <a href="./tracker-log.html" hidden>Goals</a>
+            </div>
+
+            <hr>
+
+            <div class="tt-nav-heading">
+                <h4> Tracker </h4>
+                <a href="./tracker-create.html" id="navCreateTracker" title="Create New Tracker"
+                    class="dim tt-icon-button tt-color-green-hover">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 12h14" />
+                        <path d="M12 5v14" />
                     </svg>
-                </button>
-                <div
-                    class="absolute start-0 z-10 mt-1 max-w-40 md:max-w-72 max-h-80 overflow-y-auto rounded-b-md border-x-2 border-b-2 border-zinc-600 bg-zinc-700 shadow-xl shadow-black p-2"
-                    role="menu"
-                    x-show="trackerDropdownOpen"
-                    x-on:click.away="trackerDropdownOpen = false"
-                    x-on:keydown.escape.window="trackerDropdownOpen = false"
-                >
-                    <a href="#" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-300 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100 truncate">
-                        Walk Dog 🐩
-                    </a>
-                    <a href="#" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-300 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100 truncate">
-                        Brush Teeth 🦷
-                    </a>
-                    <a href="#" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-300 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100 truncate">
-                        Workout 🏋️
-                    </a>
-                    <a href="#" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-300 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100 truncate">
-                        Long Name That Keeps Going Past When It Should Probably Stop
-                    </a>
-                </div>
+                </a>
             </div>
-    
-            <div class="text-zinc-500 font-bold"> / </div>
-            
-            <!-- Page -->
-            <div class="relative">
-                <button
-                    title="Selected Page"
-                    x-on:click="pageDropdownOpen = !pageDropdownOpen"
-                    class="flex items-center gap-2 px-3 p-1 max-w-32 rounded-md border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100"
-                >
-                    <span class="">Log</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/>
+
+            <div class="tt-nav-filter">
+                <input type="search" id="navTrackerFilter" name="navTrackerFilter" placeholder="filter...">
+                <label for="navTrackerFilter" title="Filter Tracker List">
+                    <span hidden>Filter Trackers</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                        fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
                     </svg>
-                </button>
-                <div
-                    class="absolute start-0 z-10 mt-1 w-32 rounded-b-md border-x-2 border-b-2 border-zinc-600 bg-zinc-700 shadow-xl shadow-black p-2"
-                    role="menu"
-                    x-cloak
-                    x-show="pageDropdownOpen"
-                    x-on:click.away="pageDropdownOpen = false"
-                    x-on:keydown.escape.window="pageDropdownOpen = false"
-                >
-                    <div class="px-3 pb-2 mb-2 text-zinc-400 text-sm border-b-2 border-zinc-500">Pages</div>
-                    <a href="./tracker-info.html" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-300 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
-                        Info
-                    </a>
-                    <a href="./tracker-log.html" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-300 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
-                        Log
-                    </a>
-                    <a href="./tracker-records.html" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-300 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
-                        Records
-                    </a>
-                    <a href="./tracker-chart.html" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-300 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
-                        Charts
-                    </a>
-                    <a href="#" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-500 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
-                        Reminders
-                    </a>
-                    <a href="#" role="menuitem" class="block rounded-md px-3 p-1 text-zinc-500 border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100">
-                        Goals
-                    </a>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <main class="p-4 container mx-auto flex flex-col gap-4 grow h-full overflow-auto">
-
-        <h1 class="text-2xl font-bold text-violet-300 sr-only">Log</h1>
-
-        <form class="flex flex-col gap-4" hx-post="/htmx/tracker/create" hx-target="#response">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
-                <!-- {{ range .Fields }} -->
-                <div class="grow flex flex-col gap-1">
-                    <label for="field_1" class="block py-1 text-sm font-thin text-zinc-400 grow">Field Name 1</label>
-                    <input type="number" name="field_1" id="field_1" placeholder="0" value="" required
-                        class="h-10 px-3 py-1 rounded-md bg-zinc-700 border-2 border-transparent placeholder:text-zinc-500 hover:bg-zinc-600 focus:bg-zinc-600 focus:outline-none focus:border-zinc-300" />
-                </div>
-                <div class="flex flex-col gap-1">
-                    <label for="field_1" class="block py-1 text-sm font-thin text-zinc-400 grow">Field Name 2</label>
-                    <select id="field_2" name="field_2" 
-                        class="h-10 px-3 py-1 rounded-md bg-zinc-700 border-2 border-transparent cursor-pointer hover:bg-zinc-600 focus:bg-zinc-600 focus:outline-none focus:border-zinc-300">
-                        <option value="Option 1">Option 1</option>
-                        <option value="Option 2">Option 2</option>
-                    </select>
-                </div>
-                <!-- {{ else }} -->
-                <div class="hidden grow flex flex-col gap-1">
-                    <div class="font-thin text-sm text-zinc-400">No data fields...</div>
-                </div>
-                <!-- {{ end }} -->
-                <div class="flex gap-4">
-                    <input type="submit" value="Submit New Record" class="h-10 p-1 px-3 cursor-pointer rounded-md bg-violet-700 text-violet-100 hover:bg-violet-600 focus:bg-violet-600 border-2 border-transparent focus:outline-none focus:border-violet-300" />
-                </div>
+                </label>
             </div>
 
-        </form>
+            <div id="navTrackerList" class="tt-nav-links">
+                <a href="./tracker-info.html">Walk Dog 🐩</a>
+                <a href="./tracker-info.html">Brush Teeth 🦷</a>
+                <a href="./tracker-info.html" class="active">Money 💰</a>
+                <a href="./tracker-info.html">Workout 🏋️</a>
+            </div>
 
-    </main>
+            <script>
+                const navElement = document.getElementById("navElement")
+                const navShowButton = document.getElementById("navShowButton")
+                navShowButton.addEventListener("click", () => navElement.hidden = !navElement.hidden)
+                if (document.body.offsetWidth < 800) navElement.hidden = true
+
+                document.addEventListener('keydown', (event) => {
+                    if (event.code === 'KeyB' && event.ctrlKey === true) {
+                        event.preventDefault()
+                        navElement.hidden = !navElement.hidden
+                    }
+                })
+            </script>
+
+            <script>
+                const navTrackerList = document.getElementById("navTrackerList")
+                const navTrackerFilter = document.getElementById("navTrackerFilter")
+                if (navTrackerList.children.length < 12) {
+                    navTrackerFilter.parentElement.hidden = true
+                }
+                navTrackerFilter.addEventListener("input", (event) => {
+                    const filterText = event.target.value.toLowerCase()
+                    for (const link of navTrackerList.children) {
+                        const hide = !link.innerText.toLowerCase().includes(filterText)
+                        link.hidden = hide
+                    }
+                })
+            </script>
+
+        </nav>
+
+        <main id="mainElement">
+
+            <section>
+
+                <form class="grid gap-8 pad-4">
+                    <div class="grid">
+                        <label class="tt-label" for="num-1">Transactions</label>
+                        <input type="number" class="tt-input" id="num-1" name="num-1" placeholder="2000" value=2000
+                            required>
+                    </div>
+
+                    <div class="grid">
+                        <label class="tt-label" for="select-1">Card</label>
+                        <select class="tt-input" id="select-1" name="select-1" required>
+                            <option value="Bitcoin">Bitcoin</option>
+                            <option value="Discover">Discover</option>
+                            <option value="Visa">Visa</option>
+                        </select>
+                    </div>
+
+                    <div class="flex-wrap flex-even break-md items-end gap-8">
+                        <div class="grid">
+                            <label class="tt-label" for="date-1">Date</label>
+                            <input type="date" class="tt-input" id="date-1" name="date-1">
+                        </div>
+
+                        <div class="grid gap-1">
+                            <label class="flex gap-2 w-full" for="time-1">
+                                <div>Time</div>
+                                <div id="timezone-1" class="dim" style="margin-left: auto;">GMT-0500 (Central Daylight
+                                    Time)</div>
+                            </label>
+                            <input type="time" class="tt-input" id="time-1" name="time-1">
+                        </div>
+
+                        <script>
+                            const date = new Date()
+
+                            let yyyy = date.getFullYear()
+                            let dd = date.getDate()
+                            let mm = date.getMonth() + 1 // january is 0
+
+                            if (dd < 10) dd = '0' + dd
+                            if (mm < 10) mm = '0' + mm
+
+                            const today_date = yyyy + '-' + mm + '-' + dd
+                            document.getElementById("date-1").value = today_date
+
+                            let hh = date.getHours()
+                            let mmm = date.getMinutes()
+
+                            if (hh < 10) hh = '0' + hh
+                            if (mmm < 10) mmm = '0' + mmm
+
+                            const today_time = hh + ':' + mmm
+                            document.getElementById("time-1").value = today_time
+
+                            const today_timezone = date.toTimeString().substring(9)
+                            document.getElementById("timezone-1").innerText = today_timezone
+
+                        </script>
+                    </div>
+
+                    <div class="grid">
+                        <label for="tracker_notes" class="tt-label">Notes</label>
+                        <textarea id="tracker_notes" name="tracker_notes" placeholder="Tracker Notes..." rows="3"
+                            class="tt-input">Pay Day</textarea>
+                    </div>
+
+                    <div class="flex flex-even gap-4">
+                        <input type="submit" value="Submit" class="tt-button tt-color-green" />
+                    </div>
+                </form>
+
+            </section>
+
+        </main>
+
+    </div>
 
 </body>
 

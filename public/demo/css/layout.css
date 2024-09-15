@@ -1,0 +1,212 @@
+.overflow {
+    overflow: auto;
+}
+
+.m-auto {
+    margin: auto;
+}
+
+.w-full {
+    width: 100%;
+}
+
+.h-full {
+    height: 100%;
+}
+
+.max-width-sm {
+    max-width: 640px;
+    margin-inline: auto;
+}
+
+.max-width-md {
+    max-width: 768px;
+    margin-inline: auto;
+}
+
+.max-width-lg {
+    max-width: 1024px;
+    margin-inline: auto;
+}
+
+.max-width-xl {
+    max-width: 1280px;
+    margin-inline: auto;
+}
+
+/* Flex */
+
+.flex {
+    display: flex;
+}
+
+.flex-wrap {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.flex-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.flex-even>* {
+    flex: 1 0 0%;
+}
+
+.grow {
+    flex-grow: 1;
+}
+
+/* Wrap to one element per line at break point */
+@media (max-width: 640px) {
+    .break-md>* {
+        flex: 0 1 100% !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .break-lg>* {
+        flex: 0 1 100% !important;
+    }
+}
+
+@media (max-width: 1024px) {
+    .break-xl>* {
+        flex: 0 1 100% !important;
+    }
+}
+
+/* Grid */
+
+.grid {
+    display: grid;
+    align-content: flex-start;
+}
+
+.grid-auto-xs {
+    display: grid;
+    align-content: flex-start;
+    grid-template-columns: repeat(auto-fit, minmax(min(10rem, 100%), 1fr));
+}
+
+.grid-auto-sm {
+    display: grid;
+    align-content: flex-start;
+    grid-template-columns: repeat(auto-fit, minmax(min(16rem, 100%), 1fr));
+}
+
+.grid-auto-md {
+    display: grid;
+    align-content: flex-start;
+    grid-template-columns: repeat(auto-fit, minmax(min(24rem, 100%), 1fr));
+}
+
+.grid-auto-lg {
+    display: grid;
+    align-content: flex-start;
+    grid-template-columns: repeat(auto-fit, minmax(min(36rem, 100%), 1fr));
+}
+
+/* Spacing for both Flex and Grid */
+
+.gap-0 {
+    gap: 0;
+}
+
+.gap-px {
+    gap: 1px;
+}
+
+.gap-2px {
+    gap: 2px;
+}
+
+.gap-1 {
+    gap: 0.25rem;
+}
+
+.gap-2 {
+    gap: 0.5rem;
+}
+
+.gap-3 {
+    gap: 0.75rem;
+}
+
+.gap-4 {
+    gap: 1rem;
+}
+
+.gap-6 {
+    gap: 1.5rem;
+}
+
+.gap-8 {
+    gap: 2rem;
+}
+
+/* Alignment for both Flex and Grid */
+
+/* Vertical Center */
+.items-center {
+    align-items: center;
+}
+
+/* Vertical End */
+.items-end {
+    align-items: end;
+}
+
+/* Vertical Baseline */
+.items-baseline {
+    align-items: baseline;
+}
+
+/* Vertical + Horizontal Center */
+.place-items-center {
+    place-items: center;
+}
+
+/* Horizontal End */
+.justify-end {
+    justify-content: flex-end;
+}
+
+/* Spacing for both Flex and Grid */
+
+.pad-0 {
+    padding: 0;
+}
+
+.pad-px {
+    padding: 1px;
+}
+
+.pad-2px {
+    padding: 2px;
+}
+
+.pad-1 {
+    padding: 0.25rem;
+}
+
+.pad-2 {
+    padding: 0.5rem;
+}
+
+.pad-3 {
+    padding: 0.75rem;
+}
+
+.pad-4 {
+    padding: 1rem;
+}
+
+.pad-6 {
+    padding: 1.5rem;
+}
+
+.pad-8 {
+    padding: 2rem;
+}

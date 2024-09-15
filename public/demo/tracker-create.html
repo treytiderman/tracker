@@ -1,607 +1,523 @@
 <!DOCTYPE html>
-<html lang="en" style="color-scheme: dark;">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="tracker app">
     <title>Create Tracker</title>
-    <script src="https://unpkg.com/htmx.org@2.0.0"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        input:-webkit-autofill,
-        input:-webkit-autofill:hover, 
-        input:-webkit-autofill:focus,
-        textarea:-webkit-autofill,
-        textarea:-webkit-autofill:hover,
-        textarea:-webkit-autofill:focus,
-        select:-webkit-autofill,
-        select:-webkit-autofill:hover,
-        select:-webkit-autofill:focus {
-            /* border: 2px solid #5252aa; */
-            /* outline: 2px solid #5252aa; */
-            -webkit-text-fill-color: #e4e4ff;
-            -webkit-box-shadow: 0 0 0px 1000px #3f3f5a inset;
-        }
-        
-        select {
-            appearance: none;
-            background-image:
-                linear-gradient(45deg, transparent 50%, gray 50%),
-                linear-gradient(135deg, gray 50%, transparent 50%);
-            background-position:
-                calc(100% - 20px) calc(1em + 2px),
-                calc(100% - 15px) calc(1em + 2px);
-            background-size:
-                5px 5px,
-                5px 5px;
-            background-repeat: no-repeat;
-        }
-    </style>
+
+    <link rel="stylesheet" href="./css/palette.css">
+
+    <link rel="stylesheet" href="./css/reset.css">
+    <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="./css/layout.css">
+    <link rel="stylesheet" href="./css/app.css">
+
+    <script src="./js/htmx-v2.0.0.js"></script>
 </head>
 
-<body class="font-sans bg-zinc-800 text-zinc-200 relative">
+<body class="tt-layout">
 
-    <nav
-        class="
-            sticky top-0 h-12
-            font-medium text-sm sm:text-base
-            text-zinc-200 bg-zinc-700
-            border-b border-zinc-600
-            flex items-center gap-2 p-2
-            shadow-md shadow-zinc-800
-        "
-    >
+    <header class="tt-header flex items-center gap-4 pad-2">
+        <button id="navShowButton" title="Toggle Sidebar / Nav (Ctrl+B)" class="tt-icon-button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="4" x2="20" y1="12" y2="12" />
+                <line x1="4" x2="20" y1="6" y2="6" />
+                <line x1="4" x2="20" y1="18" y2="18" />
+            </svg>
+        </button>
+        <div> Create Tracker </div>
+        <div class="mono dim"> </div>
+        <div class="title grow"> </div>
+        <button id="navSearchButton" hidden>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+            </svg>
+        </button>
+    </header>
 
-        <!-- Tracker -->
-        <div>
-            <button
-                type="button"
-                id="nav_tracker_button"
-                title="Change to another page"
-                class="
-                    flex items-center gap-2
-                    px-3 p-1 max-w-40 md:max-w-72
-                    rounded-md
-                    focus:outline-none focus:ring-2 focus:ring-zinc-300
-                    hover:bg-zinc-600
-                "
-            >
-                <span class="whitespace-nowrap truncate">Create Tracker</span>
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/>
-                </svg>
-            </button>
+    <div>
 
-            <!-- Menu -->
-            <div
-                role="menu"
-                id="nav_tracker_menu"
-                class="
-                    hidden
-                    fixed z-10 top-12 left-0 right-0 bottom-0
-                    overflow-y-auto 
-                    border-b-2 border-zinc-600 
-                    bg-black/80
-                "
-            >
-                <div
-                    id="nav_tracker_menu_items"
-                    class="
-                        p-2 overflow-y-auto 
-                        border-b-2 border-zinc-600 
-                        bg-zinc-700
-                        grid gap-2
-                    "
-                >
-                    <a href="./tracker-all.html" role="menuitem" class="block w-min rounded-md px-3 p-1 text-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-300 hover:bg-zinc-600 truncate">
-                        All Trackers
-                    </a>
-                    <a href="./tracker-create.html" role="menuitem" class="block w-min rounded-md px-3 p-1 text-violet-300 focus:outline-none focus:ring-2 focus:ring-zinc-300 hover:bg-zinc-600 truncate">
-                        Create Tracker
-                    </a>
-                    <div id="nav_tracker_menu_label" class="px-3 py-1 mt-2 text-zinc-400 text-sm border-b border-zinc-600">Trackers</div>
-                    <a href="./tracker-info.html" role="menuitem" class="block w-min rounded-md px-3 p-1 text-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-300 hover:bg-zinc-600 truncate">
-                        Walk Dog 🐩
-                    </a>
-                    <a href="./tracker-info.html" role="menuitem" class="block w-min rounded-md px-3 p-1 text-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-300 hover:bg-zinc-600 truncate">
-                        Brush Teeth 🦷
-                    </a>
-                    <a href="./tracker-info.html" role="menuitem" class="block w-min rounded-md px-3 p-1 text-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-300 hover:bg-zinc-600 truncate">
-                        Workout 🏋️
-                    </a>
-                    <a href="./tracker-info.html" role="menuitem" class="block w-min rounded-md px-3 p-1 text-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-300 hover:bg-zinc-600 truncate">
-                        Long Name That Keeps Going Past When It Should Probably Stop
-                    </a>
-                </div>
+        <nav id="navElement">
+            <div class="tt-nav-heading">
+                <h4> Page </h4>
             </div>
-        </div>
 
-        <script>
-            let nav_tracker_dropdown_open = false
-            const nav_tracker_menu = document.getElementById("nav_tracker_menu")
-            const nav_tracker_button = document.getElementById("nav_tracker_button")
-            nav_tracker_button.addEventListener("click", event => {
-                nav_tracker_menu.classList.toggle("hidden")
-            })
-            nav_tracker_menu.addEventListener("click", event => {
-                if (event.target.id !== "nav_tracker_menu_items" && event.target.id !== "nav_tracker_menu_label") {
-                    nav_tracker_menu.classList.toggle("hidden")
+            <div class="tt-nav-links">
+                <a href="./tracker-info.html">Info</a>
+                <a href="./tracker-log.html">Log</a>
+                <a href="./tracker-records.html">Records</a>
+                <a href="./tracker-chart.html" hidden>Chart</a>
+                <a href="./tracker-log.html" hidden>Reminders</a>
+                <a href="./tracker-log.html" hidden>Goals</a>
+            </div>
+
+            <hr>
+
+            <div class="tt-nav-heading">
+                <h4> Tracker </h4>
+                <a href="./tracker-create.html" id="navCreateTracker" title="Create New Tracker"
+                    class="tt-icon-button tt-color-green-hover tt-color-green">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 12h14" />
+                        <path d="M12 5v14" />
+                    </svg>
+                </a>
+            </div>
+
+            <div class="tt-nav-filter">
+                <input type="search" id="navTrackerFilter" name="navTrackerFilter" placeholder="filter...">
+                <label for="navTrackerFilter" title="Filter Tracker List">
+                    <span hidden>Filter Trackers</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                        fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+                    </svg>
+                </label>
+            </div>
+
+            <div id="navTrackerList" class="tt-nav-links">
+                <a href="./tracker-info.html">Walk Dog 🐩</a>
+                <a href="./tracker-info.html">Brush Teeth 🦷</a>
+                <a href="./tracker-info.html">Money 💰</a>
+                <a href="./tracker-info.html">Workout 🏋️</a>
+            </div>
+
+            <script>
+                const navElement = document.getElementById("navElement")
+                const navShowButton = document.getElementById("navShowButton")
+                navShowButton.addEventListener("click", () => navElement.hidden = !navElement.hidden)
+                if (document.body.offsetWidth < 800) navElement.hidden = true
+
+                document.addEventListener('keydown', (event) => {
+                    if (event.code === 'KeyB' && event.ctrlKey === true) {
+                        event.preventDefault()
+                        navElement.hidden = !navElement.hidden
+                    }
+                })
+            </script>
+
+            <script>
+                const navTrackerList = document.getElementById("navTrackerList")
+                const navTrackerFilter = document.getElementById("navTrackerFilter")
+                if (navTrackerList.children.length < 12) {
+                    navTrackerFilter.parentElement.hidden = true
                 }
-            })
-            nav_tracker_menu.addEventListener("focus", event => {
-                if (event.target.id !== "nav_tracker_menu_items" && event.target.id !== "nav_tracker_menu_label") {
-                    nav_tracker_menu.classList.toggle("hidden")
-                }
-            })
-            document.addEventListener("keydown", event => {
-                if (event.key === "Escape") {
-                    nav_tracker_menu.classList.add("hidden")
-                }
-            })
-        </script>
-    </nav>
+                navTrackerFilter.addEventListener("input", (event) => {
+                    const filterText = event.target.value.toLowerCase()
+                    for (const link of navTrackerList.children) {
+                        const hide = !link.innerText.toLowerCase().includes(filterText)
+                        link.hidden = hide
+                    }
+                })
+            </script>
 
-    <main>
+        </nav>
 
-        <!-- Create Tracker Form -->
-        <section class="p-4 container max-w-xl w-full mx-auto flex flex-col gap-4">
+        <main id="mainElement">
 
-            <form class="flex flex-col gap-4 sm:gap-8" hx-post="/htmx/tracker/create" zhx-target="#response">
-    
-                <div class="grid gap-1">
-                    <label for="tracker_name" class="block py-1 grow">Name</label>
-                    <input
-                        type="text"
-                        name="tracker_name" id="tracker_name"
-                        value="Commissions" placeholder="Tracker Name" required
-                        class="
-                            px-3 py-2
-                            bg-zinc-700 placeholder:text-zinc-500 
-                            rounded-md border border-zinc-600
-                            focus:outline-none focus:ring-2 focus:ring-zinc-300
-                        "
-                    />
-                </div>
-    
-                <div class="grid gap-1">
-                    <label for="tracker_notes" class="block py-1 grow">Notes</label>
-                    <textarea
-                        id="tracker_notes" name="tracker_notes"
-                        placeholder="Tracker Notes..."
-                        class="
-                            h-24 min-h-12
-                            px-3 py-2
-                            bg-zinc-700 placeholder:text-zinc-500
-                            rounded-md border border-zinc-600
-                            focus:outline-none focus:ring-2 focus:ring-zinc-300
-                        "
-                    >Badger badger badger...</textarea>
-                </div>
-    
-                <div class="grid gap-1">
-                    <label for="data_fields" class="block py-1 grow">Fields</label>
-                    <div id="data_fields" class="grid gap-8 mb-4">
-    
-                        <div class="grid gap-2">
-                            <div class="flex gap-2 items-center">
-    
-                                <label for="field_type_1" class="sr-only"> Type </label>
-                                <select
-                                    id="field_type_1"
-                                    name="field_type_1" 
-                                    class="
-                                        cursor-pointer
-                                        px-3 py-1 h-10 w-28
-                                        bg-zinc-700
-                                        rounded-md border border-zinc-600
-                                        focus:outline-none focus:ring-2 focus:ring-zinc-300"
-                                >
-                                    <option value="number">Number</option>
-                                    <option value="option">Option</option>
-                                </select>
-    
-                                <label for="field_name_1" class="sr-only"> Name </label>
-                                <input
-                                    type="text"
-                                    id="field_name_1"
-                                    name="field_name_1"
-                                    value="Cost" placeholder="Field Name"
-                                    class="
-                                        grow
-                                        px-3 py-1 h-10
-                                        bg-zinc-700
-                                        rounded-md border border-zinc-600
-                                        placeholder:text-zinc-500
-                                        focus:outline-none focus:ring-2 focus:ring-zinc-300
-                                    "
-                                >
-                            </div>
-    
-                            <div class="flex gap-2 items-center">
-                                <div title="Number.Decimal_Places: 2" class="w-8 h-10 grid place-items-center text-zinc-400">
-                                    <label for="decimal_places_1" class="sr-only"> Decimal Places </label>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-                                        <circle cx="12" cy="12" r="10"/>
-                                        <line x1="22" x2="18" y1="12" y2="12"/>
-                                        <line x1="6" x2="2" y1="12" y2="12"/>
-                                        <line x1="12" x2="12" y1="6" y2="2"/>
-                                        <line x1="12" x2="12" y1="22" y2="18"/>
-                                    </svg>
-                                </div>
-                                <input
-                                    type="number"
-                                    name="decimal_places_1"
-                                    id="decimal_places_1"
-                                    placeholder=0
-                                    value=2
-                                    class="h-10 grow min-w-16 px-3 py-1 bg-zinc-700 rounded-md border border-zinc-600 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-300"
-                                >
-                            </div>
-                        </div>
-            
-                        <div class="flex flex-col gap-2">
-            
-                            <div class="flex gap-2 items-center">
-    
-                                <label for="field_type_2" class="sr-only"> Type </label>
-                                <select
-                                    id="field_type_2"
-                                    name="field_type_2" 
-                                    class="
-                                        cursor-pointer
-                                        px-3 py-1
-                                        h-10 w-28
-                                        rounded-md border border-zinc-600 
-                                        bg-zinc-700
-                                        focus:outline-none focus:ring-2 focus:ring-zinc-300
-                                    "
-                                >
-                                    <option value="option">Option</option>
-                                    <option value="number">Number</option>
-                                </select>
-    
-                                <label for="field_name_2" class="sr-only"> Name </label>
-                                <input
-                                    type="text"
-                                    id="field_name_2"
-                                    name="field_name_2"
-                                    value="Status"
-                                    placeholder="Field Name"
-                                    class="
-                                        px-3 py-1
-                                        h-10 grow
-                                        bg-zinc-700 rounded-md border border-zinc-600
-                                        placeholder:text-zinc-500
-                                        focus:outline-none focus:ring-2 focus:ring-zinc-300
-                                    "
-                                >
-                            </div>
-            
-                            <div class="flex gap-2 items-center">
-    
-                                <label
-                                    for="field_2_option_value_1"
-                                    class="font-thin w-8 h-10 grid place-items-center text-zinc-400"
-                                >#</label>
-                                <input
-                                    type="number"
-                                    id="field_2_option_value_1"
-                                    name="field_2_option_value_1"
-                                    value=-1
-                                    placeholder=1
-                                    class="h-10 min-w-12 w-[4.5rem] px-3 rounded-md border border-zinc-600 bg-zinc-700 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-300"
-                                >
-    
-                                <label for="field_2_option_name_1" class="sr-only">
-                                    Name
-                                </label>
-                                <input
-                                    type="text"
-                                    id="field_2_option_name_1"
-                                    name="field_2_option_name_1"
-                                    value="Canceled"
-                                    placeholder="Option Name"
-                                    class="h-10 grow px-3 bg-zinc-700 rounded-md border border-zinc-600 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-300"
-                                >
-                            </div>
-    
-                            <div class="flex gap-2 items-center">
-    
-                                <div class="flex gap-2 items-center">
-                                    <label
-                                        for="field_2_option_value_2"
-                                        class="font-thin w-8 h-10 grid place-items-center text-zinc-400"
-                                    >#</label>
-                                    <input
-                                        type="number"
-                                        id="field_2_option_value_2"
-                                        name="field_2_option_value_2"
-                                        value=0
-                                        placeholder=1
-                                        class="h-10 min-w-12 w-[4.5rem] px-3 rounded-md border border-zinc-600 bg-zinc-700 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-300"
-                                    >
-                                </div>
-    
-                                <label for="field_2_option_name_2" class="sr-only">
-                                    Name
-                                </label>
-                                <input
-                                    type="text"
-                                    id="field_2_option_name_2"
-                                    name="field_2_option_name_2"
-                                    value="Incomplete"
-                                    placeholder="Option Name"
-                                    class="
-                                        h-10 w-full
-                                        px-3 
-                                        bg-zinc-700 rounded-md border border-zinc-600 
-                                        placeholder:text-zinc-500 
-                                        focus:outline-none focus:ring-2 focus:ring-zinc-300
-                                    "
-                                >
-                            </div>
-            
-                            <div class="flex gap-2 items-center">
-    
-                                <div class="flex gap-2 items-center">
-                                    <label
-                                        for="field_2_option_value_3"
-                                        class="font-thin w-8 h-10 grid place-items-center text-zinc-400"
-                                    >#</label>
-                                    <input
-                                        type="number"
-                                        id="field_2_option_value_3"
-                                        name="field_2_option_value_3"
-                                        value=1
-                                        placeholder=1
-                                        class="h-10 min-w-12 w-[4.5rem] px-3 rounded-md border border-zinc-600 bg-zinc-700 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-300"
-                                    >
-                                </div>
-    
-                                <label for="field_2_option_name_3" class="sr-only">
-                                    Name
-                                </label>
-                                <input
-                                    type="text"
-                                    id="field_2_option_name_3"
-                                    name="field_2_option_name_3"
-                                    value="Complete"
-                                    placeholder="Option Name"
-                                    class="
-                                        h-10 w-full
-                                        px-3 
-                                        bg-zinc-700 rounded-md border border-zinc-600 
-                                        placeholder:text-zinc-500 
-                                        focus:outline-none focus:ring-2 focus:ring-zinc-300
-                                    "
-                                >
-                            </div>
-    
-                            <div class="ml-10">
-                                <button
-                                    type="button"
-                                    id="field_2_add_option"
-                                    class="h-10 w-full p-1 text-zinc-400 rounded-md border border-zinc-600 hover:bg-zinc-700 hover:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-zinc-300"
-                                >
-                                    Add Option
-                                </button>
-                            </div>
-    
-                        </div>
-        
+            <section class="">
+
+                <!-- Create Tracker Form -->
+                <form class="grid gap-8 pad-4" hx-post="/htmx/tracker/create" hx-target="#response">
+
+                    <div class="grid">
+                        <label for="tracker_name" class="tt-label">Name</label>
+                        <input type="text" name="tracker_name" id="tracker_name" value="Commissions"
+                            placeholder="Tracker Name" class="tt-input" required />
                     </div>
-                </div>
-    
-                <div class="flex gap-4">
-                    <button
-                        type="button"
-                        id="add_field"
-                        class="
-                            h-10 w-full p-1
-                            text-zinc-400
-                            rounded-md border border-zinc-600
-                            hover:bg-zinc-700 hover:text-zinc-200
-                            focus:outline-none focus:ring-2 focus:ring-zinc-300
-                        "
-                    >
-                        Add Field
-                    </button>
-                    <input
-                        type="submit"
-                        value="Create"
-                        class="
-                            cursor-pointer
-                            h-10 w-full p-1
-                            bg-green-600 text-green-50
-                            rounded-md border border-green-600
-                            hover:bg-green-500 hover:text-green-50
-                            focus:outline-none focus:ring-2 focus:ring-green-100
-                        "
-                    />
-                </div>
-            </form>
-        </section>
 
-    </main>
+                    <div class="grid">
+                        <label for="tracker_notes" class="tt-label">Notes</label>
+                        <textarea id="tracker_notes" name="tracker_notes" placeholder="Tracker Notes..." rows="3"
+                            class="tt-input">Badger badger badger...</textarea>
+                    </div>
+
+                    <!-- Fields -->
+                    <div id="field_list" class="grid gap-8">
+
+                        <!-- Type Number -->
+                        <div id="field_a" class="grid gap-4" hidden>
+
+                            <div class="flex gap-2 items-center">
+                                <div class="grid" style="width: 8rem;">
+                                    <label for="field_a_type" class="tt-label"> Field Type </label>
+                                    <select id="field_a_type" name="field_a_type" class="tt-input">
+                                        <option value="number">Number</option>
+                                        <option value="option">Option</option>
+                                    </select>
+                                </div>
+                                <div class="grid grow">
+                                    <label for="field_a_name" class="tt-label"> Field Name </label>
+                                    <input type="text" id="field_a_name" name="field_a_name" value="Cost"
+                                        placeholder="Field Name" class="tt-input">
+                                </div>
+                            </div>
+
+                            <div class="grid gap-2">
+
+                                <div class="flex gap-2 items-end">
+                                    <div class="grid place-items-center dim"
+                                        style="width: 2rem; height: 2rem; padding-top: 0.3rem;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="12" cy="12" r="10" />
+                                            <line x1="22" x2="18" y1="12" y2="12" />
+                                            <line x1="6" x2="2" y1="12" y2="12" />
+                                            <line x1="12" x2="12" y1="6" y2="2" />
+                                            <line x1="12" x2="12" y1="22" y2="18" />
+                                        </svg>
+                                    </div>
+                                    <div class="grid grow">
+                                        <label for="field_a_decimal_places" class="tt-label"> Decimal Places </label>
+                                        <input type="number" name="field_a_decimal_places" id="field_a_decimal_places"
+                                            placeholder=0 value=2 step=1 class="tt-input">
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- Type Option -->
+                        <div id="field_b" class="grid gap-4" hidden>
+
+                            <div class="flex gap-2 items-center">
+                                <div class="grid" style="width: 8rem;">
+                                    <label for="field_b_type" class="tt-label"> Field Type </label>
+                                    <select id="field_b_type" name="field_b_type" class="tt-input">
+                                        <option value="number">Number</option>
+                                        <option value="option" selected>Option</option>
+                                    </select>
+                                </div>
+                                <div class="grid grow">
+                                    <label for="field_b_name" class="tt-label"> Field Name </label>
+                                    <input type="text" id="field_b_name" name="field_b_name" value="Cost"
+                                        placeholder="Field Name" class="tt-input">
+                                </div>
+                            </div>
+
+                            <div class="grid gap-2">
+
+                                <div class="flex gap-2 items-end">
+                                    <div class="grid place-items-center dim" style="width: 2rem; height: 2rem;">#</div>
+                                    <div class="grid">
+                                        <label for="field_b_option_1_value" class="tt-label"> Option Value </label>
+                                        <input type="number" id="field_b_option_1_value" name="field_b_option_1_value"
+                                            value=-1 placeholder=1 class="tt-input" style="width: 5.5rem;">
+                                    </div>
+                                    <div class="grid grow">
+                                        <label for="field_b_option_1_name" class="tt-label"> Option Name </label>
+                                        <input type="text" id="field_b_option_1_name" name="field_b_option_1_name"
+                                            value="Canceled" placeholder="Field Name" class="tt-input">
+                                    </div>
+                                </div>
+
+                                <div class="flex gap-2 items-end">
+                                    <div class="grid place-items-center dim" style="width: 2rem; height: 2rem;">#</div>
+                                    <div class="grid">
+                                        <label for="field_b_option_2_value" class="tt-label" hidden> Option Value
+                                        </label>
+                                        <input type="number" id="field_b_option_2_value" name="field_b_option_2_value"
+                                            value=0 placeholder=2 class="tt-input" style="width: 5.5rem;">
+                                    </div>
+                                    <div class="grid grow">
+                                        <label for="field_b_option_2_name" class="tt-label" hidden> Option Name </label>
+                                        <input type="text" id="field_b_option_2_name" name="field_b_option_2_name"
+                                            value="Incomplete" placeholder="Field Name" class="tt-input">
+                                    </div>
+                                </div>
+
+                                <div class="flex gap-2 items-end">
+                                    <div class="grid place-items-center dim" style="width: 2rem; height: 2rem;">#</div>
+                                    <div class="grid">
+                                        <label for="field_b_option_3_value" class="tt-label" hidden> Option Value
+                                        </label>
+                                        <input type="number" id="field_b_option_3_value" name="field_b_option_3_value"
+                                            value=1 placeholder=2 class="tt-input" style="width: 5.5rem;">
+                                    </div>
+                                    <div class="grid grow">
+                                        <label for="field_b_option_3_name" class="tt-label" hidden> Option Name </label>
+                                        <input type="text" id="field_b_option_3_name" name="field_b_option_3_name"
+                                            value="Complete" placeholder="Field Name" class="tt-input">
+                                    </div>
+                                </div>
+
+                                <div class="flex gap-2 items-end">
+                                    <div class="grid place-items-center dim" style="width: 2rem; height: 2rem;"> </div>
+                                    <button class="tt-text-button dim bright-hover" style="margin: auto;">
+                                        Add Option
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="flex flex-even gap-4">
+                        <button type="button" id="add_field" class="tt-button">
+                            Add Field
+                        </button>
+                        <input type="submit" value="Create" class="tt-button tt-color-green" />
+                    </div>
+                </form>
+
+            </section>
+
+            <div id="response"></div>
+
+        </main>
+
+    </div>
+
 </body>
+
+<script>
+
+</script>
 
 <script>
     let field_count = 0
 
-    function create_field_row(id) {
+    function create_field_element(id, type) {
+        const field_type = create_field_type_element(id, type)
+        const field_name = create_field_name_element(id)
+        const field_type_and_name = document.createElement("div")
+        field_type_and_name.classList = "flex gap-2 items-center"
+        field_type_and_name.appendChild(field_type)
+        field_type_and_name.appendChild(field_name)
+
+        const field_params = document.createElement("div")
+        field_params.classList = "grid gap-2"
+
+        if (type === "number") {
+            const decimal_places = create_decimal_places_element(id)
+            field_params.appendChild(decimal_places)
+        } else if (type === "option") {
+            const option_1 = create_option_element(id, 1)
+            const option_2 = create_option_element(id, 2)
+            const add_option = create_option_add_button_element(id)
+            field_params.appendChild(option_1)
+            field_params.appendChild(option_2)
+            field_params.appendChild(add_option)
+        }
+
         const field = document.createElement("div")
-        field.setAttribute("class", "flex gap-2 items-center")
-        
-        const select_label = document.createElement("label")
-        select_label.setAttribute("for", "field_type_" + id)
-        select_label.setAttribute("class", "sr-only")
-        select_label.innerText = "Type"
-        field.appendChild(select_label)
-
-        const select = document.createElement("select")
-        select.setAttribute("id", "field_type_" + id)
-        select.setAttribute("name", "field_type_" + id)
-        select.setAttribute("class", "cursor-pointer px-3 py-1 h-10 w-28 rounded-md border border-zinc-600  bg-zinc-700 focus:outline-none focus:ring-2 focus:ring-zinc-300")
-        field.appendChild(select)
-
-        const select_option_1 = document.createElement("option")
-        select_option_1.value = "number"
-        select_option_1.innerText = "Number"
-        select.appendChild(select_option_1)
-
-        const select_option_2 = document.createElement("option")
-        select_option_2.value = "option"
-        select_option_2.innerText = "Option"
-        select.appendChild(select_option_2)
-
-        const input_label = document.createElement("label")
-        input_label.setAttribute("for", "field_name_" + id)
-        input_label.setAttribute("class", "sr-only")
-        input_label.innerText = "Name"
-        field.appendChild(input_label)
-
-        const input = document.createElement("input")
-        input.setAttribute("type", "text")
-        input.setAttribute("id", "field_name_" + id)
-        input.setAttribute("name", "field_name_" + id)
-        input.setAttribute("placeholder", "Field Name")
-        input.setAttribute("class", "px-3 py-1 h-10 grow bg-zinc-700 rounded-md border border-zinc-600 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-300")
-        field.appendChild(input)
-
-        select.addEventListener("change", event => {
-
-            // Remove option rows
-            const parent = field.parentElement
-            parent.childElementCount > 1
-            while (parent.childElementCount > 1) {
-                parent.removeChild(parent.lastElementChild);
-            }
-
-            // Add option rows
-            const field_type = event.target.value
-            if (field_type === "number") {
-                const dec = create_number_decimal_row(id)
-                parent.appendChild(dec)
-            } else if (field_type === "option") {
-                const option = create_option_row(id, 1)
-                parent.appendChild(option)
-                const add_option = create_add_option_button(id)
-                parent.appendChild(add_option)
-            }
-        })
+        field.id = `field_${id}`
+        field.classList = "grid gap-4"
+        field.appendChild(field_type_and_name)
+        field.appendChild(field_params)
 
         return field
     }
 
-    function create_number_decimal_row(id) {
-        const row = document.createElement("div")
-        row.setAttribute("class", "flex gap-2 items-center")
+    function create_field_type_element(id, type) {
+        const label = document.createElement("label")
+        label.classList = "tt-label"
+        label.innerText = "Field Type"
+        label.setAttribute("for", `field_${id}_type`)
+
+        const select_option_1 = document.createElement("option")
+        select_option_1.value = "number"
+        select_option_1.innerText = "Number"
+
+        const select_option_2 = document.createElement("option")
+        select_option_2.value = "option"
+        select_option_2.innerText = "Option"
+        if (type === "option") select_option_2.selected = true
+
+        const select = document.createElement("select")
+        select.id = `field_${id}_type`
+        select.name = `field_${id}_type`
+        select.classList = "tt-input"
+        select.appendChild(select_option_1)
+        select.appendChild(select_option_2)
 
         const div = document.createElement("div")
-        div.setAttribute("class", "w-8 h-10 grid place-items-center text-zinc-400")
-        row.appendChild(div)
-
-        const label = document.createElement("label")
-        label.setAttribute("for", "decimal_places_" + id)
-        label.setAttribute("class", "sr-only")
-        label.innerText = "Decimal Places"
+        div.classList = "grid"
+        div.style = "width: 8rem;"
         div.appendChild(label)
+        div.appendChild(select)
 
-        const svg = document.createElement("label")
-        svg.innerHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"/>
-                <line x1="22" x2="18" y1="12" y2="12"/>
-                <line x1="6" x2="2" y1="12" y2="12"/>
-                <line x1="12" x2="12" y1="6" y2="2"/>
-                <line x1="12" x2="12" y1="22" y2="18"/>
-            </svg>`
-        div.appendChild(svg)
-
-        const input = document.createElement("input")
-        input.setAttribute("type", "number")
-        input.setAttribute("id", "decimal_places_" + id)
-        input.setAttribute("name", "decimal_places_" + id)
-        input.setAttribute("placeholder", 0)
-        input.setAttribute("class", "h-10 grow min-w-16 px-3 py-1 bg-zinc-700 rounded-md border border-zinc-600 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-300")
-        row.appendChild(input)
-
-        return row
-    }
-
-    function create_option_row(id, option_id) {
-        const row = document.createElement("div")
-        row.setAttribute("class", "flex gap-2 items-center")
-
-        const value_label = document.createElement("label")
-        value_label.setAttribute("for", "field_" + id + "_option_value_" + option_id)
-        value_label.setAttribute("class", "font-thin w-8 h-10 grid place-items-center text-zinc-400")
-        value_label.innerText = "#"
-        row.appendChild(value_label)
-
-        const value = document.createElement("input")
-        value.setAttribute("type", "number")
-        value.setAttribute("id", "field_" + id + "_option_value_" + option_id)
-        value.setAttribute("name", "field_" + id + "_option_value_" + option_id)
-        value.setAttribute("placeholder", option_id)
-        value.setAttribute("value", option_id)
-        value.setAttribute("class", "h-10 min-w-16 w-[4.5rem] px-3 rounded-md border border-zinc-600 bg-zinc-700 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-300")
-        row.appendChild(value)
-
-        const name_label = document.createElement("label")
-        name_label.setAttribute("for", "field_" + id + "_option_name_" + option_id)
-        name_label.setAttribute("class", "sr-only")
-        name_label.innerText = "Name"
-        row.appendChild(name_label)
-
-        const name = document.createElement("input")
-        name.setAttribute("type", "text")
-        name.setAttribute("id", "field_" + id + "_option_name_" + option_id)
-        name.setAttribute("name", "field_" + id + "_option_name_" + option_id)
-        name.setAttribute("placeholder", "Option Name")
-        name.setAttribute("class", "h-10 grow px-3 bg-zinc-700 rounded-md border border-zinc-600 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-300")
-        row.appendChild(name)
-
-        return row
-    }
-
-    function create_add_option_button(field_count) {
-        let option_counter = 1
-
-        const row = document.createElement("div")
-        row.setAttribute("class", "ml-10")
-
-        const button = document.createElement("button")
-        button.setAttribute("id", "field_2_add_option")
-        button.setAttribute("type", "button")
-        button.setAttribute("class", "h-10 w-full p-1 text-zinc-400 rounded-md border border-zinc-600 hover:bg-zinc-700 hover:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-zinc-300")
-        button.innerText = "Add Option"
-        row.appendChild(button)
-
-        button.addEventListener("click", event => {
-            option_counter++
-
-            const option = create_option_row(field_count, option_counter)
-            row.insertAdjacentElement("beforebegin", option);
+        select.addEventListener("change", event => {
+            const field_type = event.target.value
+            const field = document.getElementById(`field_${id}`)
+            field.replaceWith(create_field_element(id, field_type))
         })
 
-        return row
+        return div
+    }
+
+    function create_field_name_element(id) {
+        const label = document.createElement("label")
+        label.classList = "tt-label"
+        label.innerText = "Field Name"
+        label.setAttribute("for", `field_${id}_type`)
+
+        const input = document.createElement("input")
+        input.type = "text"
+        input.id = `field_${id}_name`
+        input.name = `field_${id}_name`
+        input.placeholder = "Field Name"
+        input.classList = "tt-input"
+        input.required = true
+
+        const div = document.createElement("div")
+        div.classList = "grid grow"
+        div.appendChild(label)
+        div.appendChild(input)
+
+        return div
+    }
+
+    function create_decimal_places_element(id) {
+        const icon = document.createElement("div")
+        icon.classList = "grid place-items-center dim"
+        icon.style = "width: 2rem; height: 2rem; padding-top: 0.3rem;"
+        icon.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="22" x2="18" y1="12" y2="12" />
+                <line x1="6" x2="2" y1="12" y2="12" />
+                <line x1="12" x2="12" y1="6" y2="2" />
+                <line x1="12" x2="12" y1="22" y2="18" />
+            </svg>`
+
+        const label = document.createElement("label")
+        label.classList = "tt-label"
+        label.innerText = "Decimal Places"
+        label.setAttribute("for", `field_${id}_decimal_places`)
+
+        const input = document.createElement("input")
+        input.type = "number"
+        input.id = `field_${id}_decimal_places`
+        input.name = `field_${id}_decimal_places`
+        input.classList = "tt-input"
+        input.placeholder = 0
+        input.value = 0
+        input.step = 1
+        input.required = true
+
+        const label_and_input = document.createElement("div")
+        label_and_input.classList = "grid grow"
+        label_and_input.appendChild(label)
+        label_and_input.appendChild(input)
+
+        const div = document.createElement("div")
+        div.classList = "flex gap-2 items-end"
+        div.appendChild(icon)
+        div.appendChild(label_and_input)
+
+        return div
+    }
+
+    function create_option_element(id, index) {
+        const icon = document.createElement("div")
+        icon.classList = "grid place-items-center dim"
+        icon.style = "width: 2rem; height: 2rem;"
+        icon.innerText = "#"
+
+        const value = create_option_value_element(id, index)
+        const name = create_option_name_element(id, index)
+
+        const div = document.createElement("div")
+        div.classList = "flex gap-2 items-end"
+        div.appendChild(icon)
+        div.appendChild(value)
+        div.appendChild(name)
+
+        return div
+    }
+
+    function create_option_value_element(id, index) {
+        const label = document.createElement("label")
+        label.classList = "tt-label"
+        label.innerText = "Option Value"
+        label.setAttribute("for", `field_${id}_option_${index}_value`)
+        if (index > 1) label.hidden = true
+
+        const input = document.createElement("input")
+        input.type = "number"
+        input.id = `field_${id}_option_${index}_value`
+        input.name = `field_${id}_option_${index}_value`
+        input.style = "width: 5.5rem;"
+        input.classList = "tt-input"
+        input.placeholder = index
+        input.value = index
+        input.step = 1
+        input.required = true
+
+        const div = document.createElement("div")
+        div.classList = "grid"
+        div.appendChild(label)
+        div.appendChild(input)
+
+        return div
+    }
+
+    function create_option_name_element(id, index) {
+        const label = document.createElement("label")
+        label.classList = "tt-label"
+        label.innerText = "Option Name"
+        label.setAttribute("for", `field_${id}_option_${index}_name`)
+        if (index > 1) label.hidden = true
+
+        const input = document.createElement("input")
+        input.type = "text"
+        input.id = `field_${id}_option_${index}_name`
+        input.name = `field_${id}_option_${index}_name`
+        input.classList = "tt-input"
+        input.placeholder = "Option Name"
+        input.required = true
+
+        const div = document.createElement("div")
+        div.classList = "grid grow"
+        div.appendChild(label)
+        div.appendChild(input)
+
+        return div
+    }
+
+    function create_option_add_button_element(id) {
+        const icon = document.createElement("div")
+        icon.classList = "grid place-items-center dim"
+        icon.style = "width: 2rem; height: 2rem;"
+        icon.innerText = " "
+
+        const button = document.createElement("button")
+        button.type = "button"
+        button.classList = "tt-text-button dim bright-hover"
+        button.style = "margin: auto;"
+        button.innerText = "Add Option"
+
+        let option_counter = 2
+        button.addEventListener("click", () => {
+            option_counter++
+            const option = create_option_element(id, option_counter)
+            div.insertAdjacentElement("beforebegin", option);
+        })
+
+        const div = document.createElement("div")
+        div.classList = "flex gap-2 items-end"
+        div.appendChild(icon)
+        div.appendChild(button)
+
+        return div
     }
 
     document.getElementById("add_field").addEventListener("click", event => {
         field_count++
-
-        const parent = document.createElement("div")
-        parent.setAttribute("class", "flex flex-col gap-2")
-
-        const field = create_field_row(field_count)
-        parent.appendChild(field)
-
-        const dec = create_number_decimal_row(field_count)
-        parent.appendChild(dec)
-
-        document.getElementById("data_fields").appendChild(parent)
+        const field_element = create_field_element(field_count, "number")
+        document.getElementById("field_list").appendChild(field_element)
     })
 
 </script>

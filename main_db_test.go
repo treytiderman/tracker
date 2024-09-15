@@ -314,7 +314,7 @@ func Test_Get_Entries_By_Tracker_Id(t *testing.T) {
 
 // Update Data
 
-func Test_Update_Tracker_Notes(t *testing.T) {
+func Test_Update_Tracker_Notes_By_Name(t *testing.T) {
 	var tests = []struct {
 		tracker_name  string
 		tracker_notes string
@@ -323,7 +323,24 @@ func Test_Update_Tracker_Notes(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.tracker_name, func(t *testing.T) {
-			err := Update_Tracker_Notes(db, tt.tracker_name, tt.tracker_notes)
+			err := Update_Tracker_Notes_By_Name(db, tt.tracker_name, tt.tracker_notes)
+			if err != nil {
+				t.Fatalf("Failed to update tracker notes")
+			}
+		})
+	}
+}
+
+func Test_Update_Tracker_Notes_By_Id(t *testing.T) {
+	var tests = []struct {
+		tracker_id  int
+		tracker_notes string
+	}{
+		{7, "Bathroom breaks"},
+	}
+	for _, tt := range tests {
+		t.Run(fmt.Sprintf("tracker_id=%d", tt.tracker_id), func(t *testing.T) {
+			err := Update_Tracker_Notes_By_Id(db, tt.tracker_id, tt.tracker_notes)
 			if err != nil {
 				t.Fatalf("Failed to update tracker notes")
 			}

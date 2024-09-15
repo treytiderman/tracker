@@ -47,6 +47,7 @@ type Db_Log struct {
 	Value          int
 	Field_Id       int
 	Field_Type     string
+	Field_Name     string
 	Decimal_Places int
 	Option_Value   int
 	Option_Name    string
@@ -390,6 +391,7 @@ func Get_Entries_By_Tracker_Id(db *sql.DB, tracker_id int) ([]Db_Entry, error) {
 
 			IFNULL(field.field_id, 0) AS field_id,
 			IFNULL(field.field_type, "") AS field_type,
+			IFNULL(field.field_name, "") AS field_name,
 
 			IFNULL(number.decimal_places, 0) AS decimal_places,
 
@@ -425,7 +427,7 @@ func Get_Entries_By_Tracker_Id(db *sql.DB, tracker_id int) ([]Db_Entry, error) {
 		var log_scan Db_Log
 		err := rows.Scan(
 			&entry_scan.Id, &entry_scan.Timestamp, &entry_scan.Notes,
-			&log_scan.Id, &log_scan.Value, &log_scan.Field_Id, &log_scan.Field_Type,
+			&log_scan.Id, &log_scan.Value, &log_scan.Field_Id, &log_scan.Field_Type, &log_scan.Field_Name,
 			&log_scan.Decimal_Places, &log_scan.Option_Value, &log_scan.Option_Name, &log_scan.Present,
 		)
 		if err != nil {
@@ -599,14 +601,38 @@ func Add_Entry(db *sql.DB, tracker_name string, entry_notes string, logs []struc
 
 // Update Data
 
-func Update_Tracker_Name(db *sql.DB, tracker_name string, new_tracker_name string) {
-	// TODO
+func Update_Tracker_Name_By_Id(db *sql.DB, tracker_id int, new_tracker_name string) error {
+	sql_string := fmt.Sprintf(
+		`UPDATE tracker SET tracker_name = "%s" WHERE tracker_id = %d;`,
+		new_tracker_name, tracker_id)
+
+	fmt.Println("SQL:", sql_string)
+	_, err := db.Exec(sql_string)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func Update_Tracker_Notes(db *sql.DB, tracker_name string, tracker_notes string) error {
+func Update_Tracker_Notes_By_Name(db *sql.DB, tracker_name string, tracker_notes string) error {
 	sql_string := fmt.Sprintf(
 		`UPDATE tracker SET tracker_notes = "%s" WHERE tracker_name = "%s";`,
 		tracker_notes, tracker_name)
+
+	fmt.Println("SQL:", sql_string)
+	_, err := db.Exec(sql_string)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func Update_Tracker_Notes_By_Id(db *sql.DB, tracker_id int, tracker_notes string) error {
+	sql_string := fmt.Sprintf(
+		`UPDATE tracker SET tracker_notes = "%s" WHERE tracker_id = %d;`,
+		tracker_notes, tracker_id)
 
 	fmt.Println("SQL:", sql_string)
 	_, err := db.Exec(sql_string)
