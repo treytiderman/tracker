@@ -25,53 +25,66 @@
             dialog1.addEventListener("click", (event) => {
                 if (event.target === dialog1) dialog1.close()
             })
+            // dialog1.showModal()
         </script>
-        <form method="dialog" class="tt-dialog grid gap-4 pad-4">
 
-            <div class="grid">
-                <label class="tt-label" for="num-1">Transaction</label>
-                <input type="number" class="tt-input" id="num-1" name="num-1" placeholder="2000" value=2000 required>
-            </div>
+        <div class="tt-dialog">
 
-            <div class="grid">
-                <label class="tt-label" for="select-1">Card</label>
-                <select class="tt-input" id="select-1" name="select-1" required>
-                    <option value="Bitcoin">Bitcoin</option>
-                    <option value="Discover">Discover</option>
-                    <option value="Visa">Visa</option>
-                </select>
-            </div>
-
-            <div class="flex-wrap flex-even break-md items-end gap-4">
-                <div class="grid">
-                    <label class="tt-label" for="date-1">Date</label>
-                    <input type="date" class="tt-input" id="date-1" name="date-1" value="2024-07-07">
-                </div>
-
-                <div class="grid gap-1">
-                    <label class="flex gap-2 w-full" for="time-1">
-                        <div>Time</div>
-                        <div id="timezone-1" class="dim" style="margin-left: auto;">GMT-0500 (Central Daylight Time)
-                        </div>
-                    </label>
-                    <input type="time" class="tt-input" id="time-1" name="time-1" value="20:57">
-                </div>
-            </div>
-
-            <div class="grid">
-                <label for="tracker_note" class="tt-label">Note</label>
-                <textarea id="tracker_note" name="tracker_note" placeholder="Tracker Note..." rows="3"
-                    class="tt-input">Pay Day</textarea>
-            </div>
-
-            <div class="flex flex-even gap-4">
-                <button type="button" id="add_field" class="tt-button"
-                    onclick="document.getElementById('dialog1').close()">
-                    Close
+            <header class="flex items-center pad-4">
+                <h2 class="grow">Modify Entry</h2>
+                <button class="tt-icon-button" title="Close Popup" onclick="document.getElementById('dialog1').close()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 6 6 18"/>
+                        <path d="m6 6 12 12"/>
+                    </svg>
                 </button>
-                <input type="submit" value="Update" class="tt-button tt-color-yellow" />
-            </div>
-        </form>
+            </header>
+
+            <form method="dialog" class="grid gap-4 pad-4">
+
+                <div class="grid">
+                    <label class="tt-label" for="num-1">Transaction</label>
+                    <input type="number" class="tt-input" id="num-1" name="num-1" placeholder="2000" value=2000 required>
+                </div>
+
+                <div class="grid">
+                    <label class="tt-label" for="select-1">Card</label>
+                    <select class="tt-input" id="select-1" name="select-1" required>
+                        <option value="Bitcoin">Bitcoin</option>
+                        <option value="Discover">Discover</option>
+                        <option value="Visa">Visa</option>
+                    </select>
+                </div>
+    
+                <div class="flex-wrap flex-even break-md items-end gap-4">
+                    <div class="grid">
+                        <label class="tt-label" for="date-1">Date</label>
+                        <input type="date" class="tt-input" id="date-1" name="date-1" value="2024-07-07">
+                    </div>
+    
+                    <div class="grid gap-1">
+                        <label class="flex gap-2 w-full" for="time-1">
+                            <div>Time</div>
+                            <div id="timezone-1" class="dim" style="margin-left: auto;">GMT-0500 (Central Daylight Time)
+                            </div>
+                        </label>
+                        <input type="time" class="tt-input" id="time-1" name="time-1" value="20:57">
+                    </div>
+                </div>
+    
+                <div class="grid">
+                    <label for="tracker_note" class="tt-label">Note</label>
+                    <textarea id="tracker_note" name="tracker_note" placeholder="Tracker Note..." rows="3"
+                        class="tt-input">Pay Day</textarea>
+                </div>
+    
+                <div class="flex flex-even gap-4">
+                    <button type="button" id="add_field" class="tt-button tt-color-red">Delete</button>
+                    <button type="submit" class="tt-button tt-color-yellow">Update</button>
+                </div>
+            </form>
+
+        </div>
     </dialog>
 
     <header class="tt-header flex items-center gap-4 pad-2">

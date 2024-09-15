@@ -347,8 +347,14 @@ input[type=checkbox].tt-input:checked::before {
 
 .tt-dialog {
     border: var(--border);
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius-lg);
     background-color: var(--color-bg);
+    overflow: hidden;
+}
+
+.tt-dialog > header {
+    background-color: var(--color-bg-header);
+    border-bottom: var(--border);
 }
 
 /* Color */
