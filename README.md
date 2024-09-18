@@ -31,3 +31,9 @@ Verbose
 ```
 go test -v
 ```
+
+## Docker
+
+```
+sudo docker build -t tracker .
+```
