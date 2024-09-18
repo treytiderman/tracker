@@ -13,9 +13,9 @@ var db *sql.DB
 
 func Test_Create_Tables(t *testing.T) {
 	var err error
-	db, err = sql.Open("sqlite", "./test.db")
+	db, err = sql.Open("sqlite", "./data/test.db")
 	if err != nil {
-		t.Fatalf("Failed to read './test.db'")
+		t.Fatalf("Failed to read './data/test.db'")
 	}
 
 	err = Create_Tables(db)

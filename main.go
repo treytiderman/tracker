@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	db_path := "./data.db"
+	db_path := "./data/data.db"
 	db, err := sql.Open("sqlite", db_path)
 	if err != nil {
 		log.Fatal(err)
