@@ -35,8 +35,8 @@ CREATE TABLE IF NOT EXISTS field (
     -- but multiple trackers can have the same field_name
     UNIQUE(tracker_id, field_name),
 
-    PRIMARY KEY(field_id),
-    FOREIGN KEY(tracker_id) REFERENCES tracker (tracker_id) ON DELETE CASCADE
+    PRIMARY KEY (field_id),
+    FOREIGN KEY (tracker_id) REFERENCES tracker (tracker_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS number (
@@ -50,8 +50,8 @@ CREATE TABLE IF NOT EXISTS number (
     -- -3 = round to thousands
     decimal_places INTEGER NOT NULL DEFAULT 0,
 
-    PRIMARY KEY(number_id),
-    FOREIGN KEY(field_id) REFERENCES field (field_id) ON DELETE CASCADE
+    PRIMARY KEY (number_id),
+    FOREIGN KEY (field_id) REFERENCES field (field_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS option (
@@ -67,8 +67,8 @@ CREATE TABLE IF NOT EXISTS option (
     -- an option can not have duplicate option_name's
     UNIQUE(field_id, option_name),
 
-    PRIMARY KEY(option_id),
-    FOREIGN KEY(field_id) REFERENCES field (field_id) ON DELETE CASCADE
+    PRIMARY KEY (option_id),
+    FOREIGN KEY (field_id) REFERENCES field (field_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS entry (
@@ -83,8 +83,8 @@ CREATE TABLE IF NOT EXISTS entry (
     -- markdown formatted notes
     entry_notes TEXT NOT NULL DEFAULT "",
 
-    PRIMARY KEY(entry_id),
-    FOREIGN KEY(tracker_id) REFERENCES tracker (tracker_id) ON DELETE CASCADE
+    PRIMARY KEY (entry_id),
+    FOREIGN KEY (tracker_id) REFERENCES tracker (tracker_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS log (
@@ -99,7 +99,7 @@ CREATE TABLE IF NOT EXISTS log (
     -- value
     log_value INTEGER NOT NULL,
 
-    PRIMARY KEY(log_id),
-    FOREIGN KEY(entry_id) REFERENCES entry (entry_id) ON DELETE CASCADE,
-    FOREIGN KEY(field_id) REFERENCES field (field_id) ON DELETE CASCADE
+    PRIMARY KEY (log_id),
+    FOREIGN KEY (entry_id) REFERENCES entry (entry_id) ON DELETE CASCADE,
+    FOREIGN KEY (field_id) REFERENCES field (field_id) ON DELETE CASCADE
 );

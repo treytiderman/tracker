@@ -56,9 +56,7 @@ type Db_Log struct {
 
 // SQL Tables
 
-func Create_Tables(db *sql.DB) error {
-	// fmt.Println("Create SQL tables if they do not exist")
-
+func Create_Db_Tables(db *sql.DB) {
 	_, err := db.Exec(`
 		-- foreign_keys constraints are not on by default
 		PRAGMA foreign_keys = ON;
@@ -166,13 +164,12 @@ func Create_Tables(db *sql.DB) error {
 			FOREIGN KEY(field_id) REFERENCES field (field_id) ON DELETE CASCADE
 		);
 	`)
-
-	return err
+	if err != nil {
+		log.Fatalln(err)
+	}
 }
 
-func Reset_Tables(db *sql.DB) error {
-	// fmt.Println("Drop SQL tables if they exist")
-
+func Reset_Db_Tables(db *sql.DB) {
 	_, err := db.Exec(`
 		DROP TABLE IF EXISTS log;
 		DROP TABLE IF EXISTS entry;
@@ -181,14 +178,150 @@ func Reset_Tables(db *sql.DB) error {
 		DROP TABLE IF EXISTS field;
 		DROP TABLE IF EXISTS tracker;
 	`)
-
 	if err != nil {
-		return err
+		log.Fatalln(err)
 	}
 
-	err = Create_Tables(db)
+	Create_Db_Tables(db)
+}
 
-	return err
+// Insert Data
+
+func Create_Tracker(db *sql.DB, tracker_name string, tracker_notes string) (int, error) {
+	sql_string := fmt.Sprintf(
+		`INSERT INTO tracker (tracker_name, tracker_notes) VALUES ("%s", "%s");`,
+		tracker_name, tracker_notes)
+
+	fmt.Println("SQL:", sql_string)
+	result, err1 := db.Exec(sql_string)
+	if err1 != nil {
+		return 0, err1
+	}
+
+	id, err2 := result.LastInsertId()
+	if err2 != nil {
+		return 0, err2
+	}
+
+	return int(id), nil
+}
+
+func Add_Number_Field(db *sql.DB, tracker_name string, field_name string, field_notes string, decimal_places int) (int, error) {
+	tracker_id, err1 := Get_Tracker_Id_By_Name(db, tracker_name)
+	if err1 != nil {
+		return 0, err1
+	}
+
+	// Insert Field Row
+	sql_string := fmt.Sprintf(
+		`INSERT INTO field (tracker_id, field_type, field_name, field_notes) VALUES (%d,"number","%s","%s");`,
+		tracker_id, field_name, field_notes)
+
+	fmt.Println("SQL:", sql_string)
+	result, err2 := db.Exec(sql_string)
+	if err2 != nil {
+		return 0, err2
+	}
+
+	field_id, err3 := result.LastInsertId()
+	if err3 != nil {
+		return 0, err3
+	}
+
+	// Insert Number Row
+	sql_string2 := fmt.Sprintf(
+		`INSERT INTO number (field_id, decimal_places) VALUES (%d,%d);`,
+		field_id, decimal_places)
+
+	fmt.Println("SQL:", sql_string2)
+	_, err4 := db.Exec(sql_string2)
+	if err4 != nil {
+		return 0, err4
+	}
+
+	return int(field_id), nil
+}
+
+func Add_Option_Field(db *sql.DB, tracker_name string, field_name string, field_notes string, options []struct {
+	Value int
+	Name  string
+}) (int, error) {
+	tracker_id, err1 := Get_Tracker_Id_By_Name(db, tracker_name)
+	if err1 != nil {
+		return 0, err1
+	}
+
+	// Insert Field Row
+	sql_string := fmt.Sprintf(
+		`INSERT INTO field (tracker_id, field_type, field_name, field_notes) VALUES (%d,"option","%s","%s");`,
+		tracker_id, field_name, field_notes)
+
+	fmt.Println("SQL:", sql_string)
+	result, err2 := db.Exec(sql_string)
+	if err2 != nil {
+		return 0, err2
+	}
+
+	field_id, err3 := result.LastInsertId()
+	if err3 != nil {
+		return 0, err3
+	}
+
+	// Insert Option Rows
+	for _, option := range options {
+		sql_string2 := fmt.Sprintf(
+			`INSERT INTO option (field_id, option_value, option_name) VALUES (%d,%d,"%s");`,
+			field_id, option.Value, option.Name)
+
+		fmt.Println("SQL:", sql_string2)
+		_, err4 := db.Exec(sql_string2)
+		if err4 != nil {
+			return 0, err4
+		}
+	}
+
+	return int(field_id), nil
+}
+
+func Add_Entry(db *sql.DB, tracker_name string, entry_notes string, logs []struct {
+	Field_Id int
+	Value    int
+}) (int, error) {
+	tracker_id, err1 := Get_Tracker_Id_By_Name(db, tracker_name)
+	if err1 != nil {
+		return 0, err1
+	}
+
+	// Insert Entry Row
+	sql_string := fmt.Sprintf(
+		`INSERT INTO entry (tracker_id, entry_notes) VALUES (%d,"%s");`,
+		tracker_id, entry_notes)
+
+	fmt.Println("SQL:", sql_string)
+	result, err2 := db.Exec(sql_string)
+	if err2 != nil {
+		return 0, err2
+	}
+
+	entry_id, err3 := result.LastInsertId()
+	if err3 != nil {
+		return 0, err3
+	}
+
+	// Insert Field Data Rows
+	for _, log := range logs {
+		sql_string2 := fmt.Sprintf(
+			`INSERT INTO log (entry_id, field_id, log_value) VALUES (%d,%d,%d);`,
+			entry_id, log.Field_Id, log.Value)
+
+		fmt.Println("SQL:", sql_string2)
+		_, err4 := db.Exec(sql_string2)
+		if err4 != nil {
+			return 0, err4
+		}
+	}
+
+	return int(entry_id), nil
 }
 
 // Get Data
@@ -198,7 +331,6 @@ func Get_Tracker_Id_By_Name(db *sql.DB, tracker_name string) (int, error) {
 		`SELECT tracker_id FROM tracker WHERE tracker_name = "%s";`,
 		tracker_name)
 
-	// fmt.Println("SQL:", sql_string)
 	row := db.QueryRow(sql_string)
 
 	var id int
@@ -284,20 +416,6 @@ func Get_Tracker_By_Id(db *sql.DB, tracker_id int) (Db_Tracker, error) {
 
 	if err := rows.Err(); err != nil {
 		log.Fatal(err)
-	}
-
-	return tracker, nil
-}
-
-func Get_Tracker_By_Name(db *sql.DB, tracker_name string) (Db_Tracker, error) {
-	tracker_id, err1 := Get_Tracker_Id_By_Name(db, tracker_name)
-	if err1 != nil {
-		return Db_Tracker{}, err1
-	}
-
-	tracker, err2 := Get_Tracker_By_Id(db, tracker_id)
-	if err2 != nil {
-		return Db_Tracker{}, err2
 	}
 
 	return tracker, nil
@@ -460,165 +578,12 @@ func Get_Entries_By_Tracker_Id(db *sql.DB, tracker_id int) ([]Db_Entry, error) {
 	return entries, nil
 }
 
-// Insert Data
-
-func Create_Tracker(db *sql.DB, tracker_name string, tracker_notes string) (int, error) {
-	sql_string := fmt.Sprintf(
-		`INSERT INTO tracker (tracker_name, tracker_notes) VALUES ("%s", "%s");`,
-		tracker_name, tracker_notes)
-
-	fmt.Println("SQL:", sql_string)
-	result, err1 := db.Exec(sql_string)
-	if err1 != nil {
-		return 0, err1
-	}
-
-	id, err2 := result.LastInsertId()
-	if err2 != nil {
-		return 0, err2
-	}
-
-	return int(id), nil
-}
-
-func Add_Number_Field(db *sql.DB, tracker_name string, field_name string, field_notes string, decimal_places int) (int, error) {
-	tracker_id, err1 := Get_Tracker_Id_By_Name(db, tracker_name)
-	if err1 != nil {
-		return 0, err1
-	}
-
-	// Insert Field Row
-	sql_string := fmt.Sprintf(
-		`INSERT INTO field (tracker_id, field_type, field_name, field_notes) VALUES (%d,"number","%s","%s");`,
-		tracker_id, field_name, field_notes)
-
-	fmt.Println("SQL:", sql_string)
-	result, err2 := db.Exec(sql_string)
-	if err2 != nil {
-		return 0, err2
-	}
-
-	field_id, err3 := result.LastInsertId()
-	if err3 != nil {
-		return 0, err3
-	}
-
-	// Insert Number Row
-	sql_string2 := fmt.Sprintf(
-		`INSERT INTO number (field_id, decimal_places) VALUES (%d,%d);`,
-		field_id, decimal_places)
-
-	fmt.Println("SQL:", sql_string2)
-	_, err4 := db.Exec(sql_string2)
-	if err4 != nil {
-		return 0, err4
-	}
-
-	return int(field_id), nil
-}
-
-func Add_Option_Field(db *sql.DB, tracker_name string, field_name string, field_notes string, options []struct {
-	Value int
-	Name  string
-}) (int, error) {
-	tracker_id, err1 := Get_Tracker_Id_By_Name(db, tracker_name)
-	if err1 != nil {
-		return 0, err1
-	}
-
-	// Insert Field Row
-	sql_string := fmt.Sprintf(
-		`INSERT INTO field (tracker_id, field_type, field_name, field_notes) VALUES (%d,"option","%s","%s");`,
-		tracker_id, field_name, field_notes)
-
-	fmt.Println("SQL:", sql_string)
-	result, err2 := db.Exec(sql_string)
-	if err2 != nil {
-		return 0, err2
-	}
-
-	field_id, err3 := result.LastInsertId()
-	if err3 != nil {
-		return 0, err3
-	}
-
-	// Insert Option Rows
-	for _, option := range options {
-		sql_string2 := fmt.Sprintf(
-			`INSERT INTO option (field_id, option_value, option_name) VALUES (%d,%d,"%s");`,
-			field_id, option.Value, option.Name)
-
-		fmt.Println("SQL:", sql_string2)
-		_, err4 := db.Exec(sql_string2)
-		if err4 != nil {
-			return 0, err4
-		}
-	}
-
-	return int(field_id), nil
-}
-
-func Add_Entry(db *sql.DB, tracker_name string, entry_notes string, logs []struct {
-	Field_Id int
-	Value    int
-}) (int, error) {
-	tracker_id, err1 := Get_Tracker_Id_By_Name(db, tracker_name)
-	if err1 != nil {
-		return 0, err1
-	}
-
-	// Insert Entry Row
-	sql_string := fmt.Sprintf(
-		`INSERT INTO entry (tracker_id, entry_notes) VALUES (%d,"%s");`,
-		tracker_id, entry_notes)
-
-	fmt.Println("SQL:", sql_string)
-	result, err2 := db.Exec(sql_string)
-	if err2 != nil {
-		return 0, err2
-	}
-
-	entry_id, err3 := result.LastInsertId()
-	if err3 != nil {
-		return 0, err3
-	}
-
-	// Insert Option Rows
-	for _, log := range logs {
-		sql_string2 := fmt.Sprintf(
-			`INSERT INTO log (entry_id, field_id, log_value) VALUES (%d,%d,%d);`,
-			entry_id, log.Field_Id, log.Value)
-
-		fmt.Println("SQL:", sql_string2)
-		_, err4 := db.Exec(sql_string2)
-		if err4 != nil {
-			return 0, err4
-		}
-	}
-
-	return int(entry_id), nil
-}
-
 // Update Data
 
 func Update_Tracker_Name_By_Id(db *sql.DB, tracker_id int, new_tracker_name string) error {
 	sql_string := fmt.Sprintf(
 		`UPDATE tracker SET tracker_name = "%s" WHERE tracker_id = %d;`,
 		new_tracker_name, tracker_id)
-
-	fmt.Println("SQL:", sql_string)
-	_, err := db.Exec(sql_string)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func Update_Tracker_Notes_By_Name(db *sql.DB, tracker_name string, tracker_notes string) error {
-	sql_string := fmt.Sprintf(
-		`UPDATE tracker SET tracker_notes = "%s" WHERE tracker_name = "%s";`,
-		tracker_notes, tracker_name)
 
 	fmt.Println("SQL:", sql_string)
 	_, err := db.Exec(sql_string)
@@ -675,10 +640,11 @@ func Delete_Tracker_By_Id(db *sql.DB, tracker_id int) error {
 	return nil
 }
 
-func Delete_Tracker_By_Name(db *sql.DB, tracker_name string) error {
+func Delete_Field_By_Id(db *sql.DB, field_id int) error {
 	sql_string := fmt.Sprintf(
-		`DELETE FROM tracker WHERE tracker_name = "%s";`,
-		tracker_name)
+		`DELETE FROM field WHERE field_id = "%d";
+		DELETE FROM log WHERE field_id = "%d";`,
+		field_id, field_id)
 
 	fmt.Println("SQL:", sql_string)
 	_, err := db.Exec(sql_string)
@@ -689,10 +655,17 @@ func Delete_Tracker_By_Name(db *sql.DB, tracker_name string) error {
 	return nil
 }
 
-func Delete_Field_By_Id() {
-	// TODO
-}
+func Delete_Entry_By_Id(db *sql.DB, entry_id int) error {
+	sql_string := fmt.Sprintf(
+		`DELETE FROM entry WHERE entry_id = "%d";
+		DELETE FROM log WHERE entry_id = "%d";`,
+		entry_id, entry_id)
 
-func Delete_Entry_By_Id() {
-	// TODO
+	fmt.Println("SQL:", sql_string)
+	_, err := db.Exec(sql_string)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

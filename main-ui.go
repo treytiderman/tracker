@@ -49,12 +49,12 @@ func Start_Web_Server(db *sql.DB) {
 	routes(db)
 
 	// Start Web Server
-	port := os.Getenv("PORT")
+	port := os.Getenv("HTTP_PORT")
 	if port == "" {
 		port = "8000"
 	}
 	port = fmt.Sprintf(":%s", port)
-	fmt.Printf("WEB SERVER: http://%s%s\n", "localhost", port)
+	fmt.Printf("HTTP SERVER: http://%s%s\n", "localhost", port)
 	log.Fatal(http.ListenAndServe(port, nil))
 }
 
@@ -82,6 +82,7 @@ func htmx_Routes(db *sql.DB) {
 
 		id, err := Create_Tracker(db, tracker_name, tracker_notes)
 		if err != nil {
+			w.Write([]byte(err.Error()))
 			return
 		}
 
@@ -194,7 +195,7 @@ func htmx_Routes(db *sql.DB) {
 		url := fmt.Sprintf("/tracker/info?id=%d", id)
 		http.Redirect(w, r, url, http.StatusSeeOther)
 	})
-	
+
 	http.HandleFunc("/htmx/tracker/log", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("POST: %s\n", r.URL)
 
@@ -204,7 +205,7 @@ func htmx_Routes(db *sql.DB) {
 			return
 		}
 		fmt.Printf("- FORM: %s\n", r.Form.Encode())
-		
+
 		// Get Id from URL
 		id, err := strconv.Atoi(r.URL.Query().Get("id"))
 		if err != nil {
@@ -331,7 +332,7 @@ func page_Tracker_Info(db *sql.DB) {
 			Trackers []Db_Tracker
 			Tracker  Db_Tracker
 		}{
-			Tracker: tracker,
+			Tracker:  tracker,
 			Trackers: trackers,
 		}
 
@@ -404,7 +405,7 @@ func page_Tracker_Log(db *sql.DB) {
 			Trackers []Db_Tracker
 			Tracker  Db_Tracker
 		}{
-			Tracker: tracker,
+			Tracker:  tracker,
 			Trackers: trackers,
 		}
 
@@ -455,126 +456,10 @@ func page_Tracker_Records(db *sql.DB) {
 			Trackers []Db_Tracker
 		}{
 			Trackers: trackers,
-			Tracker: tracker,
-			Entries: entries,
+			Tracker:  tracker,
+			Entries:  entries,
 		}
 
 		t.ExecuteTemplate(w, "tracker-records.html", data)
-	})
-}
-
-
-
-
-// ------------------------------------------------------------------------------------------------------
-
-func page_Tracker_Chart(db *sql.DB) {
-	t, err := template.New("").ParseFS(Templates_Embed, "templates/tracker-chart.html")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	http.HandleFunc("/tracker/chart", func(w http.ResponseWriter, r *http.Request) {
-		id, err := strconv.Atoi(r.URL.Query().Get("id"))
-		if err != nil {
-			w.Write([]byte(err.Error()))
-			return
-		}
-		fmt.Printf("GET: /tracker/chart?id=%d\n", id)
-
-		data := struct {
-			Trackers []Db_Tracker
-			Tracker  Db_Tracker
-			Entries  []Db_Entry
-		}{}
-
-		tracker, err := Get_Tracker_By_Id(db, id)
-		if err != nil {
-			log.Fatal(err)
-			w.Write([]byte(err.Error()))
-			return
-		}
-		data.Tracker = tracker
-
-		trackers, err := Get_Trackers(db)
-		if err != nil {
-			log.Fatal(err)
-		}
-		data.Trackers = trackers
-
-		entries, err := Get_Entries_By_Tracker_Id(db, id)
-		if err != nil {
-			log.Fatal(err)
-			w.Write([]byte(err.Error()))
-			return
-		}
-		data.Entries = entries
-
-		t.ExecuteTemplate(w, "tracker-chart.html", data)
-	})
-}
-
-func page_Trackers(db *sql.DB) {
-	t, err1 := template.New("").ParseFS(Templates_Embed, "templates/trackers.html")
-	if err1 != nil {
-		log.Fatal(err1)
-	}
-
-	http.HandleFunc("/trackers", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("GET: /trackers")
-
-		// Test Data
-		// trackers := []Db_Tracker{
-		// 	{
-		// 		1, "Walk Dog 🐶", "Each time I take the dog out", nil,
-		// 	},
-		// 	{
-		// 		2, "Brush Teeth 🦷", "Each time I brush my teeth", nil,
-		// 	},
-		// 	{
-		// 		3, "Money 💰", "Money used by different cards", []Db_Field{
-		// 			{1, "number", "Transactions", "Money Spent", Db_Number{1, 2}, nil},
-		// 			{2, "option", "Card", "Which Credit or Debit Card was used?", Db_Number{0, 0}, []Db_Option{
-		// 				{1, -1, "Discover"},
-		// 				{2, 0, "Visa"},
-		// 				{3, 2, "American Express"},
-		// 			}},
-		// 		},
-		// 	},
-		// 	{
-		// 		4, "Lift 🏋️", "My Lifting Habits", []Db_Field{
-		// 			{2, "option", "Exercise", "", Db_Number{0, 0}, []Db_Option{
-		// 				{1, 1, "Bench Press"},
-		// 				{2, 3, "Squat"},
-		// 				{3, 5, "Deadlift"},
-		// 			}},
-		// 			{3, "number", "Weight", "", Db_Number{2, 0}, nil},
-		// 			{4, "number", "Reps", "", Db_Number{3, 0}, nil},
-		// 		},
-		// 	},
-		// }
-
-		trackers, err2 := Get_Trackers(db)
-		if err2 != nil {
-			log.Fatal(err2)
-		}
-
-		t.ExecuteTemplate(w, "trackers.html", trackers)
-	})
-
-	http.HandleFunc("/htmx/tracker/delete", func(w http.ResponseWriter, r *http.Request) {
-		id, err1 := strconv.Atoi(r.URL.Query().Get("id"))
-		if err1 != nil {
-			w.Write([]byte(err1.Error()))
-			return
-		}
-
-		err2 := Delete_Tracker_By_Id(db, id)
-		if err2 != nil {
-			w.Write([]byte(err2.Error()))
-			return
-		}
-
-		w.Write([]byte("<div class='text-red-300'>Deleted</div>"))
 	})
 }

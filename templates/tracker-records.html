@@ -209,12 +209,16 @@
 
                             {{ range .Entries }}
 
-                            <tr>
-                                <td data-cell="Timestamp" title="{{ .Timestamp }}"> <span class="mono text-sm">{{ .Timestamp }}</span> </td>
+                            <tr id="entry_{{.Id}}">
+                                <td data-cell="Timestamp" title="{{ .Timestamp }}" class="mono text-sm">
+                                    {{ .Timestamp }}
+                                </td>
 
                                 {{ range .Logs }}
                                 {{ if eq .Field_Type "number" }}
-                                <td data-cell="{{ .Field_Name }}" class="text-right" title="{{ .Value }}"> {{ .Present }} </td>
+                                <td data-cell="{{ .Field_Name }}" class="text-right" title="{{ .Value }}">
+                                    {{ .Present }}
+                                </td>
                                 {{ else }}
                                 <td data-cell="{{ .Field_Name }}" class="" title="{{ .Value }}"> {{ .Present }} </td>
                                 {{ end }}
@@ -234,6 +238,11 @@
                                     </button>
                                 </td> -->
                             </tr>
+                            <script>
+                                var date = new Date(document.getElementById("entry_{{.Id}}").children[0].innerText)
+                                var string = date.toLocaleString().replace(",", "")
+                                document.getElementById("entry_{{.Id}}").children[0].innerText = string
+                            </script>
 
                             {{ else }}
 

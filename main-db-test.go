@@ -11,25 +11,21 @@ import (
 
 var db *sql.DB
 
-func Test_Create_Tables(t *testing.T) {
+func Test_Create_Db_Tables(t *testing.T) {
 	var err error
 	db, err = sql.Open("sqlite", "./data/test.db")
 	if err != nil {
 		t.Fatalf("Failed to read './data/test.db'")
 	}
 
-	err = Create_Tables(db)
-	if err != nil {
-		t.Fatalf("Failed to Create_Tables")
-	}
+	Create_Db_Tables(db)
 }
 
-func Test_Reset_Tables(t *testing.T) {
-	err := Reset_Tables(db)
-	if err != nil {
-		t.Fatalf("Failed to Reset_Tables")
-	}
+func Test_Reset_Db_Tables(t *testing.T) {
+	Reset_Db_Tables(db)
 }
+
+// Insert Data
 
 func Test_Create_Tracker(t *testing.T) {
 	var tests = []struct {
@@ -233,27 +229,6 @@ func Test_Get_Tracker_Id_By_Name(t *testing.T) {
 	}
 }
 
-func Test_Get_Tracker_By_Name(t *testing.T) {
-	var tests = []struct {
-		tracker_name string
-	}{
-		{"Journal"},
-		{"Weight"},
-		{"Workout"},
-	}
-	for _, tt := range tests {
-		t.Run(tt.tracker_name, func(t *testing.T) {
-			tracker, err := Get_Tracker_By_Name(db, tt.tracker_name)
-			if err != nil {
-				t.Fatalf("Failed to Get_Tracker_By_Name")
-			}
-			s, _ := json.Marshal(tracker)
-			fmt.Sprintln("JSON:", string(s))
-			// fmt.Println("JSON:", string(s))
-		})
-	}
-}
-
 func Test_Get_Tracker_By_Id(t *testing.T) {
 	var tests = []struct {
 		tracker_id int
@@ -280,7 +255,6 @@ func Test_Get_Trackers(t *testing.T) {
 	}
 	s, _ := json.Marshal(trackers)
 	fmt.Sprintln("JSON:", string(s))
-	// fmt.Println("JSON:", string(s))
 }
 
 func Test_Get_Entries_By_Tracker_Id(t *testing.T) {
@@ -314,26 +288,9 @@ func Test_Get_Entries_By_Tracker_Id(t *testing.T) {
 
 // Update Data
 
-func Test_Update_Tracker_Notes_By_Name(t *testing.T) {
-	var tests = []struct {
-		tracker_name  string
-		tracker_notes string
-	}{
-		{"Bathroom", "Restroom breaks"},
-	}
-	for _, tt := range tests {
-		t.Run(tt.tracker_name, func(t *testing.T) {
-			err := Update_Tracker_Notes_By_Name(db, tt.tracker_name, tt.tracker_notes)
-			if err != nil {
-				t.Fatalf("Failed to update tracker notes")
-			}
-		})
-	}
-}
-
 func Test_Update_Tracker_Notes_By_Id(t *testing.T) {
 	var tests = []struct {
-		tracker_id  int
+		tracker_id    int
 		tracker_notes string
 	}{
 		{7, "Bathroom breaks"},
@@ -350,15 +307,15 @@ func Test_Update_Tracker_Notes_By_Id(t *testing.T) {
 
 // Delete Data
 
-func Test_Delete_Tracker_By_Name(t *testing.T) {
+func Test_Delete_Tracker_By_Id(t *testing.T) {
 	var tests = []struct {
-		tracker_name string
+		tracker_id int
 	}{
-		// {"DELETE_ME"},
+		{7},
 	}
 	for _, tt := range tests {
-		t.Run(tt.tracker_name, func(t *testing.T) {
-			err := Delete_Tracker_By_Name(db, tt.tracker_name)
+		t.Run(fmt.Sprintf("tracker_id=%d", tt.tracker_id), func(t *testing.T) {
+			err := Delete_Tracker_By_Id(db, tt.tracker_id)
 			if err != nil {
 				t.Fatalf("Failed to delete tracker")
 			}
