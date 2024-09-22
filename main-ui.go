@@ -71,17 +71,16 @@ func htmx_Routes(db *sql.DB) {
 	http.HandleFunc("/htmx/tracker/create", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("POST: %s\n", r.URL)
 
-		// Parse Form Data
 		err := r.ParseForm()
 		if err != nil {
 			return
 		}
-		fmt.Printf("- FORM: %s\n", r.Form.Encode())
+		fmt.Printf("FORM: %s\n", r.Form.Encode())
 
 		tracker_name := r.Form.Get("tracker_name")
 		tracker_notes := r.Form.Get("tracker_notes")
 
-		id, err := Create_Tracker(db, tracker_name, tracker_notes)
+		tracker_id, err := Db_Tracker_Create(db, tracker_name, tracker_notes)
 		if err != nil {
 			w.Write([]byte(err.Error()))
 			return
@@ -100,7 +99,7 @@ func htmx_Routes(db *sql.DB) {
 						decimal_places, _ = strconv.Atoi(r.Form.Get(fmt.Sprintf("field_%d_decimal_places", field_id)))
 					}
 
-					_, err := Add_Number_Field(db, tracker_name, field_name, field_notes, decimal_places)
+					_, err := Db_Tracker_Field_Number_Create(db, tracker_id, field_name, field_notes, decimal_places)
 					if err != nil {
 						return
 					}
@@ -124,7 +123,7 @@ func htmx_Routes(db *sql.DB) {
 						}
 					}
 
-					_, err := Add_Option_Field(db, tracker_name, field_name, field_notes, options)
+					_, err := Db_Tracker_Field_Option_Create(db, tracker_id, field_name, field_notes, options)
 					if err != nil {
 						return
 					}
@@ -132,7 +131,7 @@ func htmx_Routes(db *sql.DB) {
 			}
 		}
 
-		url := fmt.Sprintf("/tracker-info?id=%d", id)
+		url := fmt.Sprintf("/tracker-info?id=%d", tracker_id)
 		http.Redirect(w, r, url, http.StatusSeeOther)
 	})
 
@@ -144,7 +143,7 @@ func htmx_Routes(db *sql.DB) {
 		if err != nil {
 			return
 		}
-		fmt.Printf("- FORM: %s\n", r.Form.Encode())
+		fmt.Printf("FORM: %s\n", r.Form.Encode())
 
 		// Get Id from URL
 		id, err := strconv.Atoi(r.URL.Query().Get("id"))
@@ -156,7 +155,7 @@ func htmx_Routes(db *sql.DB) {
 		tracker_name := r.Form.Get("tracker_name")
 
 		// Update Tracker Name
-		err = Update_Tracker_Name_By_Id(db, id, tracker_name)
+		err = Db_Tracker_Name_Update(db, id, tracker_name)
 		if err != nil {
 			return
 		}
@@ -174,7 +173,7 @@ func htmx_Routes(db *sql.DB) {
 		if err != nil {
 			return
 		}
-		fmt.Printf("- FORM: %s\n", r.Form.Encode())
+		fmt.Printf("FORM: %s\n", r.Form.Encode())
 
 		// Get Id from URL
 		id, err := strconv.Atoi(r.URL.Query().Get("id"))
@@ -187,7 +186,7 @@ func htmx_Routes(db *sql.DB) {
 		fmt.Printf("POST: /htmx/tracker/notes?id=%d&tracker_notes=%s\n", id, tracker_notes)
 
 		// Update Tracker Notes
-		err = Update_Tracker_Notes_By_Id(db, id, tracker_notes)
+		err = Db_Tracker_Notes_Update(db, id, tracker_notes)
 		if err != nil {
 			return
 		}
@@ -205,7 +204,7 @@ func htmx_Routes(db *sql.DB) {
 		if err != nil {
 			return
 		}
-		fmt.Printf("- FORM: %s\n", r.Form.Encode())
+		fmt.Printf("FORM: %s\n", r.Form.Encode())
 
 		// Get Id from URL
 		id, err := strconv.Atoi(r.URL.Query().Get("id"))
@@ -221,7 +220,7 @@ func htmx_Routes(db *sql.DB) {
 		r.Form.Del("id")
 
 		// Get Tracker by Id
-		tracker, err := Get_Tracker_By_Id(db, id)
+		tracker, err := Db_Tracker_Get(db, id)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -267,7 +266,7 @@ func htmx_Routes(db *sql.DB) {
 			})
 		}
 
-		Add_Entry(db, tracker.Name, entry_notes, logs)
+		Db_Entry_Create(db, tracker.Id, entry_notes, logs)
 
 		// Reload page
 		url := fmt.Sprintf("/tracker-log?id=%d", id)
@@ -284,7 +283,7 @@ func htmx_Routes(db *sql.DB) {
 		}
 
 		// Delete Tracker
-		err = Delete_Tracker_By_Id(db, id)
+		err = Db_Tracker_Delete(db, id)
 		if err != nil {
 			return
 		}
@@ -309,7 +308,7 @@ func page_Tracker_Info(db *sql.DB) {
 	http.HandleFunc("/tracker-info", func(w http.ResponseWriter, r *http.Request) {
 
 		// Get All Trackers
-		trackers, err := Get_Trackers(db)
+		trackers, err := Db_Tracker_All_Get(db)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -323,7 +322,7 @@ func page_Tracker_Info(db *sql.DB) {
 		fmt.Printf("GET: /tracker-info?id=%d\n", id)
 
 		// Get Tracker by Id
-		tracker, err := Get_Tracker_By_Id(db, id)
+		tracker, err := Db_Tracker_Get(db, id)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -350,7 +349,7 @@ func page_Tracker_Create(db *sql.DB) {
 	http.HandleFunc("/tracker-create", func(w http.ResponseWriter, r *http.Request) {
 
 		// Get All Trackers
-		trackers, err := Get_Trackers(db)
+		trackers, err := Db_Tracker_All_Get(db)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -381,8 +380,9 @@ func page_Tracker_Log(db *sql.DB) {
 	}
 
 	http.HandleFunc("/tracker-log", func(w http.ResponseWriter, r *http.Request) {
+
 		// Get All Trackers
-		trackers, err := Get_Trackers(db)
+		trackers, err := Db_Tracker_All_Get(db)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -396,7 +396,7 @@ func page_Tracker_Log(db *sql.DB) {
 		fmt.Printf("GET: /tracker-log?id=%d\n", id)
 
 		// Get Tracker by Id
-		tracker, err := Get_Tracker_By_Id(db, id)
+		tracker, err := Db_Tracker_Get(db, id)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -423,7 +423,7 @@ func page_Tracker_Records(db *sql.DB) {
 	http.HandleFunc("/tracker-records", func(w http.ResponseWriter, r *http.Request) {
 
 		// Get All Trackers
-		trackers, err := Get_Trackers(db)
+		trackers, err := Db_Tracker_All_Get(db)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -437,13 +437,13 @@ func page_Tracker_Records(db *sql.DB) {
 		fmt.Printf("GET: /tracker-records?id=%d\n", id)
 
 		// Get Tracker by Id
-		tracker, err := Get_Tracker_By_Id(db, id)
+		tracker, err := Db_Tracker_Get(db, id)
 		if err != nil {
 			log.Fatal(err)
 		}
 
 		// Get Records by Id
-		entries, err := Get_Entries_By_Tracker_Id(db, id)
+		entries, err := Db_Entry_Get(db, id)
 		if err != nil {
 			log.Fatal(err)
 			w.Write([]byte(err.Error()))
@@ -474,7 +474,7 @@ func page_Settings(db *sql.DB) {
 	http.HandleFunc("/settings", func(w http.ResponseWriter, r *http.Request) {
 
 		// Get All Trackers
-		trackers, err := Get_Trackers(db)
+		trackers, err := Db_Tracker_All_Get(db)
 		if err != nil {
 			log.Fatal(err)
 		}

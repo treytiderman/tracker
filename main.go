@@ -11,15 +11,22 @@ import (
 func main() {
 	db_path := "./data/data.db"
 
+	fmt.Printf("DATABASE SQLite: %s\n", db_path)
 	db, err := sql.Open("sqlite", db_path)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer db.Close()
 
-	fmt.Printf("DATABASE SQLite: %s\n", db_path)
+	err = Db_Tracker_Table_Create(db)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	Create_Db_Tables(db)
+	err = Db_Entry_Table_Create(db)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	Start_Web_Server(db)
 }

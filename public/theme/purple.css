@@ -1,28 +1,28 @@
 :root {
     --border-width: 1.5px;
-    --border-radius: 0.6rem;
-    --border-radius-lg: 0.8rem;
+    --border-radius: 0.3rem;
+    --border-radius-lg: 0.5rem;
 
     --padding-x: 0.8rem;
     --padding-y: 0.4rem;
 
-    --color-bg: hsl(273, 88%, 6%);
-    --color-text: var(--color-purple-300);
+    --color-bg: hsl(273, 88%, 4%);
+    --color-text: var(--color-zinc-300);
     --color-border: var(--color-purple-950);
     --color-outline: var(--color-purple-300);
     --color-box-shadow: #00000099;
 
-    --color-bg-header: hsl(273, 88%, 10%);
-    --color-text-heading: var(--color-purple-200);
+    --color-bg-header: hsl(273, 88%, 7%);
+    --color-text-heading: var(--color-zinc-100);
     
     --color-bg-button: hsl(273, 88%, 14%);
-    --color-text-button: var(--color-purple-200);
+    --color-text-button: var(--color-color-zinc-200);
     --color-border-button: var(--color-purple-600);
     
     --color-bg-input: hsl(273, 88%, 0%);
-    --color-text-input: var(--color-purple-300);
+    --color-text-input: var(--color-color-zinc-200);
     --color-border-input: var(--color-border);
-    --color-placeholder: var(--color-purple-500);
+    --color-placeholder: var(--color-purple-800);
 
     --color-text-link: var(--color-violet-300);
 

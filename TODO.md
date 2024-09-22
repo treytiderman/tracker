@@ -1,25 +1,9 @@
 # Todo
 
-- [ ] Add Tailwind css as a static file
-    - https://github.com/tailwindlabs/tailwindcss-from-zero-to-production/tree/main/01-setting-up-tailwindcss
-- [ ] Fix hover sticking on mobile
-	- https://dev.to/truongductri01/solving-the-sticky-hover-effect-on-mobile-with-tailwindcss-i5p
 - [ ] Deleting a tracker causes problems for new trackers?
+- [ ] Add Ctrl+Enter to submit from a "textarea"
 
 # Ideas
-
-```go
-func Tracker_Table_Create(db *sql.DB) {
-	// lock the tracker from adding changing fields
-}
-
-func Tracker_Table_Migrate(db *sql.DB) {
-	// unlock the tracker from adding changing fields
-	// update fields
-	// migrate data to new schema
-	// re-lock the tracker
-}
-```
 
 ```go
 package main
