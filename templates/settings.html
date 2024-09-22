@@ -5,10 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="tracker app">
-    <title>Log / {{ .Tracker.Name }}</title>
+    <title>Settings</title>
 
+    <link rel="apple-touch-icon" sizes="180x180" href="../public/icon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../public/icon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../public/icon/favicon-16x16.png">
+    <link rel="manifest" href="../public/icon/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#000000">
+    
     <link rel="stylesheet" href="../public/css/palette.css">
-
     <link rel="stylesheet" href="../public/css/reset.css">
     <link rel="stylesheet" href="../public/css/styles.css">
     <link rel="stylesheet" href="../public/css/layout.css">
@@ -39,9 +45,9 @@
                 <line x1="4" x2="20" y1="18" y2="18" />
             </svg>
         </button>
-        <div> Log </div>
-        <div class="mono dim"> / </div>
-        <div class="title grow"> {{ .Tracker.Name }} </div>
+        <div> Settings </div>
+        <div class="mono dim"> </div>
+        <div class="title grow"> </div>
         <button id="navSearchButton" hidden>
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -61,13 +67,13 @@
             <div class="tt-nav-links pad-2">
                 <a href="./trackers"> All Tracker </a>
                 <a href="./tracker-create"> Create Tracker </a>
-                <a href="./tracker-info?id={{.Tracker.Id}}">Info</a>
-                <a href="./tracker-log?id={{.Tracker.Id}}" class="active">Log</a>
-                <a href="./tracker-records?id={{.Tracker.Id}}">Records</a>
-                <a href="./tracker-chart?id={{.Tracker.Id}}" hidden>Chart</a>
-                <a href="./tracker-log?id={{.Tracker.Id}}" hidden>Reminders</a>
-                <a href="./tracker-goals?id={{.Tracker.Id}}" hidden>Goals</a>
-                <a href="./settings">Settings</a>
+                <a href="./tracker-info">Info</a>
+                <a href="./tracker-log">Log</a>
+                <a href="./tracker-records">Records</a>
+                <a href="./tracker-chart" hidden>Chart</a>
+                <a href="./tracker-log" hidden>Reminders</a>
+                <a href="./tracker-log" hidden>Goals</a>
+                <a href="./settings" class="active">Settings</a>
             </div>
 
             <hr>
@@ -98,11 +104,7 @@
 
             <div id="navTrackerList" class="tt-nav-links pad-2">
                 {{ range .Trackers }}
-                {{ if eq $.Tracker.Id .Id }}
-                <a href="./tracker-log?id={{.Id}}" class="active"> {{ .Name }} </a>
-                {{ else }}
-                <a href="./tracker-log?id={{.Id}}"> {{ .Name }} </a>
-                {{ end }}
+                <a href="./tracker-info?id={{.Id}}"> {{ .Name }} </a>
                 {{ end }}
             </div>
 
@@ -144,86 +146,47 @@
 
         <main id="mainElement">
 
-            <section>
+            <section class="pad-4">
 
-                <form class="grid gap-8 pad-4" action="/htmx/tracker/log?id={{.Tracker.Id}}" method="post">
+                <div class="grid">
+                    <label for="settingTheme" class="tt-label"> Theme </label>
+                    <select id="settingTheme" name="settingTheme" class="tt-input">
+                        <option value="" selected>Auto (Default)</option>
+                    </select>
+                    <script>
+                        const currentTheme = localStorage.getItem("tracker_setting_theme")
+                        const settingThemeSelect = document.getElementById("settingTheme")
 
-                    {{ range .Tracker.Fields }}
+                        // Get all available themes
+                        fetch("./public/theme").then(async (res) => {
+                                const text = await res.text()
+                                text.split("\n").forEach(line => {
+                                    if (line.includes(`<a href=`)) {
+                                        const t = line.split(`">`)[1].split(`</a>`)[0]
+                                        const o = document.createElement("option")
+                                        o.innerText = t
+                                        o.value = t
+                                        settingThemeSelect.appendChild(o)
+                                    }
+                                })
 
-                    {{ if eq .Type "number" }}
-                    <div class="grid">
-                        <label class="tt-label" for="field_{{.Id}}">{{ .Name }}</label>
-                        <input type="number" class="tt-input" id="field_{{.Id}}" name="field_{{.Id}}" placeholder="0" value=""
-                            step="{{ decimal_places_to_step_size .Number.Decimal_Places }}" required>
-                    </div>
-                    {{ end }}
+                                // Set the current theme as selected
+                                for (const child of settingThemeSelect.children) {
+                                    if (child.value == currentTheme) child.selected = true
+                                    if (currentTheme === false) settingThemeSelect.children[0].selected = true
+                                }
+                            }).catch((err) => {
+                                console.log(err)
+                            })
 
-                    {{ if eq .Type "option" }}
-                    <div class="grid">
-                        <label class="tt-label" for="field_{{.Id}}">{{ .Name }}</label>
-                        <select class="tt-input" id="field_{{.Id}}" name="field_{{.Id}}" required>
-                            {{ range .Options }}
-                            <option value="{{ .Value }}">{{ .Value }}: {{ .Name }}</option>
-                            {{ end }}
-                        </select>
-                    </div>
-                    {{ end }}
-
-                    {{ end }}
-
-                    <div class="flex-wrap flex-even break-md items-end gap-8" hidden>
-                        <div class="grid">
-                            <label class="tt-label" for="entry_date">Date</label>
-                            <input type="date" class="tt-input" id="entry_date" name="entry_date">
-                        </div>
-
-                        <div class="grid gap-1">
-                            <label class="flex gap-2 w-full" for="entry_time">
-                                <div>Time</div>
-                                <div id="entry_timezone" class="dim" style="margin-left: auto;">GMT-0500 (Central Daylight
-                                    Time)</div>
-                            </label>
-                            <input type="time" class="tt-input" id="entry_time" name="entry_time">
-                        </div>
-
-                        <script>
-                            const date = new Date()
-
-                            let yyyy = date.getFullYear()
-                            let dd = date.getDate()
-                            let mm = date.getMonth() + 1 // january is 0
-
-                            if (dd < 10) dd = '0' + dd
-                            if (mm < 10) mm = '0' + mm
-
-                            const today_date = yyyy + '-' + mm + '-' + dd
-                            document.getElementById("entry_date").value = today_date
-
-                            let hh = date.getHours()
-                            let mmm = date.getMinutes()
-
-                            if (hh < 10) hh = '0' + hh
-                            if (mmm < 10) mmm = '0' + mmm
-
-                            const today_time = hh + ':' + mmm
-                            document.getElementById("entry_time").value = today_time
-
-                            const today_timezone = date.toTimeString().substring(9)
-                            document.getElementById("entry_timezone").innerText = today_timezone
-
-                        </script>
-                    </div>
-
-                    <div class="grid">
-                        <label for="entry_notes" class="tt-label">Notes</label>
-                        <textarea id="entry_notes" name="entry_notes" placeholder="Log Notes..." rows="3"
-                            class="tt-input"></textarea>
-                    </div>
-
-                    <div class="flex flex-even gap-4">
-                        <button type="submit" class="tt-button tt-color-green">Submit</button>
-                    </div>
-                </form>
+                        settingThemeSelect.addEventListener("change", (event) => {
+                            const theme = event.target.value
+                            localStorage.setItem("tracker_setting_theme", theme)
+                            if (theme === "") localStorage.removeItem("tracker_setting_theme")
+                            location.reload()
+                        })
+                    </script>
+                </div>
 
             </section>
 

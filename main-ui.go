@@ -36,7 +36,7 @@ func Start_Web_Server(db *sql.DB) {
 	// Base URL Redirect
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/" {
-			http.Redirect(w, r, "/tracker/info", http.StatusSeeOther)
+			http.Redirect(w, r, "/tracker-info", http.StatusSeeOther)
 		}
 	})
 
@@ -60,6 +60,7 @@ func Start_Web_Server(db *sql.DB) {
 
 func routes(db *sql.DB) {
 	htmx_Routes(db)
+	page_Settings(db)
 	page_Tracker_Info(db)
 	page_Tracker_Create(db)
 	page_Tracker_Log(db)
@@ -131,7 +132,7 @@ func htmx_Routes(db *sql.DB) {
 			}
 		}
 
-		url := fmt.Sprintf("/tracker/info?id=%d", id)
+		url := fmt.Sprintf("/tracker-info?id=%d", id)
 		http.Redirect(w, r, url, http.StatusSeeOther)
 	})
 
@@ -161,7 +162,7 @@ func htmx_Routes(db *sql.DB) {
 		}
 
 		// Reload page
-		url := fmt.Sprintf("/tracker/info?id=%d", id)
+		url := fmt.Sprintf("/tracker-info?id=%d", id)
 		http.Redirect(w, r, url, http.StatusSeeOther)
 	})
 
@@ -192,7 +193,7 @@ func htmx_Routes(db *sql.DB) {
 		}
 
 		// Reload page
-		url := fmt.Sprintf("/tracker/info?id=%d", id)
+		url := fmt.Sprintf("/tracker-info?id=%d", id)
 		http.Redirect(w, r, url, http.StatusSeeOther)
 	})
 
@@ -269,7 +270,7 @@ func htmx_Routes(db *sql.DB) {
 		Add_Entry(db, tracker.Name, entry_notes, logs)
 
 		// Reload page
-		url := fmt.Sprintf("/tracker/log?id=%d", id)
+		url := fmt.Sprintf("/tracker-log?id=%d", id)
 		http.Redirect(w, r, url, http.StatusSeeOther)
 	})
 
@@ -289,7 +290,7 @@ func htmx_Routes(db *sql.DB) {
 		}
 
 		// Reload without Id
-		http.Redirect(w, r, "/tracker/info", http.StatusSeeOther)
+		http.Redirect(w, r, "/tracker-info", http.StatusSeeOther)
 	})
 }
 
@@ -305,7 +306,7 @@ func page_Tracker_Info(db *sql.DB) {
 		log.Fatal(err)
 	}
 
-	http.HandleFunc("/tracker/info", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/tracker-info", func(w http.ResponseWriter, r *http.Request) {
 
 		// Get All Trackers
 		trackers, err := Get_Trackers(db)
@@ -319,7 +320,7 @@ func page_Tracker_Info(db *sql.DB) {
 			// Set id to first tracker's id if not set in the URL
 			id = trackers[0].Id
 		}
-		fmt.Printf("GET: /tracker/info?id=%d\n", id)
+		fmt.Printf("GET: /tracker-info?id=%d\n", id)
 
 		// Get Tracker by Id
 		tracker, err := Get_Tracker_By_Id(db, id)
@@ -346,7 +347,7 @@ func page_Tracker_Create(db *sql.DB) {
 		log.Fatal(err)
 	}
 
-	http.HandleFunc("/tracker/create", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/tracker-create", func(w http.ResponseWriter, r *http.Request) {
 
 		// Get All Trackers
 		trackers, err := Get_Trackers(db)
@@ -354,7 +355,7 @@ func page_Tracker_Create(db *sql.DB) {
 			log.Fatal(err)
 		}
 
-		fmt.Println("GET: /tracker/create")
+		fmt.Println("GET: /tracker-create")
 
 		// Page Data
 		data := struct {
@@ -379,7 +380,7 @@ func page_Tracker_Log(db *sql.DB) {
 		log.Fatal(err)
 	}
 
-	http.HandleFunc("/tracker/log", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/tracker-log", func(w http.ResponseWriter, r *http.Request) {
 		// Get All Trackers
 		trackers, err := Get_Trackers(db)
 		if err != nil {
@@ -392,7 +393,7 @@ func page_Tracker_Log(db *sql.DB) {
 			// Set id to first tracker's id if not set in the URL
 			id = trackers[0].Id
 		}
-		fmt.Printf("GET: /tracker/log?id=%d\n", id)
+		fmt.Printf("GET: /tracker-log?id=%d\n", id)
 
 		// Get Tracker by Id
 		tracker, err := Get_Tracker_By_Id(db, id)
@@ -419,7 +420,7 @@ func page_Tracker_Records(db *sql.DB) {
 		log.Fatal(err)
 	}
 
-	http.HandleFunc("/tracker/records", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/tracker-records", func(w http.ResponseWriter, r *http.Request) {
 
 		// Get All Trackers
 		trackers, err := Get_Trackers(db)
@@ -433,7 +434,7 @@ func page_Tracker_Records(db *sql.DB) {
 			// Set id to first tracker's id if not set in the URL
 			id = trackers[0].Id
 		}
-		fmt.Printf("GET: /tracker/records?id=%d\n", id)
+		fmt.Printf("GET: /tracker-records?id=%d\n", id)
 
 		// Get Tracker by Id
 		tracker, err := Get_Tracker_By_Id(db, id)
@@ -461,5 +462,32 @@ func page_Tracker_Records(db *sql.DB) {
 		}
 
 		t.ExecuteTemplate(w, "tracker-records.html", data)
+	})
+}
+
+func page_Settings(db *sql.DB) {
+	t, err := template.New("").ParseFS(Templates_Embed, "templates/settings.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	http.HandleFunc("/settings", func(w http.ResponseWriter, r *http.Request) {
+
+		// Get All Trackers
+		trackers, err := Get_Trackers(db)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Println("GET: /settings")
+
+		// Page Data
+		data := struct {
+			Trackers []Db_Tracker
+		}{
+			Trackers: trackers,
+		}
+
+		t.ExecuteTemplate(w, "settings.html", data)
 	})
 }

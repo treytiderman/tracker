@@ -15,6 +15,17 @@
     <link rel="stylesheet" href="../public/css/app.css">
 
     <script src="../public/js/htmx-v2.0.0.js"></script>
+    <script>
+        const head = document.getElementsByTagName('head')[0];
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+
+        // Set Theme
+        const theme = localStorage.getItem("tracker_setting_theme")
+        link.href = `../public/theme/${theme}`;
+        if (theme) head.appendChild(link);
+    </script>
 </head>
 
 <body class="tt-layout">
@@ -47,20 +58,23 @@
                 <h4> Page </h4>
             </div>
 
-            <div class="tt-nav-links">
-                <a href="./info?id={{.Tracker.Id}}" class="active">Info</a>
-                <a href="./log?id={{.Tracker.Id}}">Log</a>
-                <a href="./records?id={{.Tracker.Id}}">Records</a>
-                <a href="./chart?id={{.Tracker.Id}}" hidden>Chart</a>
-                <a href="./log?id={{.Tracker.Id}}" hidden>Reminders</a>
-                <a href="./log?id={{.Tracker.Id}}" hidden>Goals</a>
+            <div class="tt-nav-links pad-2">
+                <a href="./trackers"> All Tracker </a>
+                <a href="./tracker-create"> Create Tracker </a>
+                <a href="./tracker-info?id={{.Tracker.Id}}" class="active">Info</a>
+                <a href="./tracker-log?id={{.Tracker.Id}}">Log</a>
+                <a href="./tracker-records?id={{.Tracker.Id}}">Records</a>
+                <a href="./tracker-chart?id={{.Tracker.Id}}" hidden>Chart</a>
+                <a href="./tracker-log?id={{.Tracker.Id}}" hidden>Reminders</a>
+                <a href="./tracker-goals?id={{.Tracker.Id}}" hidden>Goals</a>
+                <a href="./settings">Settings</a>
             </div>
 
             <hr>
 
             <div class="tt-nav-heading">
                 <h4> Tracker </h4>
-                <a href="./create" id="navCreateTracker" title="Create New Tracker"
+                <a href="./tracker-create" id="navCreateTracker" title="Create New Tracker"
                     class="dim tt-icon-button tt-color-green-hover">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
@@ -70,7 +84,7 @@
                 </a>
             </div>
 
-            <div class="tt-nav-filter">
+            <div class="tt-nav-filter pad-2">
                 <input type="search" id="navTrackerFilter" name="navTrackerFilter" placeholder="filter...">
                 <label for="navTrackerFilter" title="Filter Tracker List">
                     <span hidden>Filter Trackers</span>
@@ -82,12 +96,12 @@
                 </label>
             </div>
 
-            <div id="navTrackerList" class="tt-nav-links">
+            <div id="navTrackerList" class="tt-nav-links pad-2">
                 {{ range .Trackers }}
                 {{ if eq $.Tracker.Id .Id }}
-                <a href="./info?id={{.Id}}" class="active"> {{ .Name }} </a>
+                <a href="./tracker-info?id={{.Id}}" class="active"> {{ .Name }} </a>
                 {{ else }}
-                <a href="./info?id={{.Id}}"> {{ .Name }} </a>
+                <a href="./tracker-info?id={{.Id}}"> {{ .Name }} </a>
                 {{ end }}
                 {{ end }}
             </div>
@@ -96,11 +110,11 @@
                 const navElement = document.getElementById("navElement")
                 const navShowButton = document.getElementById("navShowButton")
                 navShowButton.addEventListener("click", () => {
-                    localStorage.setItem("nav_hide", !navElement.hidden)
+                    localStorage.setItem("tracker_nav_hide", !navElement.hidden)
                     navElement.hidden = !navElement.hidden
                 })
 
-                if (localStorage.getItem("nav_hide") === "true") navElement.hidden = true
+                if (localStorage.getItem("tracker_nav_hide") === "true") navElement.hidden = true
                 if (document.body.offsetWidth < 800) navElement.hidden = true
 
                 document.addEventListener('keydown', (event) => {

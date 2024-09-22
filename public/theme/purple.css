@@ -1,0 +1,47 @@
+:root {
+    --border-width: 1.5px;
+    --border-radius: 0.6rem;
+    --border-radius-lg: 0.8rem;
+
+    --padding-x: 0.8rem;
+    --padding-y: 0.4rem;
+
+    --color-bg: hsl(273, 88%, 6%);
+    --color-text: var(--color-purple-300);
+    --color-border: var(--color-purple-950);
+    --color-outline: var(--color-purple-300);
+    --color-box-shadow: #00000099;
+
+    --color-bg-header: hsl(273, 88%, 10%);
+    --color-text-heading: var(--color-purple-200);
+    
+    --color-bg-button: hsl(273, 88%, 14%);
+    --color-text-button: var(--color-purple-200);
+    --color-border-button: var(--color-purple-600);
+    
+    --color-bg-input: hsl(273, 88%, 0%);
+    --color-text-input: var(--color-purple-300);
+    --color-border-input: var(--color-border);
+    --color-placeholder: var(--color-purple-500);
+
+    --color-text-link: var(--color-violet-300);
+
+    --color-bg-primary: var(--color-purple-900);
+    --color-text-primary: var(--color-purple-100);
+    --color-border-primary: var(--color-purple-400);
+
+    --color-bg-green: var(--color-green-900);
+    --color-text-green: var(--color-green-100);
+    --color-border-green: var(--color-green-400);
+
+    --color-bg-red: var(--color-red-900);
+    --color-text-red: var(--color-red-100);
+    --color-border-red: var(--color-red-400);
+
+    --color-bg-yellow: var(--color-yellow-900);
+    --color-text-yellow: var(--color-yellow-100);
+    --color-border-yellow: var(--color-yellow-400);
+
+    --filter-brightness-disable: brightness(75%);
+    --filter-brightness-active: brightness(85%);
+}

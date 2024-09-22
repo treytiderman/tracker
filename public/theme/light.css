@@ -1,0 +1,41 @@
+:root {
+    --color-bg: #FFFFFF;
+    --color-text: var(--color-zinc-600);
+    --color-border: var(--color-zinc-400);
+    --color-outline: #000000;
+    --color-box-shadow: #00000055;
+
+    --color-bg-header: var(--color-zinc-100);
+    --color-bg-header: hsl(240, 4%, 94%);
+    --color-text-heading: #000000;
+
+    --color-bg-button: var(--color-zinc-50);
+    --color-text-button: var(--color-zinc-900);
+    --color-border-button: var(--color-zinc-400);
+
+    --color-bg-input: #FFFFFF;
+    --color-text-input: var(--color-zinc-800);
+    --color-border-input: var(--color-border);
+    --color-placeholder: var(--color-zinc-500);
+
+    --color-text-link: var(--color-purple-600);
+
+    --color-bg-primary: var(--color-purple-100);
+    --color-text-primary: var(--color-purple-900);
+    --color-border-primary: var(--color-purple-500);
+
+    --color-bg-green: var(--color-green-100);
+    --color-text-green: var(--color-green-900);
+    --color-border-green: var(--color-green-500);
+
+    --color-bg-red: var(--color-red-100);
+    --color-text-red: var(--color-red-900);
+    --color-border-red: var(--color-red-500);
+
+    --color-bg-yellow: var(--color-yellow-100);
+    --color-text-yellow: var(--color-yellow-900);
+    --color-border-yellow: var(--color-yellow-500);
+
+    --filter-brightness-disable: brightness(75%);
+    --filter-brightness-active: brightness(85%);
+}
