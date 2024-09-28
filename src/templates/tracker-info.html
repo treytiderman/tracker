@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="tracker app">
     <title>Info / {{ .Tracker.Name }}</title>
+    <link rel="icon" type="image/x-icon" href="/public/favicon.ico">
 
     <link rel="stylesheet" href="../public/css/palette.css">
 
@@ -182,10 +183,6 @@
                                 <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
                             </svg>
                         </a>
-                        <!-- <button id="trackerNameDeleteButton" class="tt-icon-button dim tt-color-red-hover"
-                            title="Delete Tracker Permanently" hx-post="/htmx/tracker/delete?id={{.Tracker.Id}}" hx-target="#tracker_name_form"
-                            hx-confirm="Are you sure you want to delete this tracker? All data will be erased.">
-                        </button> -->
                     </div>
 
                     <h2 id="trackerNameH2">{{ .Tracker.Name }}</h2>
