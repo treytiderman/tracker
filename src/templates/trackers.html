@@ -141,15 +141,22 @@
 
             <section>
 
-                <div class="grid gap-8 pad-4">
+                <div class="pad-4" style="padding-bottom: 0;">
+                    <h1>All Trackers</h1>
+                </div>
 
-                    <h1 style="border-bottom: var(--border); padding-bottom: 0.5rem;">Trackers</h1>
+                <div class="grid gap-4 pad-4">
 
                     {{ range $Tracker := $.Trackers }}
-                    <div id="tracker_{{$Tracker.Id}}" class="grid justify-start gap-4">
+                    <hr>
+                    <div id="tracker_{{$Tracker.Id}}" class="grid gap-4 pad-2" style="padding: 0.5rem 0">
 
                         <div class="flex items-end">
-                            <h2 class="grow"> {{ $Tracker.Name }} </h2>
+                            <h2 class="grow">
+                                <a href="./tracker-info?id={{$Tracker.Id}}" class="tt-icon-button">
+                                    {{ $Tracker.Name }}
+                                </a>
+                            </h2>
                             <a href="./tracker-log?id={{$Tracker.Id}}" class="tt-icon-button dim tt-color-green-hover">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -160,31 +167,42 @@
                             </a>
                         </div>
 
-                        {{ $count := 0 }}
-                        {{ range $Entry := $.Entries }}
-                        {{ if eq $Entry.Tracker_Id $Tracker.Id }}
-                        {{ $count = increment $count }}
-                        {{ if lt $count 2 }}
-                        <div id="entry_{{$Entry.Id}}" class="flex gap-8">
-                            <div>
-                                <label class="tt-label dim">Last Log Entry</label>
-                                <div> {{ $Entry.Timestamp }} </div>
+                        <a href="./tracker-records?id={{$Tracker.Id}}" class="tt-icon-button">
+
+                            {{ $count := 0 }}
+                            {{ range $Entry := $.Entries }}
+                            {{ if eq $Entry.Tracker_Id $Tracker.Id }}
+                            {{ $count = increment $count }}
+                            {{ if lt $count 2 }}
+                            <div id="entry_{{$Entry.Id}}" class="flex gap-8">
+                                <div>
+                                    <label class="tt-label dim">Last Log Entry</label>
+                                    <div> {{ $Entry.Timestamp }} </div>
+                                </div>
+                                {{ range $Entry.Logs }}
+                                <div class="too-big">
+                                    <label class="tt-label dim"> {{ .Field_Name }} </label>
+                                    <div> {{ .Present }} </div>
+                                </div>
+                                {{ end }}
                             </div>
-                            {{ range $Entry.Logs }}
-                            <div>
-                                <label class="tt-label dim"> {{ .Field_Name }} </label>
-                                <div> {{ .Present }} </div>
-                            </div>
+                            <script>
+                                var date = new Date(document.getElementById("entry_{{$Entry.Id}}").children[0].children[1].innerText)
+                                var string = date.toLocaleString().replace(",", "")
+                                document.getElementById("entry_{{$Entry.Id}}").children[0].children[1].innerText = string
+                            </script>
+                            <style>
+                                @media (max-width: 800px) {
+                                    .too-big {
+                                        display: none;
+                                    }
+                                }
+                            </style>
                             {{ end }}
-                        </div>
-                        <script>
-                            var date = new Date(document.getElementById("entry_{{$Entry.Id}}").children[0].children[1].innerText)
-                            var string = date.toLocaleString().replace(",", "")
-                            document.getElementById("entry_{{$Entry.Id}}").children[0].children[1].innerText = string
-                        </script>
-                        {{ end }}
-                        {{ end }}
-                        {{ end }}
+                            {{ end }}
+                            {{ end }}
+
+                        </a>
 
                     </div>
                     {{ end }}
