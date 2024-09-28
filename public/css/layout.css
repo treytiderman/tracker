@@ -173,6 +173,11 @@
     justify-content: flex-end;
 }
 
+/* Horizontal Start */
+.justify-start {
+    justify-content: flex-start;
+}
+
 /* Spacing for both Flex and Grid */
 
 .pad-0 {
