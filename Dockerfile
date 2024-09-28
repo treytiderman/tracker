@@ -1,8 +1,15 @@
+# docker build -t tracker .
+# docker stop tracker
+# docker rm tracker
+# docker run -d --name tracker -p 8000:8000 -v ./data:/app/data tracker
+
 FROM golang:1.23 AS build
-WORKDIR /app
-COPY ./ ./
+WORKDIR /app/src
+COPY ./src /app/src
+COPY ./data /app/data
+COPY ./public /app/public
 RUN go build -o tracker
-CMD "/app/tracker"
+CMD "/app/src/tracker"
 
 # FROM scratch
 # WORKDIR /app
