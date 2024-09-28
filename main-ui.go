@@ -2,32 +2,18 @@ package main
 
 import (
 	"database/sql"
-	"embed"
 	"fmt"
 	"io"
-	"io/fs"
 	"log"
 	"net/http"
 	"os"
 	"time"
 )
 
-//go:embed public
-var Public_Embed embed.FS
-
-//go:embed templates
-var Templates_Embed embed.FS
-
 func Start_Web_Server(db *sql.DB) {
 
 	// Setup Public Routes
-	var public_fs = fs.FS(Public_Embed)
-	public_files, err := fs.Sub(public_fs, "public")
-	if err != nil {
-		log.Fatal(err)
-	}
-	fs := http.FileServer(http.FS(public_files))
-	http.Handle("/public/", http.StripPrefix("/public/", fs))
+	http.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("./public"))))
 
 	// Base URL Redirect
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {

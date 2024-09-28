@@ -25,7 +25,7 @@ func page_Tracker_Info(db *sql.DB) {
 		},
 	}
 
-	t, err := template.New("").Funcs(funcMap).ParseFS(Templates_Embed, "templates/tracker-info.html")
+	tmp, err := template.New("").Funcs(funcMap).ParseFiles("templates/tracker-info.html")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -61,12 +61,12 @@ func page_Tracker_Info(db *sql.DB) {
 			Trackers: trackers,
 		}
 
-		t.ExecuteTemplate(w, "tracker-info.html", data)
+		tmp.ExecuteTemplate(w, "tracker-info.html", data)
 	})
 }
 
 func page_Tracker_Create(db *sql.DB) {
-	t, err := template.New("").ParseFS(Templates_Embed, "templates/tracker-create.html")
+	tmp, err := template.New("").ParseFiles("templates/tracker-create.html")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -88,7 +88,7 @@ func page_Tracker_Create(db *sql.DB) {
 			Trackers: trackers,
 		}
 
-		t.ExecuteTemplate(w, "tracker-create.html", data)
+		tmp.ExecuteTemplate(w, "tracker-create.html", data)
 	})
 }
 
@@ -99,7 +99,7 @@ func page_Tracker_Log(db *sql.DB) {
 		},
 	}
 
-	t, err := template.New("").Funcs(funcMap).ParseFS(Templates_Embed, "templates/tracker-log.html")
+	tmp, err := template.New("").Funcs(funcMap).ParseFiles("templates/tracker-log.html")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -135,12 +135,12 @@ func page_Tracker_Log(db *sql.DB) {
 			Trackers: trackers,
 		}
 
-		t.ExecuteTemplate(w, "tracker-log.html", data)
+		tmp.ExecuteTemplate(w, "tracker-log.html", data)
 	})
 }
 
 func page_Tracker_Records(db *sql.DB) {
-	t, err := template.New("").ParseFS(Templates_Embed, "templates/tracker-records.html")
+	tmp, err := template.New("").ParseFiles("templates/tracker-records.html")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -186,12 +186,12 @@ func page_Tracker_Records(db *sql.DB) {
 			Entries:  entries,
 		}
 
-		t.ExecuteTemplate(w, "tracker-records.html", data)
+		tmp.ExecuteTemplate(w, "tracker-records.html", data)
 	})
 }
 
 func page_Settings(db *sql.DB) {
-	t, err := template.New("").ParseFS(Templates_Embed, "templates/settings.html")
+	tmp, err := template.New("").ParseFiles("templates/settings.html")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -213,6 +213,6 @@ func page_Settings(db *sql.DB) {
 			Trackers: trackers,
 		}
 
-		t.ExecuteTemplate(w, "settings.html", data)
+		tmp.ExecuteTemplate(w, "settings.html", data)
 	})
 }
