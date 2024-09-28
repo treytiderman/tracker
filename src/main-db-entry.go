@@ -110,7 +110,7 @@ func Db_Entry_Get(db *sql.DB, tracker_id int) (entries []Db_Entry, err error) {
 			IFNULL(option.option_value, 0) AS option_value,
 			IFNULL(option.option_name, "") AS option_name,
 			IFNULL((CASE WHEN field.field_type == "number" THEN
-				printf("%%.2f", log.log_value / power(10, number.decimal_places))
+				printf(("%%." || number.decimal_places || "f"), log.log_value / power(10, number.decimal_places))
 			ELSE
 				option.option_name
 			END), "") AS present
@@ -120,7 +120,7 @@ func Db_Entry_Get(db *sql.DB, tracker_id int) (entries []Db_Entry, err error) {
 		LEFT JOIN number USING (field_id)
 		LEFT JOIN option ON log.field_id = option.field_id AND log.log_value = option.option_value
 		WHERE entry.tracker_id = %d
-		ORDER BY entry.entry_id, field.field_id;`,
+		ORDER BY entry.entry_id DESC, field.field_id;`,
 		tracker_id)
 
 	rows, err := db.Query(sql_string)
@@ -183,7 +183,7 @@ func Db_Entry_All_Get(db *sql.DB) (entries []Db_Entry, err error) {
 			IFNULL(option.option_value, 0) AS option_value,
 			IFNULL(option.option_name, "") AS option_name,
 			IFNULL((CASE WHEN field.field_type == "number" THEN
-				printf("%%.2f", log.log_value / power(10, number.decimal_places))
+				printf(("%." || number.decimal_places || "f"), log.log_value / power(10, number.decimal_places))
 			ELSE
 				option.option_name
 			END), "") AS present
@@ -192,7 +192,7 @@ func Db_Entry_All_Get(db *sql.DB) (entries []Db_Entry, err error) {
 		LEFT JOIN field USING (field_id)
 		LEFT JOIN number USING (field_id)
 		LEFT JOIN option ON log.field_id = option.field_id AND log.log_value = option.option_value
-		ORDER BY entry.entry_id, field.field_id;`
+		ORDER BY entry.entry_id DESC, field.field_id;`
 
 	rows, err := db.Query(sql_string)
 	if err != nil {
