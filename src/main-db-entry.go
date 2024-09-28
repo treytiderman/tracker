@@ -7,10 +7,11 @@ import (
 )
 
 type Db_Entry struct {
-	Id        int
-	Timestamp string
-	Notes     string
-	Logs      []Db_Log
+	Id         int
+	Tracker_Id int
+	Timestamp  string
+	Notes      string
+	Logs       []Db_Log
 }
 
 type Db_Log struct {
@@ -57,7 +58,10 @@ func Db_Entry_Table_Delete(db *sql.DB) (err error) {
 	return err
 }
 
-func Db_Entry_Create(db *sql.DB, tracker_id int, entry_notes string, logs []struct { Field_Id int; Value int }) (entry_id int, err error) {
+func Db_Entry_Create(db *sql.DB, tracker_id int, entry_notes string, logs []struct {
+	Field_Id int
+	Value    int
+}) (entry_id int, err error) {
 	sql_string_entry := fmt.Sprintf(
 		`INSERT INTO entry (tracker_id, entry_notes) VALUES (%d,"%s");`,
 		tracker_id, entry_notes)
@@ -94,6 +98,7 @@ func Db_Entry_Get(db *sql.DB, tracker_id int) (entries []Db_Entry, err error) {
 	sql_string := fmt.Sprintf(
 		`SELECT
 			entry.entry_id,
+			entry.tracker_id,
 			entry.timestamp,
 			entry.entry_notes,
 			IFNULL(log.log_id, 0) AS log_id,
@@ -131,7 +136,7 @@ func Db_Entry_Get(db *sql.DB, tracker_id int) (entries []Db_Entry, err error) {
 		var entry_scan Db_Entry
 		var log_scan Db_Log
 		err = rows.Scan(
-			&entry_scan.Id, &entry_scan.Timestamp, &entry_scan.Notes,
+			&entry_scan.Id, &entry_scan.Tracker_Id, &entry_scan.Timestamp, &entry_scan.Notes,
 			&log_scan.Id, &log_scan.Value, &log_scan.Field_Id, &log_scan.Field_Type, &log_scan.Field_Name,
 			&log_scan.Decimal_Places, &log_scan.Option_Value, &log_scan.Option_Name, &log_scan.Present,
 		)
@@ -166,6 +171,7 @@ func Db_Entry_All_Get(db *sql.DB) (entries []Db_Entry, err error) {
 	sql_string := `
 		SELECT
 			entry.entry_id,
+			entry.tracker_id,
 			entry.timestamp,
 			entry.entry_notes,
 			IFNULL(log.log_id, 0) AS log_id,
@@ -201,7 +207,7 @@ func Db_Entry_All_Get(db *sql.DB) (entries []Db_Entry, err error) {
 		var entry_scan Db_Entry
 		var log_scan Db_Log
 		err = rows.Scan(
-			&entry_scan.Id, &entry_scan.Timestamp, &entry_scan.Notes,
+			&entry_scan.Id, &entry_scan.Tracker_Id, &entry_scan.Timestamp, &entry_scan.Notes,
 			&log_scan.Id, &log_scan.Value, &log_scan.Field_Id, &log_scan.Field_Type, &log_scan.Field_Name,
 			&log_scan.Decimal_Places, &log_scan.Option_Value, &log_scan.Option_Name, &log_scan.Present,
 		)

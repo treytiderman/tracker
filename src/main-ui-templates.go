@@ -20,7 +20,13 @@ func Routes_pages(db *sql.DB) {
 }
 
 func page_Trackers(db *sql.DB) {
-	tmp, err := template.New("").ParseFiles("./templates/trackers.html")
+	funcMap := template.FuncMap{
+		"increment": func(i int) int {
+			return i + 1
+		},
+	}
+
+	tmp, err := template.New("").Funcs(funcMap).ParseFiles("./templates/trackers.html")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -35,11 +41,21 @@ func page_Trackers(db *sql.DB) {
 
 		fmt.Println("GET: /trackers")
 
+		// Get Records
+		entries, err := Db_Entry_All_Get(db)
+		if err != nil {
+			log.Fatal(err)
+			w.Write([]byte(err.Error()))
+			return
+		}
+
 		// Page Data
 		data := struct {
 			Trackers []Db_Tracker
+			Entries  []Db_Entry
 		}{
 			Trackers: trackers,
+			Entries:  entries,
 		}
 
 		tmp.ExecuteTemplate(w, "trackers.html", data)

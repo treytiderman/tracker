@@ -139,7 +139,57 @@
 
         <main id="mainElement">
 
-            <section class="grid gap-8 pad-4">
+            <section>
+
+                <div class="grid gap-8 pad-4">
+
+                    <h1 style="border-bottom: var(--border); padding-bottom: 0.5rem;">Trackers</h1>
+
+                    {{ range $Tracker := $.Trackers }}
+                    <div id="tracker_{{$Tracker.Id}}" class="grid justify-start gap-4">
+
+                        <div class="flex items-end">
+                            <h2 class="grow"> {{ $Tracker.Name }} </h2>
+                            <a href="./tracker-log?id={{$Tracker.Id}}" class="tt-icon-button dim tt-color-green-hover">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M5 12h14" />
+                                    <path d="M12 5v14" />
+                                </svg>
+                            </a>
+                        </div>
+
+                        {{ $count := 0 }}
+                        {{ range $Entry := $.Entries }}
+                        {{ if eq $Entry.Tracker_Id $Tracker.Id }}
+                        {{ $count = increment $count }}
+                        {{ if lt $count 2 }}
+                        <div id="entry_{{$Entry.Id}}" class="flex gap-8">
+                            <div>
+                                <label class="tt-label dim">Last Log Entry</label>
+                                <div> {{ $Entry.Timestamp }} </div>
+                            </div>
+                            {{ range $Entry.Logs }}
+                            <div>
+                                <label class="tt-label dim"> {{ .Field_Name }} </label>
+                                <div> {{ .Present }} </div>
+                            </div>
+                            {{ end }}
+                        </div>
+                        <script>
+                            var date = new Date(document.getElementById("entry_{{$Entry.Id}}").children[0].children[1].innerText)
+                            var string = date.toLocaleString().replace(",", "")
+                            document.getElementById("entry_{{$Entry.Id}}").children[0].children[1].innerText = string
+                        </script>
+                        {{ end }}
+                        {{ end }}
+                        {{ end }}
+
+                    </div>
+                    {{ end }}
+
+                </div>
 
             </section>
 
