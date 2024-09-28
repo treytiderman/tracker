@@ -25,7 +25,7 @@ func page_Tracker_Info(db *sql.DB) {
 		},
 	}
 
-	tmp, err := template.New("").Funcs(funcMap).ParseFiles("../templates/tracker-info.html")
+	tmp, err := template.New("").Funcs(funcMap).ParseFiles("./templates/tracker-info.html")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -66,7 +66,7 @@ func page_Tracker_Info(db *sql.DB) {
 }
 
 func page_Tracker_Create(db *sql.DB) {
-	tmp, err := template.New("").ParseFiles("../templates/tracker-create.html")
+	tmp, err := template.New("").ParseFiles("./templates/tracker-create.html")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -99,7 +99,7 @@ func page_Tracker_Log(db *sql.DB) {
 		},
 	}
 
-	tmp, err := template.New("").Funcs(funcMap).ParseFiles("../templates/tracker-log.html")
+	tmp, err := template.New("").Funcs(funcMap).ParseFiles("./templates/tracker-log.html")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -140,7 +140,7 @@ func page_Tracker_Log(db *sql.DB) {
 }
 
 func page_Tracker_Records(db *sql.DB) {
-	tmp, err := template.New("").ParseFiles("../templates/tracker-records.html")
+	tmp, err := template.New("").ParseFiles("./templates/tracker-records.html")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -191,7 +191,7 @@ func page_Tracker_Records(db *sql.DB) {
 }
 
 func page_Settings(db *sql.DB) {
-	tmp, err := template.New("").ParseFiles("../templates/settings.html")
+	tmp, err := template.New("").ParseFiles("./templates/settings.html")
 	if err != nil {
 		log.Fatal(err)
 	}
