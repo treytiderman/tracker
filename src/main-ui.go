@@ -13,7 +13,7 @@ import (
 func Start_Web_Server(db *sql.DB) {
 
 	// Setup Public Routes
-	http.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("./public"))))
+	http.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("../public"))))
 
 	// Base URL Redirect
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {

@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	db_path := "./data/data.db"
+	db_path := "../data/data.db"
 
 	fmt.Printf("DATABASE SQLite: %s\n", db_path)
 	db, err := sql.Open("sqlite", db_path)
