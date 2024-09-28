@@ -1,92 +1,151 @@
 <!DOCTYPE html>
-<html lang="en" style="color-scheme: dark;" class="h-full">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="tracker app">
-    <title>Trackers</title>
+    <title>All Trackers</title>
     <link rel="icon" type="image/x-icon" href="/public/favicon.ico">
-    <script src="https://unpkg.com/htmx.org@2.0.0"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="../public/css/palette.css">
+
+    <link rel="stylesheet" href="../public/css/reset.css">
+    <link rel="stylesheet" href="../public/css/styles.css">
+    <link rel="stylesheet" href="../public/css/layout.css">
+    <link rel="stylesheet" href="../public/css/app.css">
+
+    <script src="../public/js/htmx-v2.0.0.js"></script>
+    <script>
+        const head = document.getElementsByTagName('head')[0];
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+
+        // Set Theme
+        const theme = localStorage.getItem("tracker_setting_theme")
+        link.href = `../public/theme/${theme}`;
+        if (theme) head.appendChild(link);
+    </script>
 </head>
 
-<body class="h-full font-sans bg-zinc-800 text-zinc-200 flex flex-col overflow-hidden">
+<body class="tt-layout">
 
-    <nav class="text-zinc-200 bg-zinc-700 border-b-2 border-zinc-600 font-medium text-sm sm:text-base">
-        <div class="max-w-lg mx-auto flex items-center gap-2 p-1">
-            <a href="./trackers" class="px-3 p-1 rounded-md border-2 border-zinc-700 focus:outline-none focus:border-zinc-300 hover:bg-zinc-600 hover:text-zinc-100 flex items-center gap-3">
-                <svg class="w-4 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" fill="currentColor" viewBox="0 0 20 20"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
-                    <path d="M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.2c0 2.7-.2 5.4-.5 8.1V472c0 22.1-17.9 40-40 40H456c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1H416 392c-22.1 0-40-17.9-40-40V448 384c0-17.7-14.3-32-32-32H256c-17.7 0-32 14.3-32 32v64 24c0 22.1-17.9 40-40 40H160 128.1c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2H104c-22.1 0-40-17.9-40-40V360c0-.9 0-1.9 .1-2.8V287.6H32c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z"/>
-                </svg>
-                Trackers
-            </a>
-        </div>
-    </nav>
+    <header class="tt-header flex items-center gap-4 pad-2">
+        <button id="navShowButton" title="Toggle Sidebar / Nav (Ctrl+B)" class="tt-icon-button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="4" x2="20" y1="12" y2="12" />
+                <line x1="4" x2="20" y1="6" y2="6" />
+                <line x1="4" x2="20" y1="18" y2="18" />
+            </svg>
+        </button>
+        <div> Trackers </div>
+        <button id="navSearchButton" hidden>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+            </svg>
+        </button>
+    </header>
 
-    <main class="p-4 max-w-lg w-full grow mx-auto flex flex-col gap-4 overflow-auto">
-        <h1 class="text-4xl font-bold text-violet-300 sr-only">Trackers</h1>
+    <div>
 
-        {{ range . }}
-        {{ block "tracker-info" . }}
-        <details id="details{{.Id}}" class="[&_svg]:open:-rotate-180 bg-zinc-700 border-2 border-zinc-600 rounded-lg">
-            <summary class="w-full p-4 list-none flex cursor-pointer items-center gap-4 rounded-lg [&::-webkit-details-marker]:hidden focus:outline-none focus:ring-2 focus:ring-zinc-300">
-                <div>
-                    <h2 class="text-xl font-bold text-violet-300">{{ .Name }}</h2>
-                    <div class="font-thin text-sm text-zinc-400">{{ .Notes }}</div>
-                </div>
-                <div class="ml-auto text-violet-300">
-                    <svg class="rotate-0 transform transition-all duration-200" fill="none" height="24" width="24"
-                        stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        viewBox="0 0 24 24">
-                        <polyline points="6 9 12 15 18 9"></polyline>
+        <nav id="navElement">
+            <div class="tt-nav-heading">
+                <h4> Page </h4>
+            </div>
+
+            <div class="tt-nav-links pad-2">
+                <a href="./trackers" class="active"> All Trackers </a>
+                <a href="./tracker-create"> Create Tracker </a>
+                <a href="./tracker-info">Info</a>
+                <a href="./tracker-log">Log</a>
+                <a href="./tracker-records">Records</a>
+                <a href="./tracker-chart" hidden>Chart</a>
+                <a href="./tracker-log" hidden>Reminders</a>
+                <a href="./tracker-goals" hidden>Goals</a>
+                <a href="./settings">Settings</a>
+            </div>
+
+            <hr>
+
+            <div class="tt-nav-heading">
+                <h4> Tracker </h4>
+                <a href="./tracker-create" id="navCreateTracker" title="Create New Tracker"
+                    class="dim tt-icon-button tt-color-green-hover">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 12h14" />
+                        <path d="M12 5v14" />
                     </svg>
-                </div>
-            </summary>
-            <div class="flex p-2 px-4 flex-col gap-2">
-                <h3 class="">Data Fields:</h3>
-                {{ range .Fields }}
-                <div class="flex flex-wrap items-center gap-4">
-                    <div class="w-4"></div>
-                    <div class="">{{ .Name }}</div>
-                    <div class="font-thin text-sm text-zinc-400">{{ .Type }}</div>
-                </div>
-                {{ else }}
-                <div class="flex flex-wrap items-center gap-4">
-                    <div class="w-4"></div>
-                    <div class="font-thin text-sm text-zinc-400">None...</div>
-                </div>
+                </a>
+            </div>
+
+            <div class="tt-nav-filter pad-2">
+                <input type="search" id="navTrackerFilter" name="navTrackerFilter" placeholder="filter...">
+                <label for="navTrackerFilter" title="Filter Tracker List">
+                    <span hidden>Filter Trackers</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                        fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+                    </svg>
+                </label>
+            </div>
+
+            <div id="navTrackerList" class="tt-nav-links pad-2">
+                {{ range .Trackers }}
+                <a href="./tracker-info?id={{.Id}}"> {{ .Name }} </a>
                 {{ end }}
             </div>
-            <div class="flex p-4 w-full">
-                <a href="./tracker/records?id={{.Id}}"
-                    class="block text-sky-200 bg-sky-800 p-1 px-2 rounded-md border-2 border-sky-600 focus:outline-none focus:border-zinc-300">
-                    View Records
-                </a>
-                <button
-                    hx-get="/htmx/tracker/delete?id={{.Id}}"
-                    hx-target="#details{{.Id}}"
-                    hx-swap="outerHTML"
-                    hx-confirm="Are you sure you want to delete this tracker?"
-                    class="block ml-auto text-red-300 p-1 px-2 rounded-md focus:outline-none focus:ring-2 focus:ring-zinc-300"
-                >
-                    Delete Forever
-                </button>
-            </div>
-        </details>
-        {{ end }}
 
-        {{ else }}
-        <div>No Trackers...</div>
-        {{ end }}
+            <script>
+                const navElement = document.getElementById("navElement")
+                const navShowButton = document.getElementById("navShowButton")
+                navShowButton.addEventListener("click", () => {
+                    localStorage.setItem("tracker_nav_hide", !navElement.hidden)
+                    navElement.hidden = !navElement.hidden
+                })
 
-        <div class="w-full">
-            <a href="./tracker-create" class="block p-1 px-2 text-green-300 ml-auto w-fit rounded-md focus:outline-none focus:ring-2 focus:ring-zinc-300">
-                Create Tracker
-            </a>
-        </div>
+                if (localStorage.getItem("tracker_nav_hide") === "true") navElement.hidden = true
+                if (document.body.offsetWidth < 800) navElement.hidden = true
 
-    </main>
+                document.addEventListener('keydown', (event) => {
+                    if (event.code === 'KeyB' && event.ctrlKey === true) {
+                        event.preventDefault()
+                        navElement.hidden = !navElement.hidden
+                    }
+                })
+            </script>
+
+            <script>
+                const navTrackerList = document.getElementById("navTrackerList")
+                const navTrackerFilter = document.getElementById("navTrackerFilter")
+                if (navTrackerList.children.length < 12) {
+                    navTrackerFilter.parentElement.hidden = true
+                }
+                navTrackerFilter.addEventListener("input", (event) => {
+                    const filterText = event.target.value.toLowerCase()
+                    for (const link of navTrackerList.children) {
+                        const hide = !link.innerText.toLowerCase().includes(filterText)
+                        link.hidden = hide
+                    }
+                })
+            </script>
+
+        </nav>
+
+        <main id="mainElement">
+
+            <section class="grid gap-8 pad-4">
+
+            </section>
+
+        </main>
+
+    </div>
 
 </body>
 

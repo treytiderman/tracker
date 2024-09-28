@@ -12,10 +12,38 @@ import (
 
 func Routes_pages(db *sql.DB) {
 	page_Settings(db)
+	page_Trackers(db)
 	page_Tracker_Create(db)
 	page_Tracker_Info(db)
 	page_Tracker_Log(db)
 	page_Tracker_Records(db)
+}
+
+func page_Trackers(db *sql.DB) {
+	tmp, err := template.New("").ParseFiles("./templates/trackers.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	http.HandleFunc("/trackers", func(w http.ResponseWriter, r *http.Request) {
+
+		// Get All Trackers
+		trackers, err := Db_Tracker_All_Get(db)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Println("GET: /trackers")
+
+		// Page Data
+		data := struct {
+			Trackers []Db_Tracker
+		}{
+			Trackers: trackers,
+		}
+
+		tmp.ExecuteTemplate(w, "trackers.html", data)
+	})
 }
 
 func page_Tracker_Info(db *sql.DB) {
