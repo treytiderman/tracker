@@ -1,4 +1,4 @@
-module trey.app
+module github.com/treytiderman/tracker
 
 go 1.23
 
