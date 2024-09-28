@@ -29,6 +29,10 @@
     font-size: .875rem;
 }
 
+.border-bottom {
+    border-bottom: var(--border);
+}
+
 /* Layout */
 
 .tt-layout {
@@ -276,6 +280,15 @@ input[type=file].tt-input {
     border-color: transparent;
 
     width: fit-content;
+}
+
+.tt-link {
+    color: var(--color-text-link);
+}
+
+.tt-link:hover,
+.tt-link:focus-visible {
+    text-decoration: underline;
 }
 
 /* Checkboxes / Radio */

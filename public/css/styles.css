@@ -189,7 +189,7 @@ hr {
 /* --- --- --- Inputs --- --- --- */
 
 a {
-    color: var(--color-text-link);
+    color: var(--color-text-heading);
     text-underline-position: under left;
     text-decoration: none;
     border-radius: 1px;
@@ -263,11 +263,6 @@ input[type=file] {
 select option,
 optgroup {
     background: var(--color-bg);
-}
-
-a:hover,
-a:focus-visible {
-    text-decoration: underline;
 }
 
 a:focus-visible,
