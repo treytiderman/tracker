@@ -82,6 +82,17 @@ VALUES ("Journal", "Searchable journal expecting markdown syntax");
 INSERT INTO entry (tracker_id, entry_notes) VALUES (1, "Dog found a turtle");
 INSERT INTO entry (tracker_id, entry_notes) VALUES (1, "Dog learned to fly");
 INSERT INTO entry (tracker_id, entry_notes) VALUES (1, "Dog ran away");
+INSERT INTO entry (tracker_id, entry_notes) VALUES (1,
+    "# Dogs can fly" || char(10)
+    || "The first `dog` was an *alien* that felt bad about how ruff humans have it" || char(10)
+    || "" || char(10)
+    || "" || char(10)
+    || "Best Boys" || char(10)
+    || "" || char(10)
+    || "- Kraken" || char(10)
+    || "- Bluey" || char(10)
+    || "- Sandman" || char(10)
+);
 INSERT INTO entry (tracker_id, entry_notes) VALUES (1, "No dog still walk");
 
 
