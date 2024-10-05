@@ -21,6 +21,8 @@
     --padding-y: 0.4rem;
     --padding: var(--padding-y) var(--padding-x);
 
+    --max-width-main: 80ch;
+
     /* Light */
     --color-bg: #FFFFFF;
     --color-text: var(--color-zinc-600);
@@ -73,11 +75,11 @@
 
         --color-bg-header: hsl(240, 4%, 13%);
         --color-text-heading: var(--color-zinc-200);
-        
+
         --color-bg-button: hsl(240, 4%, 22%);
         --color-text-button: var(--color-zinc-200);
         --color-border-button: var(--color-zinc-600);
-        
+
         --color-bg-input: hsl(240, 4%, 13%);
         --color-text-input: var(--color-zinc-300);
         --color-border-input: var(--color-border);
@@ -218,6 +220,12 @@ textarea {
     -webkit-tap-highlight-color: transparent;
 }
 
+textarea::-webkit-resizer {
+    background-color: var(--color-placeholder);
+    border-radius: 99px;
+    border: 0.35rem solid var(--color-bg-input);
+}
+
 button,
 select,
 input[type=file],
@@ -324,7 +332,7 @@ input[type="search"]::-webkit-search-cancel-button {
         padding-left: var(--pad-x);
         content: "📅";
     }
-    
+
     input[type="time"]::after {
         padding-left: var(--pad-x);
         content: "🕘";
@@ -368,13 +376,17 @@ tr:hover td {
 }
 
 @media (max-width: 650px) {
-    th, thead {
+
+    th,
+    thead {
         display: none;
     }
+
     tbody {
         display: grid;
         width: 100%;
     }
+
     tr {
         padding: 1rem 0;
         width: 100%;
@@ -384,9 +396,11 @@ tr:hover td {
         display: grid;
         gap: 0.25rem;
     }
+
     tr:last-child {
         border: none;
     }
+
     td {
         padding: 1rem;
         padding: 0;
@@ -398,12 +412,14 @@ tr:hover td {
         grid-template-columns: 8rem auto;
         align-items: center;
     }
+
     td::before {
         content: attr(data-cell);
         padding-right: 0.5rem;
         font-size: 0.875rem;
         color: var(--color-placeholder);
     }
+
     tr:hover td {
         background-color: unset;
     }

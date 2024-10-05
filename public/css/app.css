@@ -59,7 +59,7 @@
 .tt-layout>div>main>section {
     flex-grow: 1;
     height: calc(100svh - 3rem);
-    max-width: 80ch;
+    max-width: var(--max-width-main);
     margin-inline: auto;
 }
 
