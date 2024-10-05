@@ -480,7 +480,7 @@ func Db_Tracker_Field_Delete(db *sql.DB, field_id int) (err error) {
 	sql_string := fmt.Sprintf(
 		`DELETE FROM field WHERE field_id = "%d";
 		DELETE FROM log WHERE field_id = "%d";`,
-		field_id, field_id, field_id, field_id)
+		field_id, field_id)
 
 	fmt.Println("SQL:", sql_string)
 	_, err = db.Exec(sql_string)
