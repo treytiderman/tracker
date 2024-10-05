@@ -85,8 +85,12 @@ func page_Tracker_Info(db *sql.DB) {
 		// Get Id from URL
 		id, err := strconv.Atoi(r.URL.Query().Get("id"))
 		if err != nil {
-			// Set id to first tracker's id if not set in the URL
-			id = trackers[0].Id
+			if len(trackers) > 0 {
+				// Set id to first tracker's id if not set in the URL
+				id = trackers[0].Id
+			} else {
+				id = 1
+			}
 		}
 		fmt.Printf("GET: /tracker-info?id=%d\n", id)
 
@@ -159,8 +163,12 @@ func page_Tracker_Log(db *sql.DB) {
 		// Get Id from URL
 		id, err := strconv.Atoi(r.URL.Query().Get("id"))
 		if err != nil {
-			// Set id to first tracker's id if not set in the URL
-			id = trackers[0].Id
+			if len(trackers) > 0 {
+				// Set id to first tracker's id if not set in the URL
+				id = trackers[0].Id
+			} else {
+				id = 1
+			}
 		}
 		fmt.Printf("GET: /tracker-log?id=%d\n", id)
 
@@ -200,8 +208,12 @@ func page_Tracker_Records(db *sql.DB) {
 		// Get Id from URL
 		id, err := strconv.Atoi(r.URL.Query().Get("id"))
 		if err != nil {
-			// Set id to first tracker's id if not set in the URL
-			id = trackers[0].Id
+			if len(trackers) > 0 {
+				// Set id to first tracker's id if not set in the URL
+				id = trackers[0].Id
+			} else {
+				id = 1
+			}
 		}
 		fmt.Printf("GET: /tracker-records?id=%d\n", id)
 
