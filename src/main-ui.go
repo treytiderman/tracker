@@ -18,7 +18,7 @@ func Start_Web_Server(db *sql.DB) {
 	// Base URL Redirect
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/" {
-			http.Redirect(w, r, "/tracker-info", http.StatusSeeOther)
+			http.Redirect(w, r, "/trackers", http.StatusSeeOther)
 		}
 	})
 
