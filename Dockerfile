@@ -6,7 +6,6 @@
 FROM golang:1.23 AS build
 WORKDIR /app/src
 COPY ./src /app/src
-COPY ./data /app/data
 COPY ./public /app/public
 RUN go build -o tracker
 CMD "/app/src/tracker"
