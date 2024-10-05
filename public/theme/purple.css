@@ -1,4 +1,6 @@
 :root {
+    --max-width-main: 120ch;
+
     --border-width: 1.5px;
     --border-radius: 0.3rem;
     --border-radius-lg: 0.5rem;

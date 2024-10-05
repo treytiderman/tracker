@@ -1,6 +1,8 @@
 :root {
     color-scheme: light;
 
+    --max-width-main: 120ch;
+
     --color-bg: #FFFFFF;
     --color-text: #000000;
     --color-border: var(--color-pink-500);
