@@ -1,5 +1,6 @@
 # SQL Notes
 
+
 ## Install SQLite
 
 For Debian
@@ -12,7 +13,7 @@ For Windows
 
 https://dev.to/dendihandian/installing-sqlite3-in-windows-44eb
 
-Check Version
+Check if installed
 
 ```
 sqlite3 --version
@@ -22,11 +23,14 @@ sqlite3 --version
 ## Run a SQL file
 
 ```
-sqlite3 ./data/sql.db < ./sql/fill.sql
-sqlite3 ./data/sql.db < ./sql/tables-drop.sql
+sqlite3 ./data/sql.db < ./sql/init.sql
 ```
 
-> If sql.db doesn't exist sqlite will make it
+```
+sqlite3 ./data/sql.db < ./sql/temp.sql
+```
+
+> If the file "sql.db" doesn't exist sqlite3 will create it
 
 ## Test SQL Files
 
