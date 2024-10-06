@@ -253,6 +253,9 @@ func page_Tracker_Records(db *sql.DB) {
 
 func page_Tracker_History(db *sql.DB) {
 	funcMap := template.FuncMap{
+		"decimal_places_to_step_size": func(x int) float32 {
+			return 1 / float32(math.Pow10(x))
+		},
 		"render_markdown": func(md string) string {
 			var b []byte
 			for _, bb := range []byte(md) {
