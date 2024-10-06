@@ -3,12 +3,15 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"github.com/russross/blackfriday"
 	"log"
 	"math"
 	"net/http"
 	"strconv"
 	"text/template"
+
+	bf_chroma "github.com/Depado/bfchroma/v2"
+	bf_html "github.com/alecthomas/chroma/v2/formatters/html"
+	bf "github.com/russross/blackfriday/v2"
 )
 
 func Routes_pages(db *sql.DB) {
@@ -251,8 +254,12 @@ func page_Tracker_Records(db *sql.DB) {
 func page_Tracker_History(db *sql.DB) {
 	funcMap := template.FuncMap{
 		"render_markdown": func(md string) string {
-			s := blackfriday.MarkdownCommon([]byte(md))
-			return string(s)
+			arr := bf.Run([]byte(md), bf.WithRenderer(bf_chroma.NewRenderer(
+				bf_chroma.Style("vulcan"),
+				bf_chroma.ChromaOptions(bf_html.WithLineNumbers(true), bf_html.WithClasses(true)),
+			)))
+			str := string(arr)
+			return str
 		},
 	}
 
