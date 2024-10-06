@@ -31,31 +31,22 @@
 </head>
 
 <body class="tt-layout">
+    <script>
+        const dialogs = {}
+    </script>
 
-    <dialog id="dialog1">
+    {{ range $Entry := .Entries }}
+
+    <dialog id="dialog_{{$Entry.Id}}">
         <script>
-            const dialog1 = document.getElementById("dialog1")
-            dialog1.addEventListener("click", (event) => {
-                if (event.target === dialog1) dialog1.close()
+            dialogs["{{$Entry.Id}}"] = document.getElementById("dialog_{{$Entry.Id}}")
+            dialogs["{{$Entry.Id}}"].addEventListener("click", (event) => {
+                if (event.target === dialogs["{{$Entry.Id}}"]) dialogs["{{$Entry.Id}}"].close()
             })
         </script>
-        <form method="dialog" class="tt-dialog grid gap-4 pad-4">
+        <form method="post" action="/htmx/tracker/log-update?tracker_id={{$.Tracker.Id}}&entry_id={{$Entry.Id}}" class="tt-dialog grid gap-8 pad-4">
 
-            <div class="grid">
-                <label class="tt-label" for="num-1">Transaction</label>
-                <input type="number" class="tt-input" id="num-1" name="num-1" placeholder="2000" value=2000 required>
-            </div>
-
-            <div class="grid">
-                <label class="tt-label" for="select-1">Card</label>
-                <select class="tt-input" id="select-1" name="select-1" required>
-                    <option value="Bitcoin">Bitcoin</option>
-                    <option value="Discover">Discover</option>
-                    <option value="Visa">Visa</option>
-                </select>
-            </div>
-
-            <div class="flex-wrap flex-even break-md items-end gap-4">
+            <!-- <div class="flex-wrap flex-even break-md items-end gap-4" hidden>
                 <div class="grid">
                     <label class="tt-label" for="date-1">Date</label>
                     <input type="date" class="tt-input" id="date-1" name="date-1" value="2024-07-07">
@@ -69,23 +60,70 @@
                     </label>
                     <input type="time" class="tt-input" id="time-1" name="time-1" value="20:57">
                 </div>
+            </div> -->
+
+            {{ range $Field := $.Tracker.Fields }}
+
+            {{ if eq $Field.Type "number" }}
+            <div class="grid">
+
+                {{ range $Log := $Entry.Logs }}
+                {{ if eq $Log.Field_Id $Field.Id }}
+                <label class="tt-label" for="log_{{$Log.Id}}">{{ $Field.Name }}</label>
+                <input type="number" class="tt-input" id="log_{{$Log.Id}}" name="log_{{$Log.Id}}"
+                    step="{{ decimal_places_to_step_size $Field.Number.Decimal_Places }}" placeholder="0"
+                    value="{{$Log.Present}}" required>
+                {{ end }}
+                {{ end }}
+
             </div>
+            {{ end }}
+
+            {{ if eq $Field.Type "option" }}
+            <div class="grid">
+
+                {{ range $Log := $Entry.Logs }}
+                {{ if eq $Log.Field_Id $Field.Id }}
+                <label class="tt-label" for="log_{{$Log.Id}}">{{ $Field.Name }}</label>
+                <select class="tt-input" id="log_{{$Log.Id}}" name="log_{{$Log.Id}}" required>
+
+                    {{ range $Option := $Field.Options }}
+                    {{ if eq $Log.Option_Value $Option.Value }}
+                    <option value="{{ $Option.Value }}" selected>{{ $Option.Value }}: {{ $Option.Name }}</option>
+                    {{ else }}
+                    <option value="{{ $Option.Value }}">{{ $Option.Value }}: {{ $Option.Name }}</option>
+                    {{ end }}
+                    {{ end }}
+
+                </select>
+                {{ end }}
+                {{ end }}
+
+            </div>
+            {{ end }}
+
+            {{ end }}
 
             <div class="grid">
-                <label for="tracker_note" class="tt-label">Note</label>
-                <textarea id="tracker_note" name="tracker_note" placeholder="Tracker Note..." rows="3"
-                    class="tt-input">Pay Day</textarea>
+                <label for="entry_note" class="tt-label">Note</label>
+                <textarea id="entry_note" name="entry_note" placeholder="Log Note..." rows="4"
+                    class="tt-input">{{ $Entry.Notes }}</textarea>
             </div>
 
             <div class="flex flex-even gap-4">
                 <button type="button" id="add_field" class="tt-button"
-                    onclick="document.getElementById('dialog1').close()">
+                    onclick="document.getElementById('dialog_{{$Entry.Id}}').close()">
                     Close
                 </button>
-                <input type="submit" value="Update" class="tt-button tt-color-yellow" />
+                <button type="submit" class="tt-button tt-color-yellow">
+                    Update
+                </button>
             </div>
+
         </form>
     </dialog>
+
+    {{ end }}
 
     <header class="tt-header flex items-center gap-4 pad-2">
         <button id="navShowButton" title="Toggle Sidebar / Nav (Ctrl+B)" class="tt-icon-button">
@@ -214,7 +252,7 @@
                     <div class="flex items-center gap-4 dim">
                         <div class="grow">{{ .Timestamp }}</div>
                         <button id="edit_row_1" class="tt-icon-button dim tt-color-yellow-hover" title="Edit Log"
-                            onclick="document.getElementById('dialog1').showModal()">
+                            onclick="document.getElementById('dialog_{{.Id}}').showModal()">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                 stroke-linejoin="round">
