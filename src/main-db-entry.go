@@ -388,7 +388,7 @@ func Db_Entry_All_Filter_Notes_Get(db *sql.DB, search string) (entries []Db_Entr
 
 func Db_Entry_Timestamp_Update(db *sql.DB, entry_id int, timestamp string) (err error) {
 	sql_string := fmt.Sprintf(
-		`UPDATE entry SET timestamp = "%s" WHERE entry_id = %d;`,
+		`UPDATE entry SET timestamp = '%s' WHERE entry_id = %d;`,
 		timestamp, entry_id)
 
 	fmt.Println("SQL:", sql_string)
@@ -399,7 +399,7 @@ func Db_Entry_Timestamp_Update(db *sql.DB, entry_id int, timestamp string) (err 
 
 func Db_Entry_Notes_Update(db *sql.DB, entry_id int, entry_notes string) (err error) {
 	sql_string := fmt.Sprintf(
-		`UPDATE entry SET entry_notes = "%s" WHERE entry_id = %d;`,
+		`UPDATE entry SET entry_notes = '%s' WHERE entry_id = %d;`,
 		entry_notes, entry_id)
 
 	fmt.Println("SQL:", sql_string)
