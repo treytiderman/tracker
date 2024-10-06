@@ -254,7 +254,14 @@ func page_Tracker_Records(db *sql.DB) {
 func page_Tracker_History(db *sql.DB) {
 	funcMap := template.FuncMap{
 		"render_markdown": func(md string) string {
-			arr := bf.Run([]byte(md), bf.WithRenderer(bf_chroma.NewRenderer(
+			var b []byte
+			for _, bb := range []byte(md) {
+				// Parser doesn't like \r (byte: 13)
+				if bb != 13 {
+					b = append(b, bb)
+				}
+			}
+			arr := bf.Run([]byte(b), bf.WithRenderer(bf_chroma.NewRenderer(
 				bf_chroma.Style("vulcan"),
 				bf_chroma.ChromaOptions(bf_html.WithLineNumbers(true), bf_html.WithClasses(true)),
 			)))
