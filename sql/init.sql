@@ -84,75 +84,72 @@ INSERT INTO entry (tracker_id, entry_notes) VALUES (1, "Dog learned to fly");
 INSERT INTO entry (tracker_id, entry_notes) VALUES (1, "Dog ran away");
 INSERT INTO entry (tracker_id, entry_notes) VALUES (1, "No dog still walk");
 INSERT INTO entry (tracker_id, entry_notes) VALUES (1,
-    "# Basic Markdown" || char(10) ||
-    "" || char(10) ||
-    "# Heading 1" || char(10) ||
-    "## Heading 2" || char(10) ||
-    "### Heading 3" || char(10) ||
-    "" || char(10) ||
-    "Text **bold** *italicized* `code` text" || char(10) ||
-    "" || char(10) ||
-    "Horizontal Rule" || char(10) ||
-    "" || char(10) ||
-    "---" || char(10) ||
-    "" || char(10) ||
-    "> Blockquote" || char(10) ||
-    "" || char(10) ||
-    "Ordered List" || char(10) ||
-    "" || char(10) ||
-    "1. First item" || char(10) ||
-    "2. Second item" || char(10) ||
-    "3. Third item" || char(10) ||
-    "" || char(10) ||
-    "Unordered List" || char(10) ||
-    "" || char(10) ||
-    "- First item" || char(10) ||
-    "- Second item" || char(10) ||
-    "- Third item" || char(10) ||
-    "" || char(10) ||
-    "[Google Link](https://www.google.com)" || char(10) ||
-    "" || char(10) ||
-    "![Image Link](image.jpg)" || char(10) ||
-    "" || char(10) ||
-    "" || char(10)
-);
+"# Basic Markdown
+
+# Heading 1
+## Heading 2
+### Heading 3
+
+Text **bold** *italicized* `code` text
+
+Horizontal Rule
+
+---
+
+> Blockquote
+
+Ordered List
+
+1. First item
+2. Second item
+3. Third item
+
+Unordered List
+
+- First item
+- Second item
+- Third item
+
+[Google Link](https://www.google.com)
+
+![Image Link](image.jpg)
+");
 INSERT INTO entry (tracker_id, entry_notes) VALUES (1,
-    "# Extended Markdown" || char(10) ||
-    "" || char(10) ||
-    "~~Strikethrough~~" || char(10) ||
-    "" || char(10) ||
-    "Table" || char(10) ||
-    "" || char(10) ||
-    "| Syntax | Description |" || char(10) ||
-    "| ----------- | ----------- |" || char(10) ||
-    "| Header | Title |" || char(10) ||
-    "| Paragraph | Text |" || char(10) ||
-    "" || char(10) ||
-    "Code Block" || char(10) ||
-    "" || char(10) ||
-    "```json" || char(10) ||
-    "{" || char(10) ||
-    '    "firstName": "John",' || char(10) ||
-    '    "lastName": "Smith",' || char(10) ||
-    '    "age": 25' || char(10) ||
-    "}" || char(10) ||
-    "```" || char(10) ||
-    "" || char(10) ||
-    "" || char(10) ||
-    "```go" || char(10) ||
-    "func Routes_pages(db *sql.DB) {" || char(10) ||
-    "    page_Trackers(db)" || char(10) ||
-    "}" || char(10) ||
-    "```" || char(10) ||
-    "" || char(10) ||
-    "Task List" || char(10) ||
-    "" || char(10) ||
-    "- [x] Task 1" || char(10) ||
-    "- [ ] Task 2" || char(10) ||
-    "- [ ] Task 3" || char(10) ||
-    "" || char(10) ||
-    "" || char(10)
-);
+'# Extended Markdown
+
+~~Strikethrough~~
+
+Table
+
+| Syntax | Description |
+| ----------- | ----------- |
+| Header | Title |
+| Paragraph | Text |
+
+Code Block
+
+```json
+{
+    "firstName": "John",
+    "lastName": "Smith",
+    "age": 25
+}
+```
+
+
+```go
+func Routes_pages(db *sql.DB) {
+    page_Trackers(db)
+}
+```
+
+Task List
+
+- [x] Task 1
+- [ ] Task 2
+- [ ] Task 3
+
+');
 
 -- Tracker 2 - Money
 -- --------------------------------------------------------------------------------------
