@@ -63,7 +63,7 @@ func Db_Entry_Create(db *sql.DB, tracker_id int, entry_notes string, logs []stru
 	Value    int
 }) (entry_id int, err error) {
 	sql_string_entry := fmt.Sprintf(
-		`INSERT INTO entry (tracker_id, entry_notes) VALUES (%d,"%s");`,
+		`INSERT INTO entry (tracker_id, entry_notes) VALUES (%d,'%s');`,
 		tracker_id, entry_notes)
 
 	fmt.Println("SQL:", sql_string_entry)

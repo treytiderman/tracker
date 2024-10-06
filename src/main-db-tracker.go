@@ -88,7 +88,7 @@ func Db_Tracker_Table_Delete(db *sql.DB) (err error) {
 
 func Db_Tracker_Create(db *sql.DB, tracker_name string, tracker_notes string) (tracker_id int, err error) {
 	sql_string := fmt.Sprintf(
-		`INSERT INTO tracker (tracker_name, tracker_notes) VALUES ("%s", "%s");`,
+		`INSERT INTO tracker (tracker_name, tracker_notes) VALUES ('%s', '%s');`,
 		tracker_name, tracker_notes)
 
 	fmt.Println("SQL:", sql_string)
@@ -260,7 +260,7 @@ func Db_Tracker_All_Get(db *sql.DB) (trackers []Db_Tracker, err error) {
 
 func Db_Tracker_Id_Get(db *sql.DB, tracker_name string) (tracker_id int, err error) {
 	sql_string := fmt.Sprintf(
-		`SELECT tracker_id FROM tracker WHERE tracker_name = "%s";`,
+		`SELECT tracker_id FROM tracker WHERE tracker_name = '%s';`,
 		tracker_name)
 
 	row := db.QueryRow(sql_string)
@@ -275,7 +275,7 @@ func Db_Tracker_Id_Get(db *sql.DB, tracker_name string) (tracker_id int, err err
 
 func Db_Tracker_Name_Update(db *sql.DB, tracker_id int, tracker_name string) (err error) {
 	sql_string := fmt.Sprintf(
-		`UPDATE tracker SET tracker_name = "%s" WHERE tracker_id = %d;`,
+		`UPDATE tracker SET tracker_name = '%s' WHERE tracker_id = %d;`,
 		tracker_name, tracker_id)
 
 	fmt.Println("SQL:", sql_string)
@@ -286,7 +286,7 @@ func Db_Tracker_Name_Update(db *sql.DB, tracker_id int, tracker_name string) (er
 
 func Db_Tracker_Notes_Update(db *sql.DB, tracker_id int, tracker_notes string) (err error) {
 	sql_string := fmt.Sprintf(
-		`UPDATE tracker SET tracker_notes = "%s" WHERE tracker_id = %d;`,
+		`UPDATE tracker SET tracker_notes = '%s' WHERE tracker_id = %d;`,
 		tracker_notes, tracker_id)
 
 	fmt.Println("SQL:", sql_string)
@@ -311,7 +311,7 @@ func Db_Tracker_Delete(db *sql.DB, tracker_id int) (err error) {
 
 func Db_Tracker_Field_Number_Create(db *sql.DB, tracker_id int, field_name string, field_notes string, decimal_places int) (field_id int, err error) {
 	sql_string_field := fmt.Sprintf(
-		`INSERT INTO field (tracker_id, field_type, field_name, field_notes) VALUES (%d,"number","%s","%s");`,
+		`INSERT INTO field (tracker_id, field_type, field_name, field_notes) VALUES (%d,"number",'%s','%s');`,
 		tracker_id, field_name, field_notes)
 
 	fmt.Println("SQL:", sql_string_field)
@@ -359,7 +359,7 @@ func Db_Tracker_Field_Number_Update(db *sql.DB, field_id int, decimal_places int
 
 func Db_Tracker_Field_Option_Create(db *sql.DB, tracker_id int, field_name string, field_notes string, options []struct { Value int; Name string }) (field_id int, err error) {
 	sql_string_field := fmt.Sprintf(
-		`INSERT INTO field (tracker_id, field_type, field_name, field_notes) VALUES (%d,"option","%s","%s");`,
+		`INSERT INTO field (tracker_id, field_type, field_name, field_notes) VALUES (%d,"option",'%s','%s');`,
 		tracker_id, field_name, field_notes)
 
 	fmt.Println("SQL:", sql_string_field)
@@ -377,7 +377,7 @@ func Db_Tracker_Field_Option_Create(db *sql.DB, tracker_id int, field_name strin
 
 	for _, option := range options {
 		sql_string_option := fmt.Sprintf(
-			`INSERT INTO option (field_id, option_value, option_name) VALUES (%d,%d,"%s");`,
+			`INSERT INTO option (field_id, option_value, option_name) VALUES (%d,%d,'%s');`,
 			field_id, option.Value, option.Name)
 
 		fmt.Println("SQL:", sql_string_option)
@@ -392,7 +392,7 @@ func Db_Tracker_Field_Option_Create(db *sql.DB, tracker_id int, field_name strin
 
 func Db_Tracker_Field_Option_Add(db *sql.DB, field_id int, option_value int, option_name string) (option_id int, err error) {
 	sql_string := fmt.Sprintf(
-		`INSERT INTO option (field_id, option_value, option_name) VALUES (%d,%d,"%s");`,
+		`INSERT INTO option (field_id, option_value, option_name) VALUES (%d,%d,'%s');`,
 		field_id, option_value, option_name)
 
 	fmt.Println("SQL:", sql_string)
@@ -429,7 +429,7 @@ func Db_Tracker_Field_Option_Value_Update(db *sql.DB, option_id int, option_valu
 
 func Db_Tracker_Field_Option_Name_Update(db *sql.DB, option_id int, option_name string) (err error) {
 	sql_string := fmt.Sprintf(
-		`UPDATE option SET option_name = "%s" WHERE option_id = %d;`,
+		`UPDATE option SET option_name = '%s' WHERE option_id = %d;`,
 		option_name, option_id)
 
 	fmt.Println("SQL:", sql_string)
@@ -456,7 +456,7 @@ func Db_Tracker_Field_Option_Remove(db *sql.DB, option_id int) (err error) {
 
 func Db_Tracker_Field_Name_Update(db *sql.DB, field_id int, field_name string) (err error) {
 	sql_string := fmt.Sprintf(
-		`UPDATE field SET field_name = "%s" WHERE field_id = %d;`,
+		`UPDATE field SET field_name = '%s' WHERE field_id = %d;`,
 		field_name, field_id)
 
 	fmt.Println("SQL:", sql_string)
@@ -467,7 +467,7 @@ func Db_Tracker_Field_Name_Update(db *sql.DB, field_id int, field_name string) (
 
 func Db_Tracker_Field_Notes_Update(db *sql.DB, field_id int, field_notes string) (err error) {
 	sql_string := fmt.Sprintf(
-		`UPDATE field SET field_notes = "%s" WHERE field_id = %d;`,
+		`UPDATE field SET field_notes = '%s' WHERE field_id = %d;`,
 		field_notes, field_id)
 
 	fmt.Println("SQL:", sql_string)
