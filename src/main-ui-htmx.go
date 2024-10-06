@@ -165,6 +165,36 @@ func Routes_htmx(db *sql.DB) {
 		http.Redirect(w, r, url, http.StatusSeeOther)
 	})
 
+	http.HandleFunc("/htmx/tracker/log-delete", func(w http.ResponseWriter, r *http.Request) {
+		READ_ONLY := os.Getenv("READ_ONLY")
+		if READ_ONLY == "true" {
+			return
+		}
+
+		fmt.Printf("POST: %s\n", r.URL)
+
+		// Get Id from URL
+		tracker_id, err := strconv.Atoi(r.URL.Query().Get("tracker_id"))
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		entry_id, err := strconv.Atoi(r.URL.Query().Get("entry_id"))
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		// Delete Entry
+		err = Db_Entry_Delete(db, entry_id)
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		// Reload page
+		url := fmt.Sprintf("/tracker-history?id=%d", tracker_id)
+		http.Redirect(w, r, url, http.StatusSeeOther)
+	})
+
 	http.HandleFunc("/htmx/tracker/name", func(w http.ResponseWriter, r *http.Request) {
 		READ_ONLY := os.Getenv("READ_ONLY")
 		if READ_ONLY == "true" {
