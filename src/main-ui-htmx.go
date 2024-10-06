@@ -84,6 +84,87 @@ func Routes_htmx(db *sql.DB) {
 		http.Redirect(w, r, url, http.StatusSeeOther)
 	})
 
+	http.HandleFunc("/htmx/tracker/log-update", func(w http.ResponseWriter, r *http.Request) {
+		READ_ONLY := os.Getenv("READ_ONLY")
+		if READ_ONLY == "true" {
+			return
+		}
+
+		fmt.Printf("POST: %s\n", r.URL)
+
+		tracker_id, err := strconv.Atoi(r.URL.Query().Get("tracker_id"))
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		entry_id, err := strconv.Atoi(r.URL.Query().Get("entry_id"))
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		err = r.ParseForm()
+		if err != nil {
+			log.Fatalln(err)
+		}
+		fmt.Printf("FORM: %s\n", r.Form.Encode())
+
+		entry_note := r.Form.Get("entry_note")
+
+		err = Db_Entry_Notes_Update(db, entry_id, entry_note)
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		r.Form.Del("tracker_id")
+		r.Form.Del("entry_id")
+		r.Form.Del("entry_note")
+
+		// Get Tracker by Id
+		entries, err := Db_Entry_Get(db, tracker_id)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		for k, v := range r.Form {
+
+			log_id, err := strconv.Atoi(strings.ReplaceAll(k, "log_", ""))
+			if err != nil {
+				log.Fatalln(err)
+			}
+
+			var ll Db_Log
+			for _, entry := range entries {
+				for _, l := range entry.Logs {
+					if l.Id == log_id {
+						ll = l
+					}
+				}
+			}
+
+			log_value := 0
+			if ll.Field_Type == "number" {
+				log_value_float, _ := strconv.ParseFloat(v[0], 64)
+				log_value_adjusted := float64(log_value_float) * float64(math.Pow10(ll.Decimal_Places))
+				log_value = int(math.Floor(log_value_adjusted))
+			} else if ll.Field_Type == "option" {
+				log_value, err = strconv.Atoi(v[0])
+				if err != nil {
+					return
+				}
+			}
+
+			err = Db_Entry_Log_Update(db, log_id, log_value)
+			if err != nil {
+				log.Fatalln(err)
+			}
+
+		}
+
+		// Reload page
+		url := fmt.Sprintf("/tracker-history?id=%d", tracker_id)
+		http.Redirect(w, r, url, http.StatusSeeOther)
+	})
+
 	http.HandleFunc("/htmx/tracker/name", func(w http.ResponseWriter, r *http.Request) {
 		READ_ONLY := os.Getenv("READ_ONLY")
 		if READ_ONLY == "true" {
