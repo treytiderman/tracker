@@ -22,6 +22,7 @@ func Routes_pages(db *sql.DB) {
 	page_Tracker_Log(db)
 	page_Tracker_Records(db)
 	page_Tracker_History(db)
+	page_Entry_View(db)
 }
 
 func page_Trackers(db *sql.DB) {
@@ -267,7 +268,7 @@ func page_Tracker_History(db *sql.DB) {
 			arr := bf.Run([]byte(b), bf.WithRenderer(bf_chroma.NewRenderer(
 				bf_chroma.Style("vulcan"),
 				bf_chroma.ChromaOptions(bf_html.WithLineNumbers(true), bf_html.WithClasses(true)),
-			)))
+			)), bf.WithExtensions(bf.HardLineBreak | bf.CommonExtensions))
 			str := string(arr)
 			return str
 		},
@@ -324,6 +325,72 @@ func page_Tracker_History(db *sql.DB) {
 		}
 
 		tmp.ExecuteTemplate(w, "tracker-history.html", data)
+	})
+}
+
+func page_Entry_View(db *sql.DB) {
+	funcMap := template.FuncMap{
+		"decimal_places_to_step_size": func(x int) float32 {
+			return 1 / float32(math.Pow10(x))
+		},
+		"render_markdown": func(md string) string {
+			var b []byte
+			for _, bb := range []byte(md) {
+				// Parser doesn't like \r (byte: 13)
+				if bb != 13 {
+					b = append(b, bb)
+				}
+			}
+			arr := bf.Run([]byte(b), bf.WithRenderer(bf_chroma.NewRenderer(
+				bf_chroma.Style("vulcan"),
+				bf_chroma.ChromaOptions(bf_html.WithLineNumbers(true), bf_html.WithClasses(true)),
+			)), bf.WithExtensions(bf.HardLineBreak | bf.CommonExtensions))
+			str := string(arr)
+			return str
+		},
+	}
+
+	tmp, err := template.New("").Funcs(funcMap).ParseFiles("./templates/entry-view.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	http.HandleFunc("/entry-view", func(w http.ResponseWriter, r *http.Request) {
+
+		tracker_id, err := strconv.Atoi(r.URL.Query().Get("tracker_id"))
+		if err != nil {
+			tracker_id = 0
+		}
+
+		entry_id, err := strconv.Atoi(r.URL.Query().Get("entry_id"))
+		if err != nil {
+			entry_id = 0
+		}
+
+		fmt.Printf("GET: /entry-view?tracker_id=%dentry_id=%d\n", tracker_id, entry_id)
+
+		// Get Records by Id
+		entries, err := Db_Entry_Get(db, tracker_id)
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+
+		var entry Db_Entry
+		for _, e := range entries {
+			if e.Id == entry_id {
+				entry = e
+			}
+		}
+
+		// Page Data
+		data := struct {
+			Entry  Db_Entry
+		}{
+			Entry:  entry,
+		}
+
+		tmp.ExecuteTemplate(w, "entry-view.html", data)
 	})
 }
 
