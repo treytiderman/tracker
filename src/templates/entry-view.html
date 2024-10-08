@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="tracker app">
+    <title>Entry {{ $.Entry.Timestamp }}</title>
+    <link rel="icon" type="image/x-icon" href="/public/favicon.ico">
+
+    <link rel="stylesheet" href="../public/css/palette.css">
+
+    <link rel="stylesheet" href="../public/css/reset.css">
+    <link rel="stylesheet" href="../public/css/styles.css">
+    <link rel="stylesheet" href="../public/css/layout.css">
+    <link rel="stylesheet" href="../public/css/app.css">
+    <link rel="stylesheet" href="../public/css/chroma.css">
+
+    <script src="../public/js/htmx-v2.0.0.js"></script>
+    <script>
+        const head = document.getElementsByTagName('head')[0];
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+
+        // Set Theme
+        const theme = localStorage.getItem("tracker_setting_theme")
+        link.href = `../public/theme/${theme}`;
+        if (theme) head.appendChild(link);
+    </script>
+</head>
+
+<!-- http://192.168.1.1:8001/entry-view?tracker_id=9&entry_id=3 -->
+
+<body class="tt-layout">
+
+    <main id="mainElement">
+
+        <section class="grid gap-8 pad-4">
+
+            <div id="entry_{{.Entry.Id}}" class="grid gap-4">
+                <div class="flex items-center gap-4 dim">
+                    <div class="grow">{{ .Entry.Timestamp }}</div>
+                    <button class="tt-icon-button dim tt-color-primary-hover" onclick="history.back()" title="Back">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 14 4 9l5-5"/>
+                            <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"/>
+                        </svg>
+                    </button>
+                </div>
+
+                {{ range .Entry.Logs }}
+                <div class="flex items-center gap-4">
+                    <div class="dim"> > </div>
+                    <div>{{ .Present }}</div>
+                    <label class="dim">{{ .Field_Name }}</label>
+                </div>
+                {{ end }}
+
+                <div class="grid gap-4"> {{ render_markdown .Entry.Notes }} </div>
+            </div>
+
+            <script>
+                var date = new Date(document.getElementById("entry_{{.Entry.Id}}").children[0].children[0].innerText)
+                var string = date.toLocaleString().replace(",", "")
+                document.getElementById("entry_{{.Entry.Id}}").children[0].children[0].innerText = string
+            </script>
+
+            <br><br>
+
+        </section>
+
+    </main>
+
+</body>
+
+</html>
