@@ -15,6 +15,7 @@ func Routes_htmx(db *sql.DB) {
 	http.HandleFunc("/htmx/tracker/create", func(w http.ResponseWriter, r *http.Request) {
 		READ_ONLY := os.Getenv("READ_ONLY")
 		if READ_ONLY == "true" {
+			w.Write([]byte("Nope, this is READ_ONLY mode"))
 			return
 		}
 
@@ -87,6 +88,7 @@ func Routes_htmx(db *sql.DB) {
 	http.HandleFunc("/htmx/tracker/log-update", func(w http.ResponseWriter, r *http.Request) {
 		READ_ONLY := os.Getenv("READ_ONLY")
 		if READ_ONLY == "true" {
+			w.Write([]byte("Nope, this is READ_ONLY mode"))
 			return
 		}
 
@@ -168,6 +170,7 @@ func Routes_htmx(db *sql.DB) {
 	http.HandleFunc("/htmx/tracker/log-delete", func(w http.ResponseWriter, r *http.Request) {
 		READ_ONLY := os.Getenv("READ_ONLY")
 		if READ_ONLY == "true" {
+			w.Write([]byte("Nope, this is READ_ONLY mode"))
 			return
 		}
 
@@ -198,6 +201,7 @@ func Routes_htmx(db *sql.DB) {
 	http.HandleFunc("/htmx/tracker/name", func(w http.ResponseWriter, r *http.Request) {
 		READ_ONLY := os.Getenv("READ_ONLY")
 		if READ_ONLY == "true" {
+			w.Write([]byte("Nope, this is READ_ONLY mode"))
 			return
 		}
 
@@ -233,6 +237,7 @@ func Routes_htmx(db *sql.DB) {
 	http.HandleFunc("/htmx/tracker/notes", func(w http.ResponseWriter, r *http.Request) {
 		READ_ONLY := os.Getenv("READ_ONLY")
 		if READ_ONLY == "true" {
+			w.Write([]byte("Nope, this is READ_ONLY mode"))
 			return
 		}
 
@@ -269,6 +274,7 @@ func Routes_htmx(db *sql.DB) {
 	http.HandleFunc("/htmx/tracker/log", func(w http.ResponseWriter, r *http.Request) {
 		READ_ONLY := os.Getenv("READ_ONLY")
 		if READ_ONLY == "true" {
+			w.Write([]byte("Nope, this is READ_ONLY mode"))
 			return
 		}
 
@@ -351,6 +357,7 @@ func Routes_htmx(db *sql.DB) {
 	http.HandleFunc("/htmx/tracker/delete", func(w http.ResponseWriter, r *http.Request) {
 		READ_ONLY := os.Getenv("READ_ONLY")
 		if READ_ONLY == "true" {
+			w.Write([]byte("Nope, this is READ_ONLY mode"))
 			return
 		}
 
