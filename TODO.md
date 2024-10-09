@@ -1,7 +1,8 @@
 # Todo
 
-- [ ] Deleting a tracker causes problems for new trackers?
 - [ ] Add Ctrl+Enter to submit from a "textarea"
+- [ ] Add Backup logic. Backup whole db every day, hour, change?
+- [ ] Rename Records page to Table. Fix table overflow. Limit Notes col to x amount of char
 
 # Ideas
 
