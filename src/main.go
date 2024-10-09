@@ -4,12 +4,16 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
 
 	_ "modernc.org/sqlite"
 )
 
 func main() {
-	db_path := "../data/data.db"
+	db_path := os.Getenv("DB_PATH")
+	if db_path == "" {
+		db_path = "../data/data.db"
+	}
 
 	fmt.Printf("DATABASE SQLite: %s\n", db_path)
 	db, err := sql.Open("sqlite", db_path)

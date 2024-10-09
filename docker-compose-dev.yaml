@@ -12,6 +12,7 @@ services:
     environment:
       TZ: "America/Chicago"
       READ_ONLY: "false"
+      DB_PATH: "../data/dev.db"
     volumes:
       - ./src:/app/src
       - ./data:/app/data
