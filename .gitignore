@@ -3,3 +3,4 @@
 /build
 /bin
 /src/tmp
+!demo.db
