@@ -29,7 +29,7 @@ docker run -d --name tracker -p 8000:8000 -v ./data:/app/data tracker
 Start
 
 ```bash
-docker compose up -d
+docker compose up -d --build
 ```
 
 Stop
