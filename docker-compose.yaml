@@ -1,4 +1,6 @@
-# docker compose up --build
+# Start: docker compose up -d --build
+# Logs: docker compose logs --follow --tail 1000
+# Stop: docker compose down
 
 version: "3.3"
 services:
