@@ -2,7 +2,7 @@
 
 Track your life
 
-
+See the read only [demo](https://demo.trey.app/)
 
 ## Docker
 
