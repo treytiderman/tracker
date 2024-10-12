@@ -148,6 +148,11 @@
 
 /* Alignment for both Flex and Grid */
 
+/* Vertical Top */
+.items-start {
+    align-items: flex-start;
+}
+
 /* Vertical Center */
 .items-center {
     align-items: center;
@@ -155,7 +160,7 @@
 
 /* Vertical End */
 .items-end {
-    align-items: end;
+    align-items: flex-end;
 }
 
 /* Vertical Baseline */
