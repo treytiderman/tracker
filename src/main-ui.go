@@ -25,6 +25,7 @@ func Start_Web_Server(db *sql.DB) {
 	// All Other Routes
 	Routes_pages(db)
 	Routes_htmx(db)
+	Routes_upload()
 
 	// Test Route
 	http.HandleFunc("/time", func(w http.ResponseWriter, r *http.Request) {
