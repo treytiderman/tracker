@@ -223,6 +223,54 @@
                             class="tt-input"></textarea>
                     </div>
 
+                    <div class="grid" hidden>
+                        <label for="image_uploads" class="tt-label">Uploads</label>
+                        <div id="image_uploads" class="flex-wrap items-start gap-4"></div>
+                        <style>
+                            #image_uploads > * {
+                                height: 160px;
+                                aspect-ratio: 4 / 3;
+                                border: var(--border);
+                                border-radius: var(--border-radius);
+                                object-fit: cover;
+                                object-position: left top;
+                            }
+                        </style>
+                    </div>
+
+                    <script>
+                        const entry_notes = document.getElementById("entry_notes")
+                        const image_uploads = document.getElementById("image_uploads")
+
+                        entry_notes.addEventListener("paste", async (event) => {
+                            const items = (event.clipboardData || event.originalEvent.clipboardData).items
+                            for (let index in items) {
+                                const item = items[index]
+                                if (item.kind === "file") {
+                                    
+                                    // Upload image
+                                    const blob = item.getAsFile()
+                                    const res = await fetch("/ui/upload", {
+                                        method: "POST",
+                                        body: blob
+                                    })
+
+                                    // Wait for image path then add image to image_uploads
+                                    const path = await res.text()
+                                    const img = document.createElement("img")
+                                    img.src = path
+                                    img.title = path
+                                    image_uploads.appendChild(img)
+                                    image_uploads.parentElement.hidden = false
+
+                                    // Insert Markdown Link into entry_notes
+                                    event.target.focus()
+                                    document.execCommand('insertText', false, `![alt-text](${path})`)
+                                }
+                            }
+                        })
+                    </script>
+
                     <div class="flex flex-even gap-4">
                         <button type="submit" class="tt-button tt-color-green">Submit</button>
                     </div>
