@@ -1,8 +1,12 @@
 {{ define "app_page" }}
 
-<section class="pad-4">
+<section class="flex-col gap-4 pad-4">
 
     <h2>Test Page</h2>
+
+    <div class="grow">
+        {{ template "monaco" . }}
+    </div>
 
 </section>
 

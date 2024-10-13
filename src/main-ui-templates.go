@@ -15,6 +15,7 @@ import (
 )
 
 func Routes_pages(db *sql.DB) {
+	page_Test(db)
 	page_Settings(db)
 	page_Trackers(db)
 	page_Tracker_Create(db)
@@ -387,6 +388,36 @@ func page_Settings(db *sql.DB) {
 			Tracker Db_Tracker
 		}{
 			Title: "Settings",
+			Trackers: trackers,
+			Tracker: Db_Tracker{
+				Id:   1,
+				Name: "",
+			},
+		}
+
+		tmp.ExecuteTemplate(w, "app", data)
+	})
+}
+
+func page_Test(db *sql.DB) {
+	tmp := parse_templates("page-test")
+	http.HandleFunc("/test", func(w http.ResponseWriter, r *http.Request) {
+
+		// Get All Trackers
+		trackers, err := Db_Tracker_All_Get(db)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Println("GET: /test")
+
+		// Page Data
+		data := struct {
+			Title string
+			Trackers []Db_Tracker
+			Tracker Db_Tracker
+		}{
+			Title: "Test",
 			Trackers: trackers,
 			Tracker: Db_Tracker{
 				Id:   1,
