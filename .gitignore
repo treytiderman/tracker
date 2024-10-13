@@ -1,5 +1,5 @@
 *.db
-/public/upload/*.png
+/public/upload/*
 /.vscode
 /build
 /bin
