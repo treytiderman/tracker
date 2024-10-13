@@ -1,0 +1,93 @@
+{{ define "monaco" }}
+
+<!-- Load Editor -->
+<link rel="stylesheet" data-name="vs/editor/editor.main"
+    href="https://cdn.jsdelivr.net/npm/monaco-editor@0.52.0/min/vs/editor/editor.main.min.css">
+<script>
+    var require = { paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.0/min/vs' } }
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.0/min/vs/loader.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.0/min/vs/editor/editor.main.js"></script>
+
+<script src="../../public/theme-monaco/monaco-theme-black.js"></script>
+<script src="../../public/theme-monaco/monaco-theme-dark.js"></script>
+<script src="../../public/theme-monaco/monaco-theme-white.js"></script>
+
+<!-- Editor -->
+<div id="monaco"></div>
+
+<style>
+    #monaco {
+        height: 100%;
+        overflow: hidden;
+        border: var(--border);
+        border-radius: var(--border-radius);
+    }
+</style>
+
+<script>
+    monaco.editor.defineTheme("black", monaco__theme_black);
+    monaco.editor.defineTheme("dark", monaco__theme_dark);
+    monaco.editor.defineTheme("light", monaco__theme_white);
+    monaco.editor.defineTheme("white", monaco__theme_white);
+
+    const monaco_value = `# Tracker
+
+Track your life
+
+See the read only [demo](https://demo.trey.app/)
+
+## Docker
+
+Requires Docker to be installed and the source code to be downloaded
+
+Start in the \`./\` directory
+
+\`\`\`bash
+cd ~/tracker
+\`\`\`
+
+`
+
+    const monaco__editor = monaco.editor.create(document.getElementById('monaco'), {
+        automaticLayout: true,
+
+        theme: 'dark',
+        minimap: { enabled: false },
+        fontSize: "14px",
+        lineNumbers: "off",
+        folding: false,
+
+        language: 'markdown',
+        value: monaco_value,
+    })
+
+    function monaco__value_set(value, language = "markdown") {
+        monaco.editor.setModelLanguage(monaco__editor.getModel(), language)
+        monaco__editor.setValue(value)
+    }
+
+    function monaco__value_get() {
+        return monaco__editor.getValue()
+    }
+
+    function monaco__theme_set(theme) {
+        monaco.editor.setTheme(theme || "dark")
+    }
+
+    function monaco__line_numbers_set(show) {
+        monaco__editor.updateOptions({
+            lineNumbers: show ? "on" : "off",
+            folding: show,
+        });
+    }
+
+    function monaco__font_size_set(number) {
+        if (number >= 8 && number <= 36) {
+            monaco__editor.updateOptions({ fontSize: number });
+        }
+    }
+
+</script>
+
+{{ end }}
