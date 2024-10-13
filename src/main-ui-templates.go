@@ -25,18 +25,46 @@ func Routes_pages(db *sql.DB) {
 	page_Entry_View(db)
 }
 
-func page_Trackers(db *sql.DB) {
+func parse_templates(page string) *template.Template {
 	funcMap := template.FuncMap{
 		"increment": func(i int) int {
 			return i + 1
 		},
+		"decimal_places_to_step_size": func(x int) float32 {
+			return 1 / float32(math.Pow10(x))
+		},
+		"render_markdown": func(md string) string {
+			var b []byte
+			for _, bb := range []byte(md) {
+				// Parser doesn't like \r (byte: 13)
+				if bb != 13 {
+					b = append(b, bb)
+				}
+			}
+			arr := bf.Run([]byte(b), bf.WithRenderer(bf_chroma.NewRenderer(
+				bf_chroma.Style("vulcan"),
+				bf_chroma.ChromaOptions(bf_html.WithLineNumbers(true), bf_html.WithClasses(true)),
+			)), bf.WithExtensions(bf.HardLineBreak|bf.CommonExtensions))
+			str := string(arr)
+			return str
+		},
 	}
 
-	tmp, err := template.New("").Funcs(funcMap).ParseFiles("./templates/trackers.html")
+	tmp, err := template.New("").Funcs(funcMap).ParseGlob("./components/*")
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	tmp, err = tmp.ParseFiles("./pages/" + page + ".html")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return tmp
+}
+
+func page_Trackers(db *sql.DB) {
+	tmp := parse_templates("page-trackers")
 	http.HandleFunc("/trackers", func(w http.ResponseWriter, r *http.Request) {
 
 		// Get All Trackers
@@ -57,29 +85,26 @@ func page_Trackers(db *sql.DB) {
 
 		// Page Data
 		data := struct {
+			Title    string
+			Tracker  Db_Tracker
 			Trackers []Db_Tracker
 			Entries  []Db_Entry
 		}{
+			Title:    "Trackers",
 			Trackers: trackers,
-			Entries:  entries,
+			Tracker: Db_Tracker{
+				Id:   1,
+				Name: "",
+			},
+			Entries: entries,
 		}
 
-		tmp.ExecuteTemplate(w, "trackers.html", data)
+		tmp.ExecuteTemplate(w, "app", data)
 	})
 }
 
 func page_Tracker_Info(db *sql.DB) {
-	funcMap := template.FuncMap{
-		"decimal_places_to_step_size": func(x int) float32 {
-			return 1 / float32(math.Pow10(x))
-		},
-	}
-
-	tmp, err := template.New("").Funcs(funcMap).ParseFiles("./templates/tracker-info.html")
-	if err != nil {
-		log.Fatal(err)
-	}
-
+	tmp := parse_templates("page-tracker-info")
 	http.HandleFunc("/tracker-info", func(w http.ResponseWriter, r *http.Request) {
 
 		// Get All Trackers
@@ -108,23 +133,21 @@ func page_Tracker_Info(db *sql.DB) {
 
 		// Page Data
 		data := struct {
+			Title    string
 			Trackers []Db_Tracker
 			Tracker  Db_Tracker
 		}{
-			Tracker:  tracker,
+			Title:    "Info / " + tracker.Name,
 			Trackers: trackers,
+			Tracker:  tracker,
 		}
 
-		tmp.ExecuteTemplate(w, "tracker-info.html", data)
+		tmp.ExecuteTemplate(w, "app", data)
 	})
 }
 
 func page_Tracker_Create(db *sql.DB) {
-	tmp, err := template.New("").ParseFiles("./templates/tracker-create.html")
-	if err != nil {
-		log.Fatal(err)
-	}
-
+	tmp := parse_templates("page-tracker-create")
 	http.HandleFunc("/tracker-create", func(w http.ResponseWriter, r *http.Request) {
 
 		// Get All Trackers
@@ -137,27 +160,24 @@ func page_Tracker_Create(db *sql.DB) {
 
 		// Page Data
 		data := struct {
+			Title    string
 			Trackers []Db_Tracker
+			Tracker  Db_Tracker
 		}{
+			Title:    "Create Tracker",
 			Trackers: trackers,
+			Tracker: Db_Tracker{
+				Id:   1,
+				Name: "",
+			},
 		}
 
-		tmp.ExecuteTemplate(w, "tracker-create.html", data)
+		tmp.ExecuteTemplate(w, "app", data)
 	})
 }
 
 func page_Tracker_Log(db *sql.DB) {
-	funcMap := template.FuncMap{
-		"decimal_places_to_step_size": func(x int) float32 {
-			return 1 / float32(math.Pow10(x))
-		},
-	}
-
-	tmp, err := template.New("").Funcs(funcMap).ParseFiles("./templates/tracker-log.html")
-	if err != nil {
-		log.Fatal(err)
-	}
-
+	tmp := parse_templates("page-tracker-log")
 	http.HandleFunc("/tracker-log", func(w http.ResponseWriter, r *http.Request) {
 
 		// Get All Trackers
@@ -186,23 +206,21 @@ func page_Tracker_Log(db *sql.DB) {
 
 		// Page Data
 		data := struct {
+			Title    string
 			Trackers []Db_Tracker
 			Tracker  Db_Tracker
 		}{
+			Title:    "Log / " + tracker.Name,
 			Tracker:  tracker,
 			Trackers: trackers,
 		}
 
-		tmp.ExecuteTemplate(w, "tracker-log.html", data)
+		tmp.ExecuteTemplate(w, "app", data)
 	})
 }
 
 func page_Tracker_Records(db *sql.DB) {
-	tmp, err := template.New("").ParseFiles("./templates/tracker-records.html")
-	if err != nil {
-		log.Fatal(err)
-	}
-
+	tmp := parse_templates("page-tracker-records")
 	http.HandleFunc("/tracker-records", func(w http.ResponseWriter, r *http.Request) {
 
 		// Get All Trackers
@@ -239,46 +257,23 @@ func page_Tracker_Records(db *sql.DB) {
 
 		// Page Data
 		data := struct {
+			Title    string
 			Tracker  Db_Tracker
 			Entries  []Db_Entry
 			Trackers []Db_Tracker
 		}{
+			Title:    "Records / " + tracker.Name,
 			Trackers: trackers,
 			Tracker:  tracker,
 			Entries:  entries,
 		}
 
-		tmp.ExecuteTemplate(w, "tracker-records.html", data)
+		tmp.ExecuteTemplate(w, "app", data)
 	})
 }
 
 func page_Tracker_History(db *sql.DB) {
-	funcMap := template.FuncMap{
-		"decimal_places_to_step_size": func(x int) float32 {
-			return 1 / float32(math.Pow10(x))
-		},
-		"render_markdown": func(md string) string {
-			var b []byte
-			for _, bb := range []byte(md) {
-				// Parser doesn't like \r (byte: 13)
-				if bb != 13 {
-					b = append(b, bb)
-				}
-			}
-			arr := bf.Run([]byte(b), bf.WithRenderer(bf_chroma.NewRenderer(
-				bf_chroma.Style("vulcan"),
-				bf_chroma.ChromaOptions(bf_html.WithLineNumbers(true), bf_html.WithClasses(true)),
-			)), bf.WithExtensions(bf.HardLineBreak | bf.CommonExtensions))
-			str := string(arr)
-			return str
-		},
-	}
-
-	tmp, err := template.New("").Funcs(funcMap).ParseFiles("./templates/tracker-history.html")
-	if err != nil {
-		log.Fatal(err)
-	}
-
+	tmp := parse_templates("page-tracker-history")
 	http.HandleFunc("/tracker-history", func(w http.ResponseWriter, r *http.Request) {
 
 		// Get All Trackers
@@ -315,46 +310,23 @@ func page_Tracker_History(db *sql.DB) {
 
 		// Page Data
 		data := struct {
+			Title    string
 			Tracker  Db_Tracker
 			Entries  []Db_Entry
 			Trackers []Db_Tracker
 		}{
+			Title:    "History / " + tracker.Name,
 			Trackers: trackers,
 			Tracker:  tracker,
 			Entries:  entries,
 		}
 
-		tmp.ExecuteTemplate(w, "tracker-history.html", data)
+		tmp.ExecuteTemplate(w, "app", data)
 	})
 }
 
 func page_Entry_View(db *sql.DB) {
-	funcMap := template.FuncMap{
-		"decimal_places_to_step_size": func(x int) float32 {
-			return 1 / float32(math.Pow10(x))
-		},
-		"render_markdown": func(md string) string {
-			var b []byte
-			for _, bb := range []byte(md) {
-				// Parser doesn't like \r (byte: 13)
-				if bb != 13 {
-					b = append(b, bb)
-				}
-			}
-			arr := bf.Run([]byte(b), bf.WithRenderer(bf_chroma.NewRenderer(
-				bf_chroma.Style("vulcan"),
-				bf_chroma.ChromaOptions(bf_html.WithLineNumbers(true), bf_html.WithClasses(true)),
-			)), bf.WithExtensions(bf.HardLineBreak | bf.CommonExtensions))
-			str := string(arr)
-			return str
-		},
-	}
-
-	tmp, err := template.New("").Funcs(funcMap).ParseFiles("./templates/entry-view.html")
-	if err != nil {
-		log.Fatal(err)
-	}
-
+	tmp := parse_templates("page-entry-view")
 	http.HandleFunc("/entry-view", func(w http.ResponseWriter, r *http.Request) {
 
 		tracker_id, err := strconv.Atoi(r.URL.Query().Get("tracker_id"))
@@ -385,21 +357,19 @@ func page_Entry_View(db *sql.DB) {
 
 		// Page Data
 		data := struct {
-			Entry  Db_Entry
+			Title string
+			Entry Db_Entry
 		}{
-			Entry:  entry,
+			Title: "Entry",
+			Entry: entry,
 		}
 
-		tmp.ExecuteTemplate(w, "entry-view.html", data)
+		tmp.ExecuteTemplate(w, "app_page_only", data)
 	})
 }
 
 func page_Settings(db *sql.DB) {
-	tmp, err := template.New("").ParseFiles("./templates/settings.html")
-	if err != nil {
-		log.Fatal(err)
-	}
-
+	tmp := parse_templates("page-settings")
 	http.HandleFunc("/settings", func(w http.ResponseWriter, r *http.Request) {
 
 		// Get All Trackers
@@ -412,11 +382,18 @@ func page_Settings(db *sql.DB) {
 
 		// Page Data
 		data := struct {
+			Title string
 			Trackers []Db_Tracker
+			Tracker Db_Tracker
 		}{
+			Title: "Settings",
 			Trackers: trackers,
+			Tracker: Db_Tracker{
+				Id:   1,
+				Name: "",
+			},
 		}
 
-		tmp.ExecuteTemplate(w, "settings.html", data)
+		tmp.ExecuteTemplate(w, "app", data)
 	})
 }

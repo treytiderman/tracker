@@ -1,0 +1,43 @@
+{{ define "settings" }}
+
+<div class="grid">
+    <label for="settingTheme" class="tt-label"> Theme </label>
+    <select id="settingTheme" name="settingTheme" class="tt-input">
+        <option value="" selected>Auto (Default)</option>
+    </select>
+    <script>
+        const currentTheme = localStorage.getItem("tracker_setting_theme")
+        const settingThemeSelect = document.getElementById("settingTheme")
+
+        // Get all available themes
+        fetch("./public/theme").then(async (res) => {
+                const text = await res.text()
+                text.split("\n").forEach(line => {
+                    if (line.includes(`<a href=`)) {
+                        const t = line.split(`">`)[1].split(`</a>`)[0]
+                        const o = document.createElement("option")
+                        o.innerText = t
+                        o.value = t
+                        settingThemeSelect.appendChild(o)
+                    }
+                })
+
+                // Set the current theme as selected
+                for (const child of settingThemeSelect.children) {
+                    if (child.value == currentTheme) child.selected = true
+                    if (currentTheme === false) settingThemeSelect.children[0].selected = true
+                }
+            }).catch((err) => {
+                console.log(err)
+            })
+
+        settingThemeSelect.addEventListener("change", (event) => {
+            const theme = event.target.value
+            localStorage.setItem("tracker_setting_theme", theme)
+            if (theme === "") localStorage.removeItem("tracker_setting_theme")
+            location.reload()
+        })
+    </script>
+</div>
+
+{{ end }}

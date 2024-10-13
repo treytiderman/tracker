@@ -1,0 +1,21 @@
+{{ define "app_body" }}
+
+<body class="tt-layout">
+    {{ template "app_header" . }}
+    <div>
+        {{ template "app_nav" . }}
+        <main>
+            {{ template "app_page" . }}
+        </main>
+    </div>
+</body>
+
+<style>
+    .app_body_layout {
+        height: 100svh;
+        display: flex;
+        flex-direction: column;
+    }
+</style>
+
+{{ end }}

@@ -1,0 +1,80 @@
+{{ define "tracker_records" }}
+
+<div>
+    <table class="w-full">
+
+        <thead>
+            <tr>
+                <th class=""> Timestamp </th>
+                {{ range .Tracker.Fields }}
+                {{ if eq .Type "number" }}
+                <th class="text-right"> {{ .Name }} </th>
+                {{ else }}
+                <th class=""> {{ .Name }} </th>
+                {{ end }}
+                {{ end }}
+                <th class=""> Note </th>
+                <!-- <th class=""> </th> -->
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {{ range .Entries }}
+
+            <tr id="entry_{{.Id}}">
+                <td data-cell="Timestamp" title="{{ .Timestamp }}" class="mono text-sm">
+                    {{ .Timestamp }}
+                </td>
+
+                {{ range .Logs }}
+                {{ if eq .Field_Type "number" }}
+                <td data-cell="{{ .Field_Name }}" class="text-right" title="{{ .Value }}">
+                    {{ .Present }}
+                </td>
+                {{ else }}
+                <td data-cell="{{ .Field_Name }}" class="" title="{{ .Value }}"> {{ .Present }} </td>
+                {{ end }}
+                {{ end }}
+
+                <td data-cell="Note" class=""> {{ .Notes }} </td>
+                <!-- <td data-cell="Action" class="text-right">
+                    <button id="edit_row_1" class="tt-icon-button dim tt-color-yellow-hover"
+                        title="Edit Log" onclick="document.getElementById('dialog1').showModal()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+                            <path d="m15 5 4 4" />
+                        </svg>
+                    </button>
+                </td> -->
+            </tr>
+            <script>
+                var date = new Date(document.getElementById("entry_{{.Id}}").children[0].innerText)
+                var string = date.toLocaleString().replace(",", "")
+                document.getElementById("entry_{{.Id}}").children[0].innerText = string
+            </script>
+
+            {{ else }}
+
+            <tr>
+                <td>No Logs...</td>
+                {{ range .Tracker.Fields }}
+                <td></td>
+                {{ end }}
+                <td></td>
+                <!-- <td></td> -->
+            </tr>
+
+            {{ end }}
+
+        </tbody>
+
+    </table>
+</div>
+
+<br><br>
+
+{{ end }}

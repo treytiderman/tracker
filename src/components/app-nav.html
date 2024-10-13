@@ -1,0 +1,101 @@
+{{ define "app_nav" }}
+
+<nav id="navElement">
+    <div class="tt-nav-heading">
+        <h4> Page </h4>
+    </div>
+
+    <div id="app_nav__pages" class="tt-nav-links pad-2">
+        <a data-path="/trackers" href="./trackers"> All Trackers </a>
+        <a data-path="/tracker-create" href="./tracker-create"> Create Tracker </a>
+        <a data-path="/tracker-info" href="./tracker-info?id={{.Tracker.Id}}">Info</a>
+        <a data-path="/tracker-log" href="./tracker-log?id={{.Tracker.Id}}">Log</a>
+        <a data-path="/tracker-records" href="./tracker-records?id={{.Tracker.Id}}">Records</a>
+        <a data-path="/tracker-history" href="./tracker-history?id={{.Tracker.Id}}">History</a>
+        <a data-path="/tracker-chart" href="./tracker-chart?id={{.Tracker.Id}}" hidden>Chart</a>
+        <a data-path="/tracker-reminders" href="./tracker-reminders?id={{.Tracker.Id}}" hidden>Reminders</a>
+        <a data-path="/tracker-goals" href="./tracker-goals?id={{.Tracker.Id}}" hidden>Goals</a>
+        <a data-path="/settings" href="./settings">Settings</a>
+    </div>
+    <script>
+        const app_nav__pages = document.getElementById("app_nav__pages")
+        for (const child of app_nav__pages.children) {
+            if (child.dataset.path === document.location.pathname) {
+                child.classList.add("active")
+            }
+        }
+    </script>
+
+    <hr>
+
+    <div class="tt-nav-heading">
+        <h4> Tracker </h4>
+        <a href="./tracker-create" id="navCreateTracker" title="Create New Tracker"
+            class="dim tt-icon-button tt-color-green-hover">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14" />
+                <path d="M12 5v14" />
+            </svg>
+        </a>
+    </div>
+
+    <div class="tt-nav-filter pad-2">
+        <input type="search" id="navTrackerFilter" name="navTrackerFilter" placeholder="filter...">
+        <label for="navTrackerFilter" title="Filter Tracker List">
+            <span hidden>Filter Trackers</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round"
+                stroke-linejoin="round">
+                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+            </svg>
+        </label>
+    </div>
+
+    <div id="navTrackerList" class="tt-nav-links pad-2">
+        {{ range .Trackers }}
+        {{ if eq $.Tracker.Id .Id }}
+        <a href="./tracker-info?id={{.Id}}" class="active"> {{ .Name }} </a>
+        {{ else }}
+        <a href="./tracker-info?id={{.Id}}"> {{ .Name }} </a>
+        {{ end }}
+        {{ end }}
+    </div>
+
+    <script>
+        const navElement = document.getElementById("navElement")
+        const navShowButton = document.getElementById("navShowButton")
+        navShowButton.addEventListener("click", () => {
+            localStorage.setItem("tracker_nav_hide", !navElement.hidden)
+            navElement.hidden = !navElement.hidden
+        })
+
+        if (localStorage.getItem("tracker_nav_hide") === "true") navElement.hidden = true
+        if (document.body.offsetWidth < 800) navElement.hidden = true
+
+        document.addEventListener('keydown', (event) => {
+            if (event.code === 'KeyB' && event.ctrlKey === true) {
+                event.preventDefault()
+                navElement.hidden = !navElement.hidden
+            }
+        })
+    </script>
+
+    <script>
+        const navTrackerList = document.getElementById("navTrackerList")
+        const navTrackerFilter = document.getElementById("navTrackerFilter")
+        if (navTrackerList.children.length < 12) {
+            navTrackerFilter.parentElement.hidden = true
+        }
+        navTrackerFilter.addEventListener("input", (event) => {
+            const filterText = event.target.value.toLowerCase()
+            for (const link of navTrackerList.children) {
+                const hide = !link.innerText.toLowerCase().includes(filterText)
+                link.hidden = hide
+            }
+        })
+    </script>
+
+</nav>
+
+{{end}}

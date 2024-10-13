@@ -1,0 +1,33 @@
+{{ define "entry_view" }}
+
+<div id="entry_{{.Entry.Id}}" class="grid gap-4">
+    <div class="flex items-center gap-4 dim">
+        <div class="grow">{{ .Entry.Timestamp }}</div>
+        <button class="tt-icon-button dim tt-color-primary-hover" onclick="history.back()" title="Back">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 14 4 9l5-5"/>
+                <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"/>
+            </svg>
+        </button>
+    </div>
+
+    {{ range .Entry.Logs }}
+    <div class="flex items-center gap-4">
+        <div class="dim"> > </div>
+        <div>{{ .Present }}</div>
+        <label class="dim">{{ .Field_Name }}</label>
+    </div>
+    {{ end }}
+
+    <div class="grid gap-4"> {{ render_markdown .Entry.Notes }} </div>
+</div>
+
+<script>
+    var date = new Date(document.getElementById("entry_{{.Entry.Id}}").children[0].children[0].innerText)
+    var string = date.toLocaleString().replace(",", "")
+    document.getElementById("entry_{{.Entry.Id}}").children[0].children[0].innerText = string
+</script>
+
+<br><br>
+
+{{ end }}

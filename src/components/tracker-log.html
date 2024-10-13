@@ -1,0 +1,134 @@
+{{ define "tracker_log" }}
+
+<form class="grid gap-8 pad-4" action="/htmx/tracker/log?id={{.Tracker.Id}}" method="post">
+
+    {{ range .Tracker.Fields }}
+
+    {{ if eq .Type "number" }}
+    <div class="grid">
+        <label class="tt-label" for="field_{{.Id}}">{{ .Name }}</label>
+        <input type="number" class="tt-input" id="field_{{.Id}}" name="field_{{.Id}}" placeholder="0" value=""
+            step="{{ decimal_places_to_step_size .Number.Decimal_Places }}" required>
+    </div>
+    {{ end }}
+
+    {{ if eq .Type "option" }}
+    <div class="grid">
+        <label class="tt-label" for="field_{{.Id}}">{{ .Name }}</label>
+        <select class="tt-input" id="field_{{.Id}}" name="field_{{.Id}}" required>
+            {{ range .Options }}
+            <option value="{{ .Value }}">{{ .Value }}: {{ .Name }}</option>
+            {{ end }}
+        </select>
+    </div>
+    {{ end }}
+
+    {{ end }}
+
+    <div class="flex-wrap flex-even break-md items-end gap-8" hidden>
+        <div class="grid">
+            <label class="tt-label" for="entry_date">Date</label>
+            <input type="date" class="tt-input" id="entry_date" name="entry_date">
+        </div>
+
+        <div class="grid gap-1">
+            <label class="flex gap-2 w-full" for="entry_time">
+                <div>Time</div>
+                <div id="entry_timezone" class="dim" style="margin-left: auto;">GMT-0500 (Central Daylight
+                    Time)</div>
+            </label>
+            <input type="time" class="tt-input" id="entry_time" name="entry_time">
+        </div>
+
+        <script>
+            const date = new Date()
+
+            let yyyy = date.getFullYear()
+            let dd = date.getDate()
+            let mm = date.getMonth() + 1 // january is 0
+
+            if (dd < 10) dd = '0' + dd
+            if (mm < 10) mm = '0' + mm
+
+            const today_date = yyyy + '-' + mm + '-' + dd
+            document.getElementById("entry_date").value = today_date
+
+            let hh = date.getHours()
+            let mmm = date.getMinutes()
+
+            if (hh < 10) hh = '0' + hh
+            if (mmm < 10) mmm = '0' + mmm
+
+            const today_time = hh + ':' + mmm
+            document.getElementById("entry_time").value = today_time
+
+            const today_timezone = date.toTimeString().substring(9)
+            document.getElementById("entry_timezone").innerText = today_timezone
+
+        </script>
+    </div>
+
+    <div class="grid">
+        <label for="entry_notes" class="tt-label">Notes</label>
+        <textarea id="entry_notes" name="entry_notes" placeholder="Log Note..." rows="4"
+            class="tt-input"></textarea>
+    </div>
+
+    <div class="grid" hidden>
+        <label for="image_uploads" class="tt-label" title="content that has been uploaded">Content</label>
+        <div id="image_uploads" class="flex-wrap items-start gap-4"></div>
+        <style>
+            #image_uploads > * {
+                height: 160px;
+                aspect-ratio: 4 / 3;
+                border: var(--border);
+                border-radius: var(--border-radius);
+                object-fit: cover;
+                object-position: left top;
+            }
+        </style>
+    </div>
+
+    <script>
+        const entry_notes = document.getElementById("entry_notes")
+        const image_uploads = document.getElementById("image_uploads")
+
+        entry_notes.addEventListener("paste", async (event) => {
+            const items = (event.clipboardData || event.originalEvent.clipboardData).items
+            for (let index in items) {
+                const item = items[index]
+                if (item.kind === "file") {
+                    
+                    // Upload image
+                    const blob = item.getAsFile()
+                    const res = await fetch("/ui/upload", {
+                        method: "POST",
+                        body: blob
+                    })
+
+                    // Wait for image path then add image to image_uploads
+                    const path = await res.text()
+                    const img = document.createElement("img")
+                    img.src = path
+                    img.title = path
+                    image_uploads.appendChild(img)
+                    image_uploads.parentElement.hidden = false
+
+                    // Insert Markdown Link into entry_notes
+                    event.target.focus()
+                    document.execCommand('insertText', false, `![alt-text](${path})`)
+                }
+            }
+        })
+    </script>
+
+    <div class="flex flex-even gap-4">
+        <button type="submit" class="tt-button tt-color-green">Submit</button>
+    </div>
+</form>
+
+<div class="grid gap-8 pad-4">
+    <a href="./trackers" class="tt-icon-button dim bright-hover"> All Trackers </a>
+</div>
+
+{{ end }}
