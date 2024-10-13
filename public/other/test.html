@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en" style="background: black;">
+
+<head>
+    <meta charset="utf-8">
+    <title>Monaco editor no loader</title>
+    <link rel="stylesheet" data-name="vs/editor/editor.main" href="https://cdn.jsdelivr.net/npm/monaco-editor@0.52.0/min/vs/editor/editor.main.min.css">
+</head>
+
+<body style="margin: 0; overflow: hidden;">
+    <div id="container" style="height: 100dvh; border:1px solid black;"></div>
+    <script>
+        var require = { paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.0/min/vs' } }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.0/min/vs/loader.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.0/min/vs/editor/editor.main.js"></script>
+    <script>
+        monaco.editor.create(document.getElementById('container'), {
+            value: `# Tracker
+
+Track your life
+
+See the read only [demo](https://demo.trey.app/)
+
+## Docker
+
+Requires Docker to be installed and the source code to be downloaded
+
+Start in the \`./\` directory
+
+\`\`\`bash
+cd ~/tracker
+\`\`\`
+`,
+            language: 'markdown',
+            theme: 'vs-dark',
+        });
+    </script>
+</body>
+
+</html>
