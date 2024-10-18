@@ -205,15 +205,25 @@ func page_Tracker_Log(db *sql.DB) {
 			log.Fatal(err)
 		}
 
+		// Get Records by Id
+		entries, err := Db_Entry_Get(db, id)
+		if err != nil {
+			log.Fatal(err)
+			w.Write([]byte(err.Error()))
+			return
+		}
+
 		// Page Data
 		data := struct {
 			Title    string
 			Trackers []Db_Tracker
 			Tracker  Db_Tracker
+			Entries  []Db_Entry
 		}{
 			Title:    "Log / " + tracker.Name,
 			Tracker:  tracker,
 			Trackers: trackers,
+			Entries:  entries,
 		}
 
 		tmp.ExecuteTemplate(w, "app", data)
