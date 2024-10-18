@@ -1,6 +1,6 @@
 {{ define "app_nav" }}
 
-<nav id="navElement">
+<nav id="navElement" class="app_nav_nav flex-col">
     <div class="tt-nav-heading">
         <h4> Page </h4>
     </div>
@@ -17,14 +17,6 @@
         <a data-path="/tracker-goals" href="./tracker-goals?id={{.Tracker.Id}}" hidden>Goals</a>
         <a data-path="/settings" href="./settings">Settings</a>
     </div>
-    <script>
-        const app_nav__pages = document.getElementById("app_nav__pages")
-        for (const child of app_nav__pages.children) {
-            if (child.dataset.path === document.location.pathname) {
-                child.classList.add("active")
-            }
-        }
-    </script>
 
     <hr>
 
@@ -62,40 +54,154 @@
         {{ end }}
     </div>
 
-    <script>
-        const navElement = document.getElementById("navElement")
-        const navShowButton = document.getElementById("navShowButton")
-        navShowButton.addEventListener("click", () => {
-            localStorage.setItem("tracker_nav_hide", !navElement.hidden)
-            navElement.hidden = !navElement.hidden
-        })
-
-        if (localStorage.getItem("tracker_nav_hide") === "true") navElement.hidden = true
-        if (document.body.offsetWidth < 800) navElement.hidden = true
-
-        document.addEventListener('keydown', (event) => {
-            if (event.code === 'KeyB' && event.ctrlKey === true) {
-                event.preventDefault()
-                navElement.hidden = !navElement.hidden
-            }
-        })
-    </script>
-
-    <script>
-        const navTrackerList = document.getElementById("navTrackerList")
-        const navTrackerFilter = document.getElementById("navTrackerFilter")
-        if (navTrackerList.children.length < 12) {
-            navTrackerFilter.parentElement.hidden = true
-        }
-        navTrackerFilter.addEventListener("input", (event) => {
-            const filterText = event.target.value.toLowerCase()
-            for (const link of navTrackerList.children) {
-                const hide = !link.innerText.toLowerCase().includes(filterText)
-                link.hidden = hide
-            }
-        })
-    </script>
-
 </nav>
+
+<script>
+    const app_nav__pages = document.getElementById("app_nav__pages")
+    for (const child of app_nav__pages.children) {
+        if (child.dataset.path === document.location.pathname) {
+            child.classList.add("active")
+        }
+    }
+
+    const navElement = document.getElementById("navElement")
+    const navShowButton = document.getElementById("navShowButton")
+    navShowButton.addEventListener("click", () => {
+        localStorage.setItem("tracker_nav_hide", !navElement.hidden)
+        navElement.hidden = !navElement.hidden
+    })
+
+    if (localStorage.getItem("tracker_nav_hide") === "true") navElement.hidden = true
+    if (document.body.offsetWidth < 800) navElement.hidden = true
+
+    document.addEventListener('keydown', (event) => {
+        if (event.code === 'KeyB' && event.ctrlKey === true) {
+            event.preventDefault()
+            navElement.hidden = !navElement.hidden
+        }
+    })
+
+    const navTrackerList = document.getElementById("navTrackerList")
+    const navTrackerFilter = document.getElementById("navTrackerFilter")
+    if (navTrackerList.children.length < 12) {
+        navTrackerFilter.parentElement.hidden = true
+    }
+    navTrackerFilter.addEventListener("input", (event) => {
+        const filterText = event.target.value.toLowerCase()
+        for (const link of navTrackerList.children) {
+            const hide = !link.innerText.toLowerCase().includes(filterText)
+            link.hidden = hide
+        }
+    })
+</script>
+
+<style>
+    .app_nav_nav {
+        min-width: 16rem;
+        max-width: 36rem;
+        border-right: var(--border);
+        background-color: var(--color-bg-header);
+    }
+
+    @media (max-width: 800px) {
+        .app_nav_nav {
+            width: 100%;
+            max-width: unset;
+            border-right: none;
+
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+
+            z-index: 99;
+        }
+    }
+
+    .tt-nav-heading {
+        font-weight: bold;
+        padding: 0.5rem;
+
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding-bottom: 0;
+    }
+
+    .tt-nav-heading h4 {
+        color: var(--color-placeholder);
+        padding: 0.25rem;
+        flex-grow: 1;
+    }
+
+    .tt-nav-filter {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .tt-nav-filter label {
+        padding: 0.25rem;
+        color: var(--color-placeholder);
+        border: var(--border);
+        border-radius: var(--border-radius);
+        border-color: transparent;
+    }
+
+    .tt-nav-filter input {
+        width: 100%;
+        padding: 0.1rem var(--padding-x);
+
+        color: var(--color-text-input);
+        background-color: var(--color-bg);
+
+        border: var(--border);
+        border-radius: var(--border-radius);
+    }
+
+    .tt-nav-links {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .tt-nav-links a {
+        padding: 0.1rem var(--padding-x);
+        text-decoration: none;
+
+        color: var(--color-text);
+
+        border: var(--border);
+        border-radius: var(--border-radius);
+        border-color: transparent;
+    }
+
+    .tt-nav-links a.disabled {
+        color: var(--color-placeholder);
+        cursor: not-allowed;
+    }
+
+    .tt-nav-links a.active {
+        color: var(--color-text-button);
+        background-color: var(--color-bg-button);
+        border-color: var(--color-border-button);
+    }
+
+    @media (hover: hover) {
+        .tt-nav-links a:hover {
+            background-color: var(--color-bg-button);
+        }
+    }
+
+    #navTrackerList {
+        height: 100%;
+        height: 100px;
+        flex-grow: 1;
+        overflow: auto;
+        padding: 0.25rem 0.5rem 0.5rem 0.5rem;
+    }
+
+</style>
 
 {{end}}

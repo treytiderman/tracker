@@ -6,14 +6,14 @@
 
 {{ range $Entry := .Entries }}
 
-<dialog id="dialog_{{$Entry.Id}}">
+<dialog id="dialog_{{$Entry.Id}}" class="tt-dialog">
     <script>
         dialogs["{{$Entry.Id}}"] = document.getElementById("dialog_{{$Entry.Id}}")
         dialogs["{{$Entry.Id}}"].addEventListener("click", (event) => {
             if (event.target === dialogs["{{$Entry.Id}}"]) dialogs["{{$Entry.Id}}"].close()
         })
     </script>
-    <form method="post" action="/htmx/tracker/log-update?tracker_id={{$.Tracker.Id}}&entry_id={{$Entry.Id}}" class="tt-dialog grid gap-8 pad-4">
+    <form class="grid gap-8 pad-4" method="post" action="/htmx/tracker/log-update?tracker_id={{$.Tracker.Id}}&entry_id={{$Entry.Id}}">
 
         <!-- <div class="flex-wrap flex-even break-md items-end gap-4" hidden>
             <div class="grid">

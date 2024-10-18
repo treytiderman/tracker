@@ -1,20 +1,19 @@
 {{ define "app_body" }}
 
-<body class="tt-layout">
+<body class="flex-col" style="height: 100svh;">
     {{ template "app_header" . }}
-    <div>
+    <div class="flex" style="position: relative;">
         {{ template "app_nav" . }}
-        <main>
+        <main class="grow overflow" style="height: calc(100svh - 3rem);">
             {{ template "app_page" . }}
         </main>
     </div>
 </body>
 
 <style>
-    .app_body_layout {
-        height: 100svh;
-        display: flex;
-        flex-direction: column;
+    main>* {
+        margin-inline: auto;
+        max-width: var(--max-width-main);
     }
 </style>
 

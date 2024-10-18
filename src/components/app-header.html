@@ -1,6 +1,6 @@
 {{ define "app_header" }}
 
-<header class="tt-header flex items-center gap-4 pad-2">
+<header class="app_header_header flex items-center gap-4 pad-2">
 
     <button id="navShowButton" idz="app_header__nav_show" class="tt-icon-button" title="Toggle Sidebar / Nav (Ctrl+B)">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -29,5 +29,20 @@
     const app_header__title = document.getElementById("app_header__title")
     app_header__title.innerHTML = app_header__title.innerHTML.replaceAll("/", '<div class="mono dim"> / </div>')
 </script>
+
+<style>
+    .app_header_header {
+        height: 3rem;
+        color: var(--color-text-heading);
+        border-bottom: var(--border);
+        background-color: var(--color-bg-header);
+    }
+
+    #app_header__title {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>
 
 {{ end }}
