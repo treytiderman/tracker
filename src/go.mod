@@ -5,7 +5,7 @@ go 1.23
 require modernc.org/sqlite v1.30.1
 
 require (
-	github.com/alecthomas/chroma/v2 v2.2.0 // indirect
+	github.com/alecthomas/chroma/v2 v2.2.0
 	github.com/dlclark/regexp2 v1.4.0 // indirect
 )
 
