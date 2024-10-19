@@ -2,12 +2,13 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"os"
 
 	_ "modernc.org/sqlite"
 )
+
+var db *sql.DB
 
 func main() {
 	db_path := os.Getenv("DB_PATH")
@@ -15,11 +16,12 @@ func main() {
 		db_path = "../data/data.db"
 	}
 
-	fmt.Printf("DATABASE SQLite: %s\n", db_path)
-	db, err := sql.Open("sqlite", db_path)
+	var err error
+	db, err = sql.Open("sqlite", db_path)
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Printf("DATABASE SQLite: %s\n", db_path)
 	defer db.Close()
 
 	err = Db_Tracker_Table_Create(db)
@@ -32,5 +34,5 @@ func main() {
 		log.Fatal(err)
 	}
 
-	Start_Web_Server(db)
+	http_server_start()
 }
