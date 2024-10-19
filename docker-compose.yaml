@@ -11,6 +11,7 @@ services:
     environment:
       TZ: "America/Chicago"
       READ_ONLY: "false"
+      PASSWORD: "password"
     volumes:
       - ./data:/app/data
     restart: unless-stopped

@@ -13,6 +13,7 @@ services:
       TZ: "America/Chicago"
       READ_ONLY: "false"
       DB_PATH: "../data/dev.db"
+      PASSWORD: "password"
     volumes:
       - ./src:/app/src
       - ./data:/app/data

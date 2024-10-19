@@ -12,6 +12,7 @@ services:
       TZ: "America/Chicago"
       READ_ONLY: "true"
       DB_PATH: "../data/demo.db"
+      PASSWORD: "password"
     volumes:
       - ./data:/app/data
     restart: unless-stopped
