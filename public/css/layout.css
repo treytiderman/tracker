@@ -34,6 +34,12 @@
     margin-inline: auto;
 }
 
+/* Article Layout */
+
+.flow>*:not(:first-child) {
+    margin-top: 1.2em;
+}
+
 /* Flex */
 
 .flex {

@@ -1,5 +1,6 @@
 /* https://swapoff.org/chroma/playground/ */
-/* PreWrapper */ .chroma {
+/* PreWrapper */
+/* .chroma {
     color: #e6edf3;
     background-color: #202022;
     padding: 0.5rem;
@@ -8,7 +9,7 @@
     width: 100%;
     overflow: auto;
     font-size: 0.875rem;
-}
+} */
 
 /* .chroma .ln { display: none; } */
 
