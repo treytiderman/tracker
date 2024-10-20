@@ -220,7 +220,7 @@ func page_tracker_records(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	entries, err := Db_Entry_All_Get(db)
+	entries, err := Db_Entry_Get(db, id)
 	if err != nil {
 		log.Fatal(err)
 		return
