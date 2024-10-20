@@ -19,11 +19,11 @@ func handle_routes_api_htmx(mux *http.ServeMux) {
 	mux.Handle("POST /htmx/tracker/create", mw_logger(mw_auth(http.HandlerFunc(htmx_tracker_create))))
 	mux.Handle("POST /htmx/tracker/name", mw_logger(mw_auth(http.HandlerFunc(htmx_tracker_name))))
 	mux.Handle("POST /htmx/tracker/notes", mw_logger(mw_auth(http.HandlerFunc(htmx_tracker_notes))))
-	mux.Handle("POST /htmx/tracker/delete", mw_logger(mw_auth(http.HandlerFunc(htmx_tracker_delete))))
+	mux.Handle("GET /htmx/tracker/delete", mw_logger(mw_auth(http.HandlerFunc(htmx_tracker_delete))))
 
 	mux.Handle("POST /htmx/tracker/log", mw_logger(mw_auth(http.HandlerFunc(htmx_log_create))))
 	mux.Handle("POST /htmx/tracker/log-update", mw_logger(mw_auth(http.HandlerFunc(htmx_log_update))))
-	mux.Handle("POST /htmx/tracker/log-delete", mw_logger(mw_auth(http.HandlerFunc(htmx_log_delete))))
+	mux.Handle("GET /htmx/tracker/log-delete", mw_logger(mw_auth(http.HandlerFunc(htmx_log_delete))))
 
 	mux.Handle("POST /ui/upload", mw_logger(mw_auth(http.HandlerFunc(htmx_file_upload))))
 }
