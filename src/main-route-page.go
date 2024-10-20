@@ -106,7 +106,7 @@ func page_trackers(w http.ResponseWriter, r *http.Request) {
 }
 
 func page_tracker_create(w http.ResponseWriter, r *http.Request) {
-	tmp := parse_templates("page-tracker-info")
+	tmp := parse_templates("page-tracker-create")
 
 	trackers, err := Db_Tracker_All_Get(db)
 	if err != nil {
