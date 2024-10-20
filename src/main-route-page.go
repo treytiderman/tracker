@@ -47,7 +47,10 @@ func parse_templates(page string) *template.Template {
 			}
 			arr := bf.Run([]byte(b), bf.WithRenderer(bf_chroma.NewRenderer(
 				bf_chroma.Style("vulcan"),
-				bf_chroma.ChromaOptions(bf_html.WithLineNumbers(true), bf_html.WithClasses(true)),
+				bf_chroma.ChromaOptions(
+					bf_html.WithLineNumbers(false),
+					bf_html.WithClasses(true),
+				),
 			)), bf.WithExtensions(bf.HardLineBreak|bf.CommonExtensions))
 			str := string(arr)
 			return str
