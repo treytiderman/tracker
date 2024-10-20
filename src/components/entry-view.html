@@ -19,7 +19,61 @@
     </div>
     {{ end }}
 
-    <div class="grid gap-4"> {{ render_markdown .Entry.Notes }} </div>
+    <div class="tt-markdown flow"> {{ render_markdown .Entry.Notes }} </div>
+    <script>
+        var md = document.querySelector(".tt-markdown")
+        var md_count = 0
+
+        for (const child1 of md.children) {
+            if (child1.tagName === "UL") {
+                for (const child2 of child1.children) {
+                    if (child2.tagName === "LI") {
+                        if (child2.innerHTML.startsWith("[ ] ") || child2.innerHTML.startsWith("[x] ")) {
+                            md_count += 1
+
+                            const div = document.createElement("div")
+                            div.classList = "flex items-baseline gap-4"
+
+                            const input = document.createElement("input")
+                            input.classList = "tt-input"
+                            input.type = "checkbox"
+                            input.name = "chx-{{.Entry.Id}}-" + md_count
+                            input.id = "chx-{{.Entry.Id}}-" + md_count
+                            div.appendChild(input)
+
+                            const label = document.createElement("label")
+                            label.classList = "tt-label-inline"
+                            label.htmlFor = "chx-{{.Entry.Id}}-" + md_count
+                            label.innerText = "error label"
+                            label.style.fontSize = "var(--font-size)"
+                            div.appendChild(label)
+
+                            // Empty Checkbox
+                            if (child2.innerHTML.startsWith("[ ] ")) {
+                                label.innerText = child2.innerText.replace("[ ] ", "")
+                                child2.style.display = "block"
+                                child2.innerHTML = ""
+                                child2.appendChild(div)
+                            }
+
+                            // Checked Checkbox
+                            if (child2.innerHTML.startsWith("[x] ")) {
+                                const split = child2.innerHTML.split(/<br>(.*)/s)
+                                label.innerText = split[0].replace("[x] ", "")
+                                input.checked = true
+                                child2.style.display = "block"
+                                const child3 = document.createElement('div')
+                                child2.innerHTML = ""
+                                child2.appendChild(div)
+                                child2.appendChild(child3)
+                                child3.outerHTML = split[1]
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 </div>
 
 <script>
