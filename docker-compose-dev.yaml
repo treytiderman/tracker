@@ -2,7 +2,6 @@
 # Logs: docker compose -f docker-compose-dev.yaml logs --follow --tail 1000
 # Stop: docker compose -f docker-compose-dev.yaml down
 
-version: "3.3"
 services:
   dev:
     image: cosmtrek/air

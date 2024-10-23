@@ -2,7 +2,6 @@
 # Logs: docker compose logs --follow --tail 1000
 # Stop: docker compose down
 
-version: "3.3"
 services:
   app:
     build: ./
