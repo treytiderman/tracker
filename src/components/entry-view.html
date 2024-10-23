@@ -19,9 +19,9 @@
     </div>
     {{ end }}
 
-    <div class="tt-markdown flow"> {{ render_markdown .Entry.Notes }} </div>
+    <div id="entry_notes_{{.Entry.Id}}" class="tt-markdown flow"> {{ render_markdown .Entry.Notes }} </div>
     <script>
-        var md = document.querySelector(".tt-markdown")
+        var md = document.getElementById("entry_notes_{{.Entry.Id}}")
         var md_count = 0
 
         for (const child1 of md.children) {
@@ -39,6 +39,7 @@
                             input.type = "checkbox"
                             input.name = "chx-{{.Entry.Id}}-" + md_count
                             input.id = "chx-{{.Entry.Id}}-" + md_count
+                            input.addEventListener("click", event => event.preventDefault())
                             div.appendChild(input)
 
                             const label = document.createElement("label")

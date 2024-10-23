@@ -259,8 +259,7 @@ input[type=checkbox].tt-input:checked {
 .tt-markdown blockquote {
     border-left: var(--border);
     border-left-width: 4px;
-    padding-left: 1rem;
-    color: var(--color-placeholder);
+    padding: 0.25rem 1rem;
     background-color: var(--color-bg-input);
 }
 
@@ -280,8 +279,7 @@ input[type=checkbox].tt-input:checked {
 }    
 
 .tt-markdown>ol,
-.tt-markdown>ul,
-.tt-markdown>dl {
+.tt-markdown>ul {
     margin-left: 1rem;
 }
 
