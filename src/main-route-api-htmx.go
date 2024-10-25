@@ -16,6 +16,8 @@ func handle_routes_api_htmx(mux *http.ServeMux) {
 	mux.Handle("GET /htmx/token", mw_logger(http.HandlerFunc(auth_token_get)))   // test cookie
 	mux.Handle("POST /htmx/token", mw_logger(http.HandlerFunc(auth_token_post))) // set cookie if password correct
 
+	mux.Handle("/htmx/test/form", mw_logger(http.HandlerFunc(htmx_test_form)))
+
 	mux.Handle("POST /htmx/tracker/create", mw_logger(mw_read_only(mw_auth(http.HandlerFunc(htmx_tracker_create)))))
 	mux.Handle("POST /htmx/tracker/name", mw_logger(mw_read_only(mw_auth(http.HandlerFunc(htmx_tracker_name)))))
 	mux.Handle("POST /htmx/tracker/notes", mw_logger(mw_read_only(mw_auth(http.HandlerFunc(htmx_tracker_notes)))))
@@ -91,6 +93,22 @@ func auth_token_post(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Test
+
+func htmx_test_form(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		return
+	}
+
+	for key, value := range r.Form {
+		val := strings.ReplaceAll(value[0], "\n", "\\n")
+		log.Printf("FORM: %s = %s\n", key, val)
+	}
+
+	w.Write([]byte("ok"))
+}
+
 // Tracker
 
 func htmx_tracker_create(w http.ResponseWriter, r *http.Request) {
@@ -160,29 +178,29 @@ func htmx_tracker_create(w http.ResponseWriter, r *http.Request) {
 
 func htmx_tracker_name(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
-		if err != nil {
-			return
-		}
-		fmt.Printf("FORM: %s\n", r.Form.Encode())
+	if err != nil {
+		return
+	}
+	log.Printf("FORM: %s\n", r.Form.Encode())
 
-		// Get Id from URL
-		id, err := strconv.Atoi(r.URL.Query().Get("id"))
-		if err != nil {
-			return
-		}
+	// Get Id from URL
+	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	if err != nil {
+		return
+	}
 
-		// Get Tracker Name from Form Data
-		tracker_name := r.Form.Get("tracker_name")
+	// Get Tracker Name from Form Data
+	tracker_name := r.Form.Get("tracker_name")
 
-		// Update Tracker Name
-		err = Db_Tracker_Name_Update(db, id, tracker_name)
-		if err != nil {
-			return
-		}
+	// Update Tracker Name
+	err = Db_Tracker_Name_Update(db, id, tracker_name)
+	if err != nil {
+		return
+	}
 
-		// Reload page
-		url := fmt.Sprintf("/tracker-info?id=%d", id)
-		http.Redirect(w, r, url, http.StatusSeeOther)
+	// Reload page
+	url := fmt.Sprintf("/tracker-info?id=%d", id)
+	http.Redirect(w, r, url, http.StatusSeeOther)
 }
 
 func htmx_tracker_notes(w http.ResponseWriter, r *http.Request) {
@@ -190,7 +208,7 @@ func htmx_tracker_notes(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-	fmt.Printf("FORM: %s\n", r.Form.Encode())
+	log.Printf("FORM: %s\n", r.Form.Encode())
 
 	// Get Id from URL
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
@@ -200,7 +218,6 @@ func htmx_tracker_notes(w http.ResponseWriter, r *http.Request) {
 
 	// Get Tracker Notes from Form Data
 	tracker_notes := r.Form.Get("tracker_notes")
-	fmt.Printf("POST: /htmx/tracker/notes?id=%d&tracker_notes=%s\n", id, tracker_notes)
 
 	// Update Tracker Notes
 	err = Db_Tracker_Notes_Update(db, id, tracker_notes)
@@ -236,7 +253,7 @@ func htmx_log_create(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-	fmt.Printf("FORM: %s\n", r.Form.Encode())
+	log.Printf("FORM: %s\n", r.Form.Encode())
 
 	// Get Id from URL
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
@@ -320,7 +337,7 @@ func htmx_log_update(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	fmt.Printf("FORM: %s\n", r.Form.Encode())
+	log.Printf("FORM: %s\n", r.Form.Encode())
 
 	entry_note := r.Form.Get("entry_note")
 
@@ -412,7 +429,7 @@ func htmx_file_upload(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("FILE SAVED: %s\n", path)
+	log.Printf("FILE SAVED: %s\n", path)
 	defer img.Close()
 
 	_, err = io.Copy(img, r.Body)

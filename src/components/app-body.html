@@ -4,13 +4,17 @@
     {{ template "app_header" . }}
     <div class="flex" style="position: relative;">
         {{ template "app_nav" . }}
-        <main class="grow overflow" style="height: calc(100svh - 3rem);">
+        <main class="grow overflow">
             {{ template "app_page" . }}
         </main>
     </div>
 </body>
 
 <style>
+    main {
+        height: calc(100svh - 3rem);
+        scroll-padding-top: 1rem;
+    }
     main>* {
         height: 100%;
         margin-inline: auto;

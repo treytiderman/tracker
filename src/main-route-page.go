@@ -330,20 +330,40 @@ func page_settings(w http.ResponseWriter, r *http.Request) {
 
 	tmp.ExecuteTemplate(w, "app", struct {
 		Title    string
-		Tracker  Db_Tracker
 		Trackers []Db_Tracker
+		Tracker  Db_Tracker
 	}{
 		Title:    "Trackers",
-		Trackers: trackers,
 		Tracker:  Db_Tracker{Id: 1, Name: ""},
+		Trackers: trackers,
 	})
 }
 
 func page_test(w http.ResponseWriter, r *http.Request) {
 	tmp := parse_templates("page-test")
+
+	trackers, err := Db_Tracker_All_Get(db)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	if err != nil {
+		id = 1
+	}
+
+	tracker, err := Db_Tracker_Get(db, id)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	tmp.ExecuteTemplate(w, "app", struct {
 		Title string
+		Tracker  Db_Tracker
+		Trackers []Db_Tracker
 	}{
 		Title: "Test",
+		Trackers: trackers,
+		Tracker:  tracker,
 	})
 }

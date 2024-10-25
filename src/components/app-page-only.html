@@ -6,9 +6,23 @@
 {{ template "app_head" . }}
 
 <body>
-    {{ template "app_page" . }}
+    <main>
+        {{ template "app_page" . }}
+    </main>
 </body>
 
 </html>
+
+<style>
+    main {
+        height: 100svh;
+        scroll-padding-top: 1rem;
+    }
+    main>* {
+        height: 100%;
+        margin-inline: auto;
+        max-width: var(--max-width-main);
+    }
+</style>
 
 {{ end }}
