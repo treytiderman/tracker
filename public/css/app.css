@@ -54,7 +54,7 @@ select {
 
 .tt-label {
     display: block;
-    padding-bottom: 0.25rem;
+    /* padding-bottom: 0.25rem; */
     /* color: var(--color-placeholder); */
 }
 
