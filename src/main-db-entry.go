@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+
 	_ "modernc.org/sqlite"
 )
 
@@ -62,12 +63,8 @@ func Db_Entry_Create(db *sql.DB, tracker_id int, entry_notes string, logs []stru
 	Field_Id int
 	Value    int
 }) (entry_id int, err error) {
-	sql_string_entry := fmt.Sprintf(
-		`INSERT INTO entry (tracker_id, entry_notes) VALUES (%d,'%s');`,
-		tracker_id, entry_notes)
-
-	fmt.Println("SQL:", sql_string_entry)
-	result, err := db.Exec(sql_string_entry)
+	fmt.Printf("SQL: INSERT INTO entry (tracker_id, entry_notes) VALUES (%d,'%s');", tracker_id, entry_notes)
+	result, err := db.Exec("INSERT INTO entry (tracker_id, entry_notes) VALUES (?,?);", tracker_id, entry_notes)
 	if err != nil {
 		return 0, err
 	}
@@ -76,16 +73,11 @@ func Db_Entry_Create(db *sql.DB, tracker_id int, entry_notes string, logs []stru
 	if err != nil {
 		return 0, err
 	}
-
 	entry_id = int(id)
 
 	for _, log := range logs {
-		sql_string_log := fmt.Sprintf(
-			`INSERT INTO log (entry_id, field_id, log_value) VALUES (%d,%d,%d);`,
-			entry_id, log.Field_Id, log.Value)
-
-		fmt.Println("SQL:", sql_string_log)
-		_, err = db.Exec(sql_string_log)
+		fmt.Printf("SQL: INSERT INTO log (entry_id, field_id, log_value) VALUES (%d,%d,%d);", entry_id, log.Field_Id, log.Value)
+		_, err = db.Exec("INSERT INTO log (entry_id, field_id, log_value) VALUES (?,?,?);", entry_id, log.Field_Id, log.Value)
 		if err != nil {
 			return 0, err
 		}
@@ -398,13 +390,8 @@ func Db_Entry_Timestamp_Update(db *sql.DB, entry_id int, timestamp string) (err 
 }
 
 func Db_Entry_Notes_Update(db *sql.DB, entry_id int, entry_notes string) (err error) {
-	sql_string := fmt.Sprintf(
-		`UPDATE entry SET entry_notes = '%s' WHERE entry_id = %d;`,
-		entry_notes, entry_id)
-
-	fmt.Println("SQL:", sql_string)
-	_, err = db.Exec(sql_string)
-
+	fmt.Printf("SQL: UPDATE entry SET entry_notes = '%s' WHERE entry_id = %d;", entry_notes, entry_id)
+	_, err = db.Exec("UPDATE entry SET entry_notes = ? WHERE entry_id = ?;", entry_notes, entry_id)
 	return err
 }
 

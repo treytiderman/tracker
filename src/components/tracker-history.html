@@ -9,11 +9,11 @@
 <dialog id="dialog_{{$Entry.Id}}" class="tt-dialog">
     <script>
         dialogs["{{$Entry.Id}}"] = document.getElementById("dialog_{{$Entry.Id}}")
-        dialogs["{{$Entry.Id}}"].addEventListener("click", (event) => {
+        dialogs["{{$Entry.Id}}"].addEventListener("pointerdown", (event) => {
             if (event.target === dialogs["{{$Entry.Id}}"]) dialogs["{{$Entry.Id}}"].close()
         })
     </script>
-    <form class="grid gap-8 pad-4" method="post"
+    <form class="flex-col gap-8 pad-4 h-full" method="post"
         action="/htmx/tracker/log-update?tracker_id={{$.Tracker.Id}}&entry_id={{$Entry.Id}}">
 
         <!-- <div class="flex-wrap flex-even break-md items-end gap-4" hidden>
@@ -74,10 +74,10 @@
 
         {{ end }}
 
-        <div class="grid">
+        <div class="flex-col grow">
             <label for="entry_note" class="tt-label">Note</label>
-            <textarea id="entry_note" name="entry_note" placeholder="Log Note..." rows="4"
-                class="tt-input">{{ $Entry.Notes }}</textarea>
+            <textarea id="entry_note" name="entry_note" placeholder="Log Note..." rows="4" class="tt-input grow"
+                style="resize: none">{{ $Entry.Notes }}</textarea>
         </div>
 
         <div class="flex flex-even gap-4">
@@ -147,7 +147,62 @@
         </div>
         {{ end }}
 
-        <div class="grid gap-4"> {{ render_markdown $Entry.Notes }} </div>
+        <div id="entry_notes_{{$Entry.Id}}" class="tt-markdown flow"> {{ render_markdown $Entry.Notes }} </div>
+        <script>
+            var md = document.getElementById("entry_notes_{{$Entry.Id}}")
+            var md_count = 0
+    
+            for (const child1 of md.children) {
+                if (child1.tagName === "UL") {
+                    for (const child2 of child1.children) {
+                        if (child2.tagName === "LI") {
+                            if (child2.innerHTML.startsWith("[ ] ") || child2.innerHTML.startsWith("[x] ")) {
+                                md_count += 1
+    
+                                const div = document.createElement("div")
+                                div.classList = "flex items-baseline gap-4"
+    
+                                const input = document.createElement("input")
+                                input.classList = "tt-input"
+                                input.type = "checkbox"
+                                input.name = "chx-{{$Entry.Id}}-" + md_count
+                                input.id = "chx-{{$Entry.Id}}-" + md_count
+                                input.addEventListener("click", event => event.preventDefault())
+                                div.appendChild(input)
+    
+                                const label = document.createElement("label")
+                                label.classList = "tt-label-inline"
+                                label.htmlFor = "chx-{{$Entry.Id}}-" + md_count
+                                label.innerText = "error label"
+                                label.style.fontSize = "var(--font-size)"
+                                div.appendChild(label)
+    
+                                // Empty Checkbox
+                                if (child2.innerHTML.startsWith("[ ] ")) {
+                                    label.innerText = child2.innerText.replace("[ ] ", "")
+                                    child2.style.display = "block"
+                                    child2.innerHTML = ""
+                                    child2.appendChild(div)
+                                }
+    
+                                // Checked Checkbox
+                                if (child2.innerHTML.startsWith("[x] ")) {
+                                    const split = child2.innerHTML.split(/<br>(.*)/s)
+                                    label.innerText = split[0].replace("[x] ", "")
+                                    input.checked = true
+                                    child2.style.display = "block"
+                                    const child3 = document.createElement('div')
+                                    child2.innerHTML = ""
+                                    child2.appendChild(div)
+                                    child2.appendChild(child3)
+                                    child3.outerHTML = split[1]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        </script>
     </div>
 
     <script>

@@ -1,71 +1,33 @@
-# Markdown Cheat Sheet
+# Markdown Cheat Sheet (Heading 1)
 
-Thanks for visiting [The Markdown Guide](https://www.markdownguide.org)!
+To create paragraphs, use a blank line to separate one or more lines of text.
 
-This Markdown cheat sheet provides a quick overview of all the Markdown syntax elements. It can't cover every edge case, so if you need more information about any of these elements, refer to the reference guides for [basic syntax](https://www.markdownguide.org/basic-syntax/) and [extended syntax](https://www.markdownguide.org/extended-syntax/).
+- Basic Syntax
+    1. Italic *text*
+    2. Bold **text**
+    3. Code `text`
+- Extended Syntax
+    1. ~~Strikethrough text~~
+    2. ==Highlight text==
+    3. Subscript H~2~O
+    4. Superscript X^2^
+- Links
+    - [Markdown Cheat Sheet](https://www.markdownguide.org/cheat-sheet/)
+    - [Duck Duck Go](https://duckduckgo.com)
+    - [Google](https://google.com)
+    - [Heading 2](#blocks)
 
-## Basic Syntax
+Task List
 
-These are the elements outlined in John Gruber's original design document. All Markdown applications support these elements.
+- [x] Write the press release
+- [ ] Update the website
+- [ ] Contact the media
 
-### Heading
+## Images / Blockquotes / Code Blocks / Table (Heading 2) {#blocks}
 
-# H1
-## H2
-### H3
+![Image Alt Text](https://picsum.photos/800/200)
 
-### Bold
-
-**bold text**
-
-### Italic
-
-*italicized text*
-
-### Blockquote
-
-> blockquote
-
-### Ordered List
-
-1. First item
-2. Second item
-3. Third item
-
-### Unordered List
-
-- First item
-- Second item
-- Third item
-
-### Code
-
-`code`
-
-### Horizontal Rule
-
----
-
-### Link
-
-[Markdown Guide](https://www.markdownguide.org)
-
-### Image
-
-![alt text](https://www.markdownguide.org/assets/images/tux.png)
-
-## Extended Syntax
-
-These elements extend the basic syntax by adding additional features. Not all Markdown applications support these elements.
-
-### Table
-
-| Syntax | Description |
-| ----------- | ----------- |
-| Header | Title |
-| Paragraph | Text |
-
-### Fenced Code Block
+> Blockquotes
 
 ```json
 {
@@ -75,45 +37,7 @@ These elements extend the basic syntax by adding additional features. Not all Ma
 }
 ```
 
-### Footnote
-
-Here's a sentence with a footnote. [^1]
-
-[^1]: This is the footnote.
-
-### Heading ID
-
-### My Great Heading {#custom-id}
-
-### Definition List
-
-term
-: definition
-
-### Strikethrough
-
-~~The world is flat.~~
-
-### Task List
-
-- [x] Write the press release
-- [ ] Update the website
-- [ ] Contact the media
-
-### Emoji
-
-That is so funny! :joy:
-
-(See also [Copying and Pasting Emoji](https://www.markdownguide.org/extended-syntax/#copying-and-pasting-emoji))
-
-### Highlight
-
-I need to highlight these ==very important words==.
-
-### Subscript
-
-H~2~O
-
-### Superscript
-
-X^2^
+| Syntax | Description |
+| ----------- | ----------- |
+| Header | Title |
+| Paragraph | Text |

@@ -4,8 +4,8 @@ const monaco__theme_dark = {
     rules: [],
     colors: {
         "editor.background": "#202022",
-        "editor.selectionBackground": "#27272a",
-        "editor.inactiveSelectionBackground": "#27272a",
+        "editor.selectionBackground": "#52525b",
+        "editor.inactiveSelectionBackground": "#36363a",
         "editor.lineHighlightBackground": "#27272a",
         "editorCursor.foreground": "#e4e4e7",
     },

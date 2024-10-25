@@ -1,0 +1,231 @@
+{{ define "entry_editor" }}
+
+<form hx-post="/htmx/test/form" hx-target="#nope" id="entry_editor__form" class="h-full flex-col gap-4 overflow">
+    <div id="nope" hidden></div>
+
+    <!-- datetime -->
+    <div class="flex-wrap flex-even break-md items-end gap-8" xhidden>
+        <div class="grid gap-1">
+            <label class="tt-label" for="entry_editor__entry_date">Date</label>
+            <input type="date" class="tt-input" id="entry_editor__entry_date" name="entry_date">
+        </div>
+
+        <div class="grid gap-1">
+            <label class="flex gap-2 w-full" for="entry_editor__entry_time">
+                <div class="grow">Time</div>
+                <div id="entry_editor__entry_timezone_string" class="dim"></div>
+            </label>
+            <input type="time" class="tt-input" id="entry_editor__entry_time" name="entry_time">
+        </div>
+
+        <div class="grid gap-1" hidden>
+            <label class="flex gap-2 w-full" for="entry_editor__entry_time">Timezone Offset</label>
+            <input type="number" class="tt-input" id="entry_editor__entry_timezone" name="entry_timezone">
+        </div>
+
+        <script>
+            const date = new Date()
+
+            let yyyy = date.getFullYear()
+            let dd = date.getDate()
+            let mm = date.getMonth() + 1 // january is 0
+
+            if (dd < 10) dd = '0' + dd
+            if (mm < 10) mm = '0' + mm
+
+            const today_date = yyyy + '-' + mm + '-' + dd
+            document.getElementById("entry_editor__entry_date").value = today_date
+
+            let hh = date.getHours()
+            let mmm = date.getMinutes()
+            
+            if (hh < 10) hh = '0' + hh
+            if (mmm < 10) mmm = '0' + mmm
+            
+            const today_time = hh + ':' + mmm
+            document.getElementById("entry_editor__entry_time").value = today_time
+            
+            const today_timezone = date.toTimeString().substring(9)
+            document.getElementById("entry_editor__entry_timezone_string").innerText = today_timezone
+            
+            const tz = -1 * date.getTimezoneOffset() / 60
+            document.getElementById("entry_editor__entry_timezone").value = tz
+        </script>
+    </div>
+
+    <!-- fields -->
+    {{ range .Tracker.Fields }}
+    {{ if eq .Type "number" }}
+    <div class="grid gap-1">
+        <label class="tt-label" for="entry_editor__field_{{.Id}}">{{ .Name }}</label>
+        <input type="number" class="tt-input" id="entry_editor__field_{{.Id}}" name="field_{{.Id}}" placeholder="0" value=""
+            step="{{ decimal_places_to_step_size .Number.Decimal_Places }}" required>
+    </div>
+    {{ end }}
+    {{ if eq .Type "option" }}
+    <div class="grid gap-1">
+        <label class="tt-label" for="entry_editor__field_{{.Id}}">{{ .Name }}</label>
+        <select class="tt-input" id="entry_editor__field_{{.Id}}" name="field_{{.Id}}" required>
+            {{ range .Options }}
+            <option value="{{ .Value }}">{{ .Value }}: {{ .Name }}</option>
+            {{ end }}
+        </select>
+    </div>
+    {{ end }}
+    {{ end }}
+
+    <!-- notes -->
+    <div class="grow flex-col gap-1">
+        <div class="flex gap-4 items-end">
+            <label for="entry_editor__textarea" class="tt-label grow">Notes</label>
+            <button id="entry_editor__toggle_monaco" class="tt-icon-button dim tt-color-yellow-hover">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="16 18 22 12 16 6" />
+                    <polyline points="8 6 2 12 8 18" />
+                </svg>
+            </button>
+            <button id="entry_editor__fullscreen_notes" class="tt-icon-button dim tt-color-red-hover">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M8 3H5a2 2 0 0 0-2 2v3" />
+                    <path d="M21 8V5a2 2 0 0 0-2-2h-3" />
+                    <path d="M3 16v3a2 2 0 0 0 2 2h3" />
+                    <path d="M16 21h3a2 2 0 0 0 2-2v-3" />
+                </svg>
+            </button>
+        </div>
+        <textarea name="entry_notes" id="entry_editor__textarea" class="tt-input grow"></textarea>
+        <div id="entry_editor__monaco" class="grow" hidden>
+            {{ template "monaco" . }}
+        </div>
+        <button id="entry_editor__fullscreen_notes_exit" class="tt-icon-button dim tt-color-red-hover" hidden>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 6 6 18" />
+                <path d="m6 6 12 12" />
+            </svg>
+        </button>
+        <style>
+            #entry_editor__textarea {
+                resize: none;
+            }
+
+            #entry_editor__fullscreen_notes_exit {
+                position: fixed;
+                top: 1rem;
+                right: 2rem;
+                z-index: 100;
+            }
+        </style>
+        <script>
+            const entry_editor__monaco = document.getElementById("entry_editor__monaco")
+            const entry_editor__textarea = document.getElementById("entry_editor__textarea")
+
+            entry_editor__textarea.addEventListener("input", event => {
+                monaco__value_set(entry_editor__textarea.value)
+            })
+
+            monaco__value_oninput((event) => {
+                entry_editor__textarea.value = monaco__value_get()
+            })
+
+            const entry_editor__toggle_monaco = document.getElementById("entry_editor__toggle_monaco")
+            const entry_editor__fullscreen_notes = document.getElementById("entry_editor__fullscreen_notes")
+            const entry_editor__fullscreen_notes_exit = document.getElementById("entry_editor__fullscreen_notes_exit")
+
+            entry_editor__toggle_monaco.addEventListener("click", event => {
+                event.preventDefault()
+                entry_editor__monaco.hidden = !entry_editor__monaco.hidden
+                entry_editor__textarea.hidden = !entry_editor__textarea.hidden
+            })
+
+            entry_editor__fullscreen_notes.addEventListener("pointerdown", event => {
+                event.preventDefault()
+                event.stopPropagation()
+                if (entry_editor__monaco.hidden) {
+                    entry_editor__textarea.classList = "tt-input overlay"
+                } else {
+                    entry_editor__monaco.classList = "overlay"
+                }
+                entry_editor__fullscreen_notes_exit.hidden = false
+            })
+
+            entry_editor__fullscreen_notes_exit.addEventListener("pointerdown", event => {
+                event.preventDefault()
+                event.stopPropagation()
+                if (entry_editor__monaco.hidden) {
+                    entry_editor__textarea.classList = "tt-input grow"
+                } else {
+                    entry_editor__monaco.style.height = "100px"
+                    setTimeout(() => {
+                        entry_editor__monaco.classList = "grow"
+                        entry_editor__monaco.style.height = "100%"
+                    }, 50)
+                }
+                entry_editor__fullscreen_notes_exit.hidden = true
+            })
+        </script>
+    </div>
+
+    <!-- image_uploads -->
+    <div class="grid gap-1" hidden>
+        <label for="image_uploads" class="tt-label" title="content that has been uploaded">Content</label>
+        <div id="image_uploads" class="flex-wrap items-start gap-4"></div>
+        <style>
+            #image_uploads>* {
+                height: 80px;
+                aspect-ratio: 4 / 3;
+                border: var(--border);
+                border-radius: var(--border-radius);
+                object-fit: cover;
+                object-position: left top;
+            }
+        </style>
+        <script>
+            const entry_editor__form = document.getElementById("entry_editor__form")
+            const image_uploads = document.getElementById("image_uploads")
+            entry_editor__form.addEventListener("paste", async (event) => {
+                if (!entry_editor__monaco.hidden) event.preventDefault() // so this triggers
+                const items = (event.clipboardData || event.originalEvent.clipboardData).items
+                for (let index in items) {
+                    const item = items[index]
+                    if (item.kind === "file") {
+
+                        // Upload image
+                        const blob = item.getAsFile()
+                        const res = await fetch("/ui/upload", {
+                            method: "POST",
+                            body: blob
+                        })
+
+                        // Wait for image path then add image to image_uploads
+                        const path = await res.text()
+                        const img = document.createElement("img")
+                        img.src = path
+                        img.title = path
+                        image_uploads.appendChild(img)
+                        image_uploads.parentElement.hidden = false
+
+                        // Insert Markdown Link into entry_notes
+                        event.target.focus()
+                        document.execCommand('insertText', false, `![alt-text](${path})`)
+
+                        // Redraw Editor
+                        if (!entry_editor__monaco.hidden && entry_editor__monaco.classList != "overlay") {
+                            entry_editor__monaco.style.height = "100px"
+                            setTimeout(() => entry_editor__monaco.style.height = "100%", 50)
+                        }
+                    }
+                }
+            }, true)
+        </script>
+    </div>
+
+    <button class="tt-button">
+        Submit
+    </button>
+
+</form>
+
+{{ end }}

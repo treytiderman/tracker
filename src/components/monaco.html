@@ -1,11 +1,11 @@
 {{ define "monaco" }}
 
 <!-- Load Editor -->
-<link rel="stylesheet" data-name="vs/editor/editor.main"
-    href="https://cdn.jsdelivr.net/npm/monaco-editor@0.52.0/min/vs/editor/editor.main.min.css">
 <script>
     var require = { paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.0/min/vs' } }
 </script>
+<link rel="stylesheet" data-name="vs/editor/editor.main"
+    href="https://cdn.jsdelivr.net/npm/monaco-editor@0.52.0/min/vs/editor/editor.main.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.0/min/vs/loader.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.0/min/vs/editor/editor.main.js"></script>
 
@@ -23,6 +23,10 @@
         border: var(--border);
         border-radius: var(--border-radius);
     }
+    .monaco-editor {
+        /* flash of blue when unhiding */
+        --vscode-focusBorder: black !important; 
+    }
 </style>
 
 <script>
@@ -31,23 +35,7 @@
     monaco.editor.defineTheme("light", monaco__theme_white);
     monaco.editor.defineTheme("white", monaco__theme_white);
 
-    const monaco_value = `# Tracker
-
-Track your life
-
-See the read only [demo](https://demo.trey.app/)
-
-## Docker
-
-Requires Docker to be installed and the source code to be downloaded
-
-Start in the \`./\` directory
-
-\`\`\`bash
-cd ~/tracker
-\`\`\`
-
-`
+    const monaco__init_value = ""
 
     const monaco__editor = monaco.editor.create(document.getElementById('monaco'), {
         automaticLayout: true,
@@ -59,7 +47,7 @@ cd ~/tracker
         folding: false,
 
         language: 'markdown',
-        value: monaco_value,
+        value: monaco__init_value,
     })
 
     function monaco__value_set(value, language = "markdown") {
@@ -69,6 +57,12 @@ cd ~/tracker
 
     function monaco__value_get() {
         return monaco__editor.getValue()
+    }
+
+    function monaco__value_oninput(cb) {
+        monaco__editor.getModel().onDidChangeContent((event) => {
+            cb(event)
+        });
     }
 
     function monaco__theme_set(theme) {

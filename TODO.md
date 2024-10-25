@@ -3,6 +3,9 @@
 - [ ] Add Ctrl+Enter to submit from a "textarea"
 - [ ] Add Backup logic. Backup whole db every day, hour, change?
 - [ ] Rename Records page to Table. Fix table overflow. Limit Notes col to x amount of char
+- [ ] Look into SQL Injection. 
+    - https://stackoverflow.com/questions/26345318/how-can-i-prevent-sql-injection-attacks-in-go-while-using-database-sql
+    - https://dev.to/wiliamvj/preventing-sql-injection-with-golang-41m5
 
 # Ideas
 

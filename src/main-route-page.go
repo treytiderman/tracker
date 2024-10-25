@@ -47,7 +47,10 @@ func parse_templates(page string) *template.Template {
 			}
 			arr := bf.Run([]byte(b), bf.WithRenderer(bf_chroma.NewRenderer(
 				bf_chroma.Style("vulcan"),
-				bf_chroma.ChromaOptions(bf_html.WithLineNumbers(true), bf_html.WithClasses(true)),
+				bf_chroma.ChromaOptions(
+					bf_html.WithLineNumbers(false),
+					bf_html.WithClasses(true),
+				),
 			)), bf.WithExtensions(bf.HardLineBreak|bf.CommonExtensions))
 			str := string(arr)
 			return str
@@ -106,7 +109,7 @@ func page_trackers(w http.ResponseWriter, r *http.Request) {
 }
 
 func page_tracker_create(w http.ResponseWriter, r *http.Request) {
-	tmp := parse_templates("page-tracker-info")
+	tmp := parse_templates("page-tracker-create")
 
 	trackers, err := Db_Tracker_All_Get(db)
 	if err != nil {
@@ -220,7 +223,7 @@ func page_tracker_records(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	entries, err := Db_Entry_All_Get(db)
+	entries, err := Db_Entry_Get(db, id)
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -327,20 +330,40 @@ func page_settings(w http.ResponseWriter, r *http.Request) {
 
 	tmp.ExecuteTemplate(w, "app", struct {
 		Title    string
-		Tracker  Db_Tracker
 		Trackers []Db_Tracker
+		Tracker  Db_Tracker
 	}{
 		Title:    "Trackers",
-		Trackers: trackers,
 		Tracker:  Db_Tracker{Id: 1, Name: ""},
+		Trackers: trackers,
 	})
 }
 
 func page_test(w http.ResponseWriter, r *http.Request) {
 	tmp := parse_templates("page-test")
+
+	trackers, err := Db_Tracker_All_Get(db)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	if err != nil {
+		id = 1
+	}
+
+	tracker, err := Db_Tracker_Get(db, id)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	tmp.ExecuteTemplate(w, "app", struct {
 		Title string
+		Tracker  Db_Tracker
+		Trackers []Db_Tracker
 	}{
 		Title: "Test",
+		Trackers: trackers,
+		Tracker:  tracker,
 	})
 }

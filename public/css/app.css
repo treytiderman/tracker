@@ -28,6 +28,7 @@
 }
 
 .tt-dialog>* {
+    height: 80svh;
     border: var(--border);
     border-radius: var(--border-radius);
     background-color: var(--color-bg);
@@ -53,7 +54,7 @@ select {
 
 .tt-label {
     display: block;
-    padding-bottom: 0.25rem;
+    /* padding-bottom: 0.25rem; */
     /* color: var(--color-placeholder); */
 }
 
@@ -123,16 +124,6 @@ input[type=file].tt-input {
 
 /* Checkboxes / Radio */
 
-.tt-input-inline {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.tt-input-inline>label {
-    display: inline;
-}
-
 input[type=radio].tt-input,
 input[type=checkbox].tt-input {
     appearance: none;
@@ -141,8 +132,8 @@ input[type=checkbox].tt-input {
     place-content: center;
     padding: 0;
 
-    width: 1.5em;
-    height: 1.5em;
+    width: 1.2em;
+    height: 1.2em;
     vertical-align: baseline;
 
     color: var(--color-text-input);
@@ -163,8 +154,8 @@ input[type=checkbox].tt-input {
 input[type=radio].tt-input::before,
 input[type=checkbox].tt-input::before {
     content: "";
-    width: 0.8em;
-    height: 0.8em;
+    width: 0.65em;
+    height: 0.65em;
     transform: scale(0);
     box-shadow: inset 1em 1em currentColor;
 }
@@ -180,6 +171,13 @@ input[type=checkbox].tt-input::before {
 input[type=radio].tt-input:checked::before,
 input[type=checkbox].tt-input:checked::before {
     transform: scale(1);
+}
+
+input[type=radio].tt-input:checked,
+input[type=checkbox].tt-input:checked {
+    color: var(--color-text-primary);
+    background-color: var(--color-bg-primary);
+    border-color: var(--color-border-primary);
 }
 
 /* Color */
@@ -217,6 +215,7 @@ input[type=checkbox].tt-input:checked::before {
 }
 
 @media (hover: hover) {
+
     .tt-color-primary-hover:focus-visible,
     .tt-color-primary-hover:hover {
         color: var(--color-text-primary);
@@ -244,4 +243,84 @@ input[type=checkbox].tt-input:checked::before {
         background-color: var(--color-bg-red);
         border-color: var(--color-border-red);
     }
+}
+
+/* Markdown */
+
+.tt-markdown a {
+    color: var(--color-text-link);
+}
+
+.tt-markdown a:hover,
+.tt-markdown a:focus-visible {
+    text-decoration: underline;
+}
+
+.tt-markdown blockquote {
+    border-left: var(--border);
+    border-left-width: 4px;
+    padding: 0.25rem 1rem;
+    background-color: var(--color-bg-input);
+}
+
+.tt-markdown ul {
+    list-style: disc inside;
+}
+
+.tt-markdown ol {
+    list-style: decimal inside;
+}
+
+.tt-markdown ol,
+.tt-markdown ul,
+.tt-markdown dl,
+.tt-markdown dd {
+    margin-left: 3rem;
+}    
+
+.tt-markdown>ol,
+.tt-markdown>ul {
+    margin-left: 1rem;
+}
+
+.tt-markdown li {
+    line-height: 1.75;
+}
+
+.tt-markdown li::marker {
+    color: var(--color-placeholder);
+}
+
+.tt-markdown ol li::before {
+    white-space: pre;
+    content: "  ";
+}
+
+.tt-markdown table {
+    width: 100%;
+}
+
+.tt-markdown .chroma {
+    color: var(--color-text-input);
+    background-color: var(--color-bg-input);
+    padding: 0.5rem;
+    border: var(--border);
+    border-radius: var(--border-radius);
+    width: 100%;
+    overflow: auto;
+    font-size: 0.875rem;
+}
+
+.tt-markdown :not(.chroma) code {
+    line-height: 1;
+
+    font-size: var(--font-size-mono);
+    font-family: var(--font-family-mono);
+    
+    padding: 2px 0.25rem;
+    border: var(--border);
+    border-radius: var(--border-radius);
+
+    /* color: var(--color-text-input); */
+    background-color: var(--color-bg-input);
 }
