@@ -3,6 +3,7 @@ PRAGMA foreign_keys = ON;
 -- Drop Tables
 -----------------------------------------------------------------------------------------
 
+DROP TABLE IF EXISTS content;
 DROP TABLE IF EXISTS log;
 DROP TABLE IF EXISTS entry;
 DROP TABLE IF EXISTS option;
@@ -68,6 +69,14 @@ CREATE TABLE IF NOT EXISTS log (
     PRIMARY KEY (log_id),
     FOREIGN KEY (entry_id) REFERENCES entry (entry_id) ON DELETE CASCADE,
     FOREIGN KEY (field_id) REFERENCES field (field_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS content (
+    content_id INTEGER NOT NULL UNIQUE,
+    entry_id INTEGER NOT NULL,
+    content_path TEXT NOT NULL DEFAULT "",
+    PRIMARY KEY (content_id),
+    FOREIGN KEY (entry_id) REFERENCES entry (entry_id)
 );
 
 
@@ -136,7 +145,6 @@ Code Block
 }
 ```
 
-
 ```go
 func Routes_pages(db *sql.DB) {
     page_Trackers(db)
@@ -150,6 +158,8 @@ Task List
 - [ ] Task 3
 
 ');
+INSERT INTO content (entry_id, content_path) VALUES (1, "/content/2024-10-26_08:17:45.png");
+INSERT INTO content (entry_id, content_path) VALUES (1, "/content/2024-10-26_09:34:11.png");
 
 -- Tracker 2 - Money
 -- --------------------------------------------------------------------------------------
