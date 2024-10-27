@@ -27,10 +27,6 @@ sqlite3 ./data/sql.db < ./sql/init.sql
 ```
 
 ```
-sqlite3 ./data/data.db < ./sql/init.sql
-```
-
-```
 sqlite3 ./data/sql.db < ./sql/temp.sql
 ```
 
