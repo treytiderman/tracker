@@ -46,8 +46,9 @@ POST     /htmx/entry/:tracker_id   create new entry
 PUT      /htmx/entry/:tracker_id   update entry by tracker_id
 DELETE   /htmx/entry/:tracker_id   delete entry by tracker_id
 
-POST     /htmx/file/:name   upload file
-DELETE   /htmx/file/:name   delete file
+POST     /content-upload        upload file
+GET      /content/{file_name}   upload file
+DELETE   /content/{file_name}   delete file
 ```
 
 

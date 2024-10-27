@@ -86,6 +86,33 @@ func Db_Entry_Create(db *sql.DB, tracker_id int, entry_notes string, logs []stru
 	return entry_id, nil
 }
 
+func Db_Entry_Create_Timestamp(db *sql.DB, tracker_id int, entry_notes string, logs []struct {
+	Field_Id int
+	Value    int
+}, timestamp string) (entry_id int, err error) {
+	fmt.Printf("SQL: INSERT INTO entry (tracker_id, entry_notes, timestamp) VALUES (%d,'%s','%s');", tracker_id, entry_notes, timestamp)
+	result, err := db.Exec("INSERT INTO entry (tracker_id, entry_notes, timestamp) VALUES (?,?,?);", tracker_id, entry_notes, timestamp)
+	if err != nil {
+		return 0, err
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+	entry_id = int(id)
+
+	for _, log := range logs {
+		fmt.Printf("SQL: INSERT INTO log (entry_id, field_id, log_value) VALUES (%d,%d,%d);", entry_id, log.Field_Id, log.Value)
+		_, err = db.Exec("INSERT INTO log (entry_id, field_id, log_value) VALUES (?,?,?);", entry_id, log.Field_Id, log.Value)
+		if err != nil {
+			return 0, err
+		}
+	}
+
+	return entry_id, nil
+}
+
 func Db_Entry_Get(db *sql.DB, tracker_id int) (entries []Db_Entry, err error) {
 	sql_string := fmt.Sprintf(
 		`SELECT

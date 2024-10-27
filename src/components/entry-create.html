@@ -1,7 +1,7 @@
 {{ define "entry_editor" }}
 
-<form hx-post="/htmx/test/form" hx-target="#nope" id="entry_editor__form" class="h-full flex-col gap-4 overflow">
-    <div id="nope" hidden></div>
+<form hx-post="/htmx/entry/create?tracker_id={{$.Tracker.Id}}" hx-target="#entry_editor__response"
+    id="entry_editor__form" class="h-full flex-col gap-4 overflow">
 
     <!-- datetime -->
     <div class="flex-wrap flex-even break-md items-end gap-8" xhidden>
@@ -15,12 +15,12 @@
                 <div class="grow">Time</div>
                 <div id="entry_editor__entry_timezone_string" class="dim"></div>
             </label>
-            <input type="time" class="tt-input" id="entry_editor__entry_time" name="entry_time">
+            <input type="time" class="tt-input" id="entry_editor__entry_time" name="entry_time" step="1">
         </div>
 
         <div class="grid gap-1" hidden>
             <label class="flex gap-2 w-full" for="entry_editor__entry_time">Timezone Offset</label>
-            <input type="number" class="tt-input" id="entry_editor__entry_timezone" name="entry_timezone">
+            <input type="text" class="tt-input" id="entry_editor__entry_timezone" name="entry_timezone">
         </div>
 
         <script>
@@ -38,17 +38,19 @@
 
             let hh = date.getHours()
             let mmm = date.getMinutes()
-            
+            let sec = date.getSeconds()
+
             if (hh < 10) hh = '0' + hh
             if (mmm < 10) mmm = '0' + mmm
-            
-            const today_time = hh + ':' + mmm
+            if (sec < 10) sec = '0' + sec
+
+            const today_time = hh + ':' + mmm + ':' + sec
             document.getElementById("entry_editor__entry_time").value = today_time
-            
+
             const today_timezone = date.toTimeString().substring(9)
             document.getElementById("entry_editor__entry_timezone_string").innerText = today_timezone
-            
-            const tz = -1 * date.getTimezoneOffset() / 60
+
+            const tz = date.toTimeString().substring(12, 17)
             document.getElementById("entry_editor__entry_timezone").value = tz
         </script>
     </div>
@@ -58,8 +60,8 @@
     {{ if eq .Type "number" }}
     <div class="grid gap-1">
         <label class="tt-label" for="entry_editor__field_{{.Id}}">{{ .Name }}</label>
-        <input type="number" class="tt-input" id="entry_editor__field_{{.Id}}" name="field_{{.Id}}" placeholder="0" value=""
-            step="{{ decimal_places_to_step_size .Number.Decimal_Places }}" required>
+        <input type="number" class="tt-input" id="entry_editor__field_{{.Id}}" name="field_{{.Id}}" placeholder="0"
+            value="" step="{{ decimal_places_to_step_size .Number.Decimal_Places }}" required>
     </div>
     {{ end }}
     {{ if eq .Type "option" }}
@@ -78,6 +80,26 @@
     <div class="grow flex-col gap-1">
         <div class="flex gap-4 items-end">
             <label for="entry_editor__textarea" class="tt-label grow">Notes</label>
+            <button id="entry_editor__toggle_word_wrap" class="tt-icon-button dim tt-color-primary-hover" hidden>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" x2="21" y1="6" y2="6" />
+                    <path d="M3 12h15a3 3 0 1 1 0 6h-4" />
+                    <polyline points="16 16 14 18 16 20" />
+                    <line x1="3" x2="10" y1="18" y2="18" />
+                </svg>
+            </button>
+            <button id="entry_editor__toggle_line_numbers" class="tt-icon-button dim tt-color-primary-hover" hidden>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10 12h11" />
+                    <path d="M10 18h11" />
+                    <path d="M10 6h11" />
+                    <path d="M4 10h2" />
+                    <path d="M4 6h1v4" />
+                    <path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1" />
+                </svg>
+            </button>
             <button id="entry_editor__toggle_monaco" class="tt-icon-button dim tt-color-yellow-hover">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -130,6 +152,23 @@
                 entry_editor__textarea.value = monaco__value_get()
             })
 
+            let entry_editor__word_wrap = false
+            let entry_editor__line_numbers = false
+            const entry_editor__toggle_word_wrap = document.getElementById("entry_editor__toggle_word_wrap")
+            const entry_editor__toggle_line_numbers = document.getElementById("entry_editor__toggle_line_numbers")
+
+            entry_editor__toggle_word_wrap.addEventListener("click", event => {
+                event.preventDefault()
+                entry_editor__word_wrap = !entry_editor__word_wrap
+                monaco__word_wrap_set(entry_editor__word_wrap)
+            })
+
+            entry_editor__toggle_line_numbers.addEventListener("click", event => {
+                event.preventDefault()
+                entry_editor__line_numbers = !entry_editor__line_numbers
+                monaco__line_numbers_set(entry_editor__line_numbers)
+            })
+
             const entry_editor__toggle_monaco = document.getElementById("entry_editor__toggle_monaco")
             const entry_editor__fullscreen_notes = document.getElementById("entry_editor__fullscreen_notes")
             const entry_editor__fullscreen_notes_exit = document.getElementById("entry_editor__fullscreen_notes_exit")
@@ -138,6 +177,8 @@
                 event.preventDefault()
                 entry_editor__monaco.hidden = !entry_editor__monaco.hidden
                 entry_editor__textarea.hidden = !entry_editor__textarea.hidden
+                entry_editor__toggle_word_wrap.hidden = !entry_editor__toggle_word_wrap.hidden
+                entry_editor__toggle_line_numbers.hidden = !entry_editor__toggle_line_numbers.hidden
             })
 
             entry_editor__fullscreen_notes.addEventListener("pointerdown", event => {
@@ -158,8 +199,8 @@
                     entry_editor__textarea.classList = "tt-input grow"
                 } else {
                     entry_editor__monaco.style.height = "100px"
+                    entry_editor__monaco.classList = "grow"
                     setTimeout(() => {
-                        entry_editor__monaco.classList = "grow"
                         entry_editor__monaco.style.height = "100%"
                     }, 50)
                 }
@@ -168,23 +209,65 @@
         </script>
     </div>
 
-    <!-- image_uploads -->
+    <!-- content -->
     <div class="grid gap-1" hidden>
-        <label for="image_uploads" class="tt-label" title="content that has been uploaded">Content</label>
-        <div id="image_uploads" class="flex-wrap items-start gap-4"></div>
+        <label for="entry_editor__content" class="tt-label" title="content that has been uploaded">Content</label>
+        <div id="entry_editor__content" class="flex-wrap items-start gap-4">
+            <!-- <a href="/content/2024-10-26_13:09:40.png" target="_blank" class="flex items-start gap-2"
+                style="background-image: linear-gradient(rgba(0, 0, 0, var(--darken-amount)), rgba(0, 0, 0, var(--darken-amount))), url('/content/2024-10-26_13:09:40.png');"
+                title="/content/2024-10-26_13:09:40.png">
+                <button class="tt-icon-button" style="margin-left: auto;" hx-target="closest a" hx-swap="delete"
+                    hx-delete="/content/2024-10-26_13:09:40-copy.png"
+                    hx-confirm="Please confirm the file '2024-10-26_13:09:40.png' should be deleted"
+                    title="Delete File">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 6h18" />
+                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                    </svg>
+                </button>
+            </a> -->
+        </div>
         <style>
-            #image_uploads>* {
+            #entry_editor__content>a {
+                width: 120px;
                 height: 80px;
-                aspect-ratio: 4 / 3;
                 border: var(--border);
                 border-radius: var(--border-radius);
-                object-fit: cover;
-                object-position: left top;
+                padding: 0.5rem;
+                background-color: black;
+                background-size: cover;
+                background-position: left top;
+                --darken-amount: 0;
+            }
+
+            #entry_editor__content>a:focus-visible,
+            #entry_editor__content>a:hover {
+                --darken-amount: 0.5;
+            }
+
+            #entry_editor__content>a>button {
+                color: transparent;
+            }
+
+            #entry_editor__content>a:focus-visible button,
+            #entry_editor__content>a:hover button {
+                color: var(--color-text-button);
+                background-color: var(--color-bg-button);
+                border-color: var(--color-border-button);
+            }
+
+            #entry_editor__content>a button:focus-visible,
+            #entry_editor__content>a button:hover {
+                color: var(--color-text-red);
+                background-color: var(--color-bg-red);
+                border-color: var(--color-border-red);
             }
         </style>
         <script>
             const entry_editor__form = document.getElementById("entry_editor__form")
-            const image_uploads = document.getElementById("image_uploads")
+            const entry_editor__content = document.getElementById("entry_editor__content")
             entry_editor__form.addEventListener("paste", async (event) => {
                 if (!entry_editor__monaco.hidden) event.preventDefault() // so this triggers
                 const items = (event.clipboardData || event.originalEvent.clipboardData).items
@@ -192,24 +275,44 @@
                     const item = items[index]
                     if (item.kind === "file") {
 
-                        // Upload image
+                        // Upload file
                         const blob = item.getAsFile()
-                        const res = await fetch("/ui/upload", {
+                        const res = await fetch("/content-upload", {
                             method: "POST",
                             body: blob
                         })
 
-                        // Wait for image path then add image to image_uploads
+                        // Wait for file path
                         const path = await res.text()
-                        const img = document.createElement("img")
-                        img.src = path
-                        img.title = path
-                        image_uploads.appendChild(img)
-                        image_uploads.parentElement.hidden = false
+                        console.log("path", path)
+
+                        // Add thumbnail for uploaded content 
+                        entry_editor__add_content(path)
 
                         // Insert Markdown Link into entry_notes
+                        let paste_text = ""
+
+                        if (path.endsWith(".png")) {
+                            paste_text = `![image](${path})`
+                        } else if (path.endsWith(".mp4")) {
+                            paste_text = `<video controls><source src="${path}" type="video/mp4"></video>`
+                        } else if (path.endsWith(".pdf")) {
+                            const text = `<object data="${path}" type="application/pdf" width="800px" height="800px">
+                                <embed src="${path}">
+                                    <p> This browser does not support PDFs. Please download the PDF to view it:
+                                        <a href="${path}">Download PDF</a>
+                                    </p>
+                                </embed>
+                            </object>`
+                            paste_text = `[PDF Link: ${path}](${path})`
+                        } else if (path.endsWith(".mp3")) {
+                            paste_text = `[MP3 Link: ${path}](${path})`
+                        } else if (path.endsWith(".txt")) {
+                            paste_text = `[TXT Link: ${path}](${path})`
+                        }
+
                         event.target.focus()
-                        document.execCommand('insertText', false, `![alt-text](${path})`)
+                        document.execCommand('insertText', false, paste_text)
 
                         // Redraw Editor
                         if (!entry_editor__monaco.hidden && entry_editor__monaco.classList != "overlay") {
@@ -219,12 +322,42 @@
                     }
                 }
             }, true)
+
+            function entry_editor__add_content(path) {
+                const link = document.createElement("a")
+                link.href = path
+                link.title = path
+                link.target = "_blank"
+                link.classList = "flex items-start gap-2"
+                link.style = `background-image: linear-gradient(rgba(0, 0, 0, var(--darken-amount)), rgba(0, 0, 0, var(--darken-amount))), url('${path}');`
+
+                const del = document.createElement("button")
+                del.classList = "tt-icon-button"
+                del.style.marginLeft = "auto"
+                del.setAttribute("hx-target", "closest a")
+                del.setAttribute("hx-swap", "delete")
+                del.setAttribute("hx-delete", path)
+                del.setAttribute("hx-confirm", `Please confirm the file '${path}' should be deleted`)
+                del.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 6h18" />
+                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                </svg>`
+                link.appendChild(del)
+
+                entry_editor__content.appendChild(link)
+                entry_editor__content.parentElement.hidden = false
+                htmx.process(entry_editor__content);
+            }
         </script>
     </div>
 
     <button class="tt-button">
         Submit
     </button>
+
+    <div id="entry_editor__response"></div>
 
 </form>
 

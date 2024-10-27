@@ -35,8 +35,6 @@
     monaco.editor.defineTheme("light", monaco__theme_white);
     monaco.editor.defineTheme("white", monaco__theme_white);
 
-    const monaco__init_value = ""
-
     const monaco__editor = monaco.editor.create(document.getElementById('monaco'), {
         automaticLayout: true,
 
@@ -45,9 +43,10 @@
         fontSize: "14px",
         lineNumbers: "off",
         folding: false,
+        wordWrap: "on",
 
         language: 'markdown',
-        value: monaco__init_value,
+        value: "",
     })
 
     function monaco__value_set(value, language = "markdown") {
@@ -73,6 +72,12 @@
         monaco__editor.updateOptions({
             lineNumbers: show ? "on" : "off",
             folding: show,
+        });
+    }
+
+    function monaco__word_wrap_set(bool) {
+        monaco__editor.updateOptions({
+            wordWrap: bool ? "on" : "off",
         });
     }
 
