@@ -2,10 +2,17 @@
 
 - [ ] Add Ctrl+Enter to submit from a "textarea"
 - [ ] Add Backup logic. Backup whole db every day, hour, change?
-- [ ] Rename Records page to Table. Fix table overflow. Limit Notes col to x amount of char
+- [ ] Rename Records page to Table
 - [ ] Look into SQL Injection. 
     - https://stackoverflow.com/questions/26345318/how-can-i-prevent-sql-injection-attacks-in-go-while-using-database-sql
     - https://dev.to/wiliamvj/preventing-sql-injection-with-golang-41m5
+- [ ] File uploads
+    - Save a link to the file in the DB
+        - Reference the entry_id
+        - If an entry is deleted ask to delete orphaned content
+        - Otherwise use entry_id 0 for orphaned content
+    - Check for missing files on startup
+    - Add rename files "PATCH /content/FILE_NAME?new_file_name=NEW_FILE_NAME"
 
 # Ideas
 
