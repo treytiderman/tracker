@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"log"
@@ -23,11 +24,15 @@ func handle_routes_api_htmx(mux *http.ServeMux) {
 	mux.Handle("POST /htmx/tracker/notes", mw_logger(mw_read_only(mw_auth(http.HandlerFunc(htmx_tracker_notes)))))
 	mux.Handle("GET /htmx/tracker/delete", mw_logger(mw_read_only(mw_auth(http.HandlerFunc(htmx_tracker_delete)))))
 
+	mux.Handle("POST /htmx/entry/create", mw_logger(mw_read_only(mw_auth(http.HandlerFunc(htmx_entry_create)))))
+
 	mux.Handle("POST /htmx/tracker/log", mw_logger(mw_read_only(mw_auth(http.HandlerFunc(htmx_log_create)))))
 	mux.Handle("POST /htmx/tracker/log-update", mw_logger(mw_read_only(mw_auth(http.HandlerFunc(htmx_log_update)))))
 	mux.Handle("GET /htmx/tracker/log-delete", mw_logger(mw_read_only(mw_auth(http.HandlerFunc(htmx_log_delete)))))
 
-	mux.Handle("POST /ui/upload", mw_logger(mw_read_only(mw_auth(http.HandlerFunc(htmx_file_upload)))))
+	mux.Handle("POST /content-upload", mw_logger(mw_read_only(mw_auth(http.HandlerFunc(content_upload)))))
+	mux.Handle("GET /content/{content_path}", mw_logger(mw_auth(http.HandlerFunc(content_get))))
+	mux.Handle("DELETE /content/{content_path}", mw_logger(mw_read_only(mw_auth(http.HandlerFunc(content_delete)))))
 }
 
 // Auth
@@ -246,7 +251,99 @@ func htmx_tracker_delete(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/tracker-info", http.StatusSeeOther)
 }
 
-// Log
+// Entry
+
+func htmx_entry_create(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		return
+	}
+	for key, value := range r.Form {
+		val := strings.ReplaceAll(value[0], "\n", "\\n")
+		log.Printf("FORM: %s = %s\n", key, val)
+	}
+
+	// Get Id from URL
+	id, err := strconv.Atoi(r.URL.Query().Get("tracker_id"))
+	if err != nil {
+		return
+	}
+	r.Form.Del("tracker_id")
+
+	// Get then Delete non field stuff from form
+	entry_notes := r.Form.Get("entry_notes")
+	r.Form.Del("entry_notes")
+
+	entry_date := r.Form.Get("entry_date")
+	r.Form.Del("entry_date")
+
+	entry_time := r.Form.Get("entry_time")
+	r.Form.Del("entry_time")
+
+	entry_timezone := r.Form.Get("entry_timezone")
+	r.Form.Del("entry_timezone")
+
+	time_string := fmt.Sprintf("%s %s %s", entry_date, entry_time, entry_timezone)
+	dt, err := time.Parse("2006-01-02 15:04:05 -0700", time_string)
+	if err != nil {
+		return
+	}
+
+	timestamp := dt.UTC().Format("2006-01-02 15:04:05")
+
+	// Get Tracker by Id
+	tracker, err := Db_Tracker_Get(db, id)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Logs Memory
+	var logs = make([]struct {
+		Field_Id int
+		Value    int
+	}, 0)
+
+	for k, v := range r.Form {
+
+		field_id, err := strconv.Atoi(strings.ReplaceAll(k, "field_", ""))
+		if err != nil {
+			return
+		}
+
+		var field Db_Field
+		for _, f := range tracker.Fields {
+			if f.Id == field_id {
+				field = f
+			}
+		}
+
+		value := 0
+		if field.Type == "number" {
+			field_value_float, _ := strconv.ParseFloat(v[0], 64)
+			field_value_adjusted := float64(field_value_float) * float64(math.Pow10(field.Number.Decimal_Places))
+			value = int(math.Floor(field_value_adjusted))
+		} else if field.Type == "option" {
+			value, err = strconv.Atoi(v[0])
+			if err != nil {
+				return
+			}
+		}
+
+		logs = append(logs, struct {
+			Field_Id int
+			Value    int
+		}{
+			field_id,
+			value,
+		})
+	}
+
+	Db_Entry_Create_Timestamp(db, tracker.Id, entry_notes, logs, timestamp)
+
+	// Reload page
+	w.Header().Add("HX-Refresh", "true")
+	w.Write([]byte("ok"))
+}
 
 func htmx_log_create(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
@@ -420,23 +517,77 @@ func htmx_log_delete(w http.ResponseWriter, r *http.Request) {
 
 // File
 
-func htmx_file_upload(w http.ResponseWriter, r *http.Request) {
+func content_get(w http.ResponseWriter, r *http.Request) {
+	content_path := "../data/content/" + r.PathValue("content_path")
+
+	file, err := os.ReadFile(content_path)
+	if err != nil {
+		w.Write([]byte("file not found\n"))
+		w.Write([]byte(content_path))
+	}
+
+	w.Write(file)
+}
+
+func content_delete(w http.ResponseWriter, r *http.Request) {
+	content_path := "../data/content/" + r.PathValue("content_path")
+
+	err := os.Remove(content_path)
+    if err != nil {
+		w.Write([]byte("file not found"))
+    }
+
+	// remove content path from db
+
+	log.Println("FILE DELETED:", content_path)
+	w.Write([]byte("ok"))
+}
+
+func content_upload(w http.ResponseWriter, r *http.Request) {
+	body_bytes, err := io.ReadAll(r.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+	r.Body.Close() // must close
+	r.Body = io.NopCloser(bytes.NewBuffer(body_bytes)) // recreate the reader
+
+	mime_type := http.DetectContentType(body_bytes)
+
+	ext := ".png"
+	if mime_type == "image/png" {
+		ext = ".png"
+	} else if mime_type == "image/jpeg" {
+		ext = ".jpg"
+	} else if mime_type == "audio/mpeg" || mime_type == "application/octet-stream" {
+		ext = ".mp3"
+	} else if mime_type == "video/mp4" {
+		ext = ".mp4"
+	} else if mime_type == "text/plain; charset=utf-8" {
+		ext = ".txt" // also ".svg" or ".csv"
+	} else if mime_type == "application/zip" {
+		ext = ".zip"
+	} else if mime_type == "application/pdf" {
+		ext = ".pdf"
+	}
+
 	timestamp := time.Now().Format(time.DateTime)
 	timestamp = strings.ReplaceAll(timestamp, " ", "_")
-	path := "../public/upload/" + timestamp + ".png"
+	path := "../data/content/" + timestamp + ext
 
-	img, err := os.Create(path)
+	file, err := os.Create(path)
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.Printf("FILE SAVED: %s\n", path)
-	defer img.Close()
+	defer file.Close()
 
-	_, err = io.Copy(img, r.Body)
+	_, err = io.Copy(file, r.Body)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	path = strings.ReplaceAll(path, "../", "/")
+	// add content path to db
+
+	path = strings.ReplaceAll(path, "../data/", "/")
 	w.Write([]byte(path))
 }

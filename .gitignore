@@ -1,7 +1,9 @@
-*.db
-/public/upload/*
 /.vscode
 /build
 /bin
 /src/tmp
+
+/data/*.db
 !demo.db
+
+/data/content/*
