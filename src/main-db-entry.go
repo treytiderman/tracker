@@ -113,6 +113,79 @@ func Db_Entry_Create_Timestamp(db *sql.DB, tracker_id int, entry_notes string, l
 	return entry_id, nil
 }
 
+func Db_Entry_Get_By_Entry_Id(db *sql.DB, tracker_id int) (Db_Entry, error) {
+	entries := make([]Db_Entry, 0)
+
+	sql_string := fmt.Sprintf(
+		`SELECT
+			entry.entry_id,
+			entry.tracker_id,
+			entry.timestamp,
+			entry.entry_notes,
+			IFNULL(log.log_id, 0) AS log_id,
+			IFNULL(log.log_value, 0) AS log_value,
+			IFNULL(field.field_id, 0) AS field_id,
+			IFNULL(field.field_type, "") AS field_type,
+			IFNULL(field.field_name, "") AS field_name,
+			IFNULL(number.decimal_places, 0) AS decimal_places,
+			IFNULL(option.option_value, 0) AS option_value,
+			IFNULL(option.option_name, "") AS option_name,
+			IFNULL((CASE WHEN field.field_type == "number" THEN
+				printf(("%%." || number.decimal_places || "f"), log.log_value / power(10, number.decimal_places))
+			ELSE
+				option.option_name
+			END), "") AS present
+		FROM entry
+		LEFT JOIN log USING (entry_id)
+		LEFT JOIN field USING (field_id)
+		LEFT JOIN number USING (field_id)
+		LEFT JOIN option ON log.field_id = option.field_id AND log.log_value = option.option_value
+		WHERE entry.entry_id = ?;`)
+
+	rows, err := db.Query(sql_string, tracker_id)
+	if err != nil {
+		return entries[0], err
+	}
+	defer rows.Close()
+
+	var log_scan_last_id = 0
+	var entry_scan_last_id = 0
+
+	for rows.Next() {
+		var entry_scan Db_Entry
+		var log_scan Db_Log
+		err = rows.Scan(
+			&entry_scan.Id, &entry_scan.Tracker_Id, &entry_scan.Timestamp, &entry_scan.Notes,
+			&log_scan.Id, &log_scan.Value, &log_scan.Field_Id, &log_scan.Field_Type, &log_scan.Field_Name,
+			&log_scan.Decimal_Places, &log_scan.Option_Value, &log_scan.Option_Name, &log_scan.Present,
+		)
+		if err != nil {
+			return entries[0], err
+		}
+
+		if entry_scan_last_id != entry_scan.Id {
+			entries = append(entries, entry_scan)
+		}
+
+		// Why am I getting duplicate log_scan ids?
+		// This check for log_scan_last_id should not be needed
+		if log_scan_last_id != log_scan.Id {
+			if log_scan.Id > 0 {
+				entries[len(entries)-1].Logs = append(entries[len(entries)-1].Logs, log_scan)
+			}
+		}
+
+		entry_scan_last_id = entry_scan.Id
+		log_scan_last_id = log_scan.Id
+	}
+
+	if err := rows.Err(); err != nil {
+		return entries[0], err
+	}
+
+	return entries[0], nil
+}
+
 func Db_Entry_Get(db *sql.DB, tracker_id int) (entries []Db_Entry, err error) {
 	sql_string := fmt.Sprintf(
 		`SELECT

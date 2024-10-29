@@ -24,6 +24,7 @@ func handle_routes_page(mux *http.ServeMux) {
 	mux.Handle("/tracker-history", mw_logger(mw_auth(http.HandlerFunc(page_tracker_history))))
 
 	mux.Handle("/entry-view", mw_logger(mw_auth(http.HandlerFunc(page_entry_view))))
+	mux.Handle("/entry-editor", mw_logger(mw_auth(http.HandlerFunc(page_entry_editor))))
 
 	mux.Handle("/settings", mw_logger(mw_auth(http.HandlerFunc(page_settings))))
 	mux.Handle("/test", mw_logger(mw_auth(http.HandlerFunc(page_test))))
@@ -296,8 +297,6 @@ func page_entry_view(w http.ResponseWriter, r *http.Request) {
 		entry_id = 0
 	}
 
-	log.Printf("GET: /entry-view?tracker_id=%dentry_id=%d\n", tracker_id, entry_id)
-
 	entries, err := Db_Entry_Get(db, tracker_id)
 	if err != nil {
 		log.Fatal(err)
@@ -317,6 +316,55 @@ func page_entry_view(w http.ResponseWriter, r *http.Request) {
 	}{
 		Title: "Entry",
 		Entry: entry,
+	})
+}
+
+func page_entry_editor(w http.ResponseWriter, r *http.Request) {
+	tmp := parse_templates("page-entry-editor")
+
+	trackers, err := Db_Tracker_All_Get(db)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	tracker_id, err := strconv.Atoi(r.URL.Query().Get("tracker_id"))
+	if err != nil {
+		tracker_id = 0
+	}
+
+	tracker, err := Db_Tracker_Get(db, tracker_id)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	entry_id, err := strconv.Atoi(r.URL.Query().Get("entry_id"))
+	if err != nil {
+		entry_id = 0
+	}
+
+	entries, err := Db_Entry_Get(db, tracker_id)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	var entry Db_Entry
+	for _, e := range entries {
+		if e.Id == entry_id {
+			entry = e
+		}
+	}
+
+	tmp.ExecuteTemplate(w, "app", struct {
+		Title    string
+		Trackers []Db_Tracker
+		Tracker  Db_Tracker
+		Entry    Db_Entry
+	}{
+		Title:    "Entry",
+		Trackers: trackers,
+		Tracker:  tracker,
+		Entry:    entry,
 	})
 }
 
@@ -347,23 +395,39 @@ func page_test(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	tracker_id, err := strconv.Atoi(r.URL.Query().Get("tracker_id"))
 	if err != nil {
-		id = 1
+		tracker_id = 1
 	}
 
-	tracker, err := Db_Tracker_Get(db, id)
+	tracker, err := Db_Tracker_Get(db, tracker_id)
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	entries, err := Db_Entry_Get(db, tracker_id)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// entry_id, err := strconv.Atoi(r.URL.Query().Get("entry_id"))
+	// if err != nil {
+	// 	entry_id = 1
+	// }
+
+	entry := entries[0]
+
 	tmp.ExecuteTemplate(w, "app", struct {
-		Title string
+		Title    string
 		Tracker  Db_Tracker
 		Trackers []Db_Tracker
+		Entries  []Db_Entry
+		Entry    Db_Entry
 	}{
-		Title: "Test",
+		Title:    "Test",
 		Trackers: trackers,
 		Tracker:  tracker,
+		Entries:  entries,
+		Entry:    entry,
 	})
 }
