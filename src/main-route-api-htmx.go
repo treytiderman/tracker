@@ -279,6 +279,9 @@ func htmx_entry_create(w http.ResponseWriter, r *http.Request) {
 
 	entry_time := r.Form.Get("entry_time")
 	r.Form.Del("entry_time")
+	if len([]rune(entry_time)) == 5 {
+		entry_time = entry_time + ":00"
+	}
 
 	entry_timezone := r.Form.Get("entry_timezone")
 	r.Form.Del("entry_timezone")

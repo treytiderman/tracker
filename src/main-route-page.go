@@ -347,23 +347,39 @@ func page_test(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	tracker_id, err := strconv.Atoi(r.URL.Query().Get("tracker_id"))
 	if err != nil {
-		id = 1
+		tracker_id = 1
 	}
 
-	tracker, err := Db_Tracker_Get(db, id)
+	tracker, err := Db_Tracker_Get(db, tracker_id)
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	entries, err := Db_Entry_Get(db, tracker_id)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// entry_id, err := strconv.Atoi(r.URL.Query().Get("entry_id"))
+	// if err != nil {
+	// 	entry_id = 1
+	// }
+
+	entry := entries[0]
+
 	tmp.ExecuteTemplate(w, "app", struct {
-		Title string
+		Title    string
 		Tracker  Db_Tracker
 		Trackers []Db_Tracker
+		Entries  []Db_Entry
+		Entry    Db_Entry
 	}{
-		Title: "Test",
+		Title:    "Test",
 		Trackers: trackers,
 		Tracker:  tracker,
+		Entries:  entries,
+		Entry:    entry,
 	})
 }
