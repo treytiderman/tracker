@@ -1,6 +1,6 @@
 {{ define "entry_editor" }}
 
-<form hx-post="/htmx/entry/update?entry_id={{$.Entry.Id}}&tracker_id={{$.Tracker.Id}}" hx-target="#entry_editor__response"
+<form hx-post="/htmx/entry/update?entry_id={{$.Entry.Id}}&tracker_id={{$.Tracker.Id}}" hx-target="#entry_editor__response" hx-on::after-request="history.back()"
     id="entry_editor__form" class="h-full flex-col gap-4 overflow">
 
     <!-- datetime -->
@@ -129,10 +129,8 @@
                 </svg>
             </button>
         </div>
-        <textarea name="entry_notes" id="entry_editor__textarea" class="tt-input grow"></textarea>
-        <div id="entry_editor__monaco" class="grow" hidden>
-            {{ template "monaco" . }}
-        </div>
+        <textarea name="entry_notes" id="entry_editor__textarea" class="tt-input grow">{{$.Entry.Notes}}</textarea>
+        <div id="entry_editor__monaco" class="grow" hidden>{{ template "monaco" . }}</div>
         <button id="entry_editor__fullscreen_notes_exit" class="tt-icon-button dim tt-color-red-hover" hidden>
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -145,6 +143,10 @@
                 border: var(--border) !important;
                 outline: none !important;
                 resize: none;
+            }
+
+            #entry_editor__monaco {
+                border-radius: var(--border-radius);
             }
 
             #entry_editor__fullscreen_notes_exit {
@@ -166,8 +168,7 @@
                 entry_editor__textarea.value = monaco__value_get()
             })
 
-            entry_editor__textarea.value = "{{$.Entry.Notes}}"
-            monaco__value_set("{{$.Entry.Notes}}")
+            monaco__value_set(entry_editor__textarea.value)
 
             let entry_editor__word_wrap = false
             let entry_editor__line_numbers = false
