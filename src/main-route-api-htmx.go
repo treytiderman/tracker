@@ -25,6 +25,7 @@ func handle_routes_api_htmx(mux *http.ServeMux) {
 	mux.Handle("GET /htmx/tracker/delete", mw_logger(mw_read_only(mw_auth(http.HandlerFunc(htmx_tracker_delete)))))
 
 	mux.Handle("POST /htmx/entry/create", mw_logger(mw_read_only(mw_auth(http.HandlerFunc(htmx_entry_create)))))
+	mux.Handle("POST /htmx/entry/update", mw_logger(mw_read_only(mw_auth(http.HandlerFunc(htmx_entry_update)))))
 
 	mux.Handle("POST /htmx/tracker/log", mw_logger(mw_read_only(mw_auth(http.HandlerFunc(htmx_log_create)))))
 	mux.Handle("POST /htmx/tracker/log-update", mw_logger(mw_read_only(mw_auth(http.HandlerFunc(htmx_log_update)))))
@@ -348,6 +349,108 @@ func htmx_entry_create(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("ok"))
 }
 
+func htmx_entry_update(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		return
+	}
+	for key, value := range r.Form {
+		val := strings.ReplaceAll(value[0], "\n", "\\n")
+		log.Printf("FORM: %s = %s\n", key, val)
+	}
+
+	// Get Id from URL
+	entry_id, err := strconv.Atoi(r.URL.Query().Get("entry_id"))
+	if err != nil {
+		return
+	}
+	r.Form.Del("entry_id")
+
+	// Get Id from URL
+	tracker_id, err := strconv.Atoi(r.URL.Query().Get("tracker_id"))
+	if err != nil {
+		return
+	}
+	r.Form.Del("tracker_id")
+
+	tracker, err := Db_Tracker_Get(db, tracker_id)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Get then Delete non field stuff from form
+	entry_notes := r.Form.Get("entry_notes")
+	r.Form.Del("entry_notes")
+
+	entry_date := r.Form.Get("entry_date")
+	r.Form.Del("entry_date")
+
+	entry_time := r.Form.Get("entry_time")
+	r.Form.Del("entry_time")
+	if len([]rune(entry_time)) == 5 {
+		entry_time = entry_time + ":00"
+	}
+
+	entry_timezone := r.Form.Get("entry_timezone")
+	r.Form.Del("entry_timezone")
+
+	time_string := fmt.Sprintf("%s %s %s", entry_date, entry_time, entry_timezone)
+	dt, err := time.Parse("2006-01-02 15:04:05 -0700", time_string)
+	if err != nil {
+		log.Println("error parsing timestamp")
+		return
+	}
+
+	timestamp := dt.UTC().Format("2006-01-02 15:04:05")
+
+	for k, v := range r.Form {
+
+		ids := strings.Split(k, "__")
+		fmt.Println(ids)
+
+		log_id, err := strconv.Atoi(strings.ReplaceAll(ids[0], "log_", ""))
+		if err != nil {
+			log.Println("error getting log_id")
+			return
+		}
+		
+		field_id, err := strconv.Atoi(strings.ReplaceAll(ids[1], "field_", ""))
+		if err != nil {
+			log.Println("error getting field_id")
+			return
+		}
+		fmt.Println("log_id", log_id, "\nfield_id", field_id)
+
+		var field Db_Field
+		for _, f := range tracker.Fields {
+			if f.Id == field_id {
+				field = f
+			}
+		}
+
+		log_value := 0
+		if field.Type == "number" {
+			field_value_float, _ := strconv.ParseFloat(v[0], 64)
+			field_value_adjusted := float64(field_value_float) * float64(math.Pow10(field.Number.Decimal_Places))
+			log_value = int(math.Floor(field_value_adjusted))
+			Db_Entry_Log_Update(db, log_id, log_value)
+		} else if field.Type == "option" {
+			log_value, err = strconv.Atoi(v[0])
+			if err != nil {
+				return
+			}
+			Db_Entry_Log_Update(db, log_id, log_value)
+		}
+	}
+
+	Db_Entry_Notes_Update(db, entry_id, entry_notes)
+	Db_Entry_Timestamp_Update(db, entry_id, timestamp)
+
+	// Reload page
+	w.Header().Add("HX-Refresh", "true")
+	w.Write([]byte("ok"))
+}
+
 func htmx_log_create(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
@@ -536,9 +639,9 @@ func content_delete(w http.ResponseWriter, r *http.Request) {
 	content_path := "../data/content/" + r.PathValue("content_path")
 
 	err := os.Remove(content_path)
-    if err != nil {
+	if err != nil {
 		w.Write([]byte("file not found"))
-    }
+	}
 
 	// remove content path from db
 
@@ -551,7 +654,7 @@ func content_upload(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	r.Body.Close() // must close
+	r.Body.Close()                                     // must close
 	r.Body = io.NopCloser(bytes.NewBuffer(body_bytes)) // recreate the reader
 
 	mime_type := http.DetectContentType(body_bytes)

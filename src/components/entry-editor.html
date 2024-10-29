@@ -1,6 +1,6 @@
 {{ define "entry_editor" }}
 
-<form hx-post="/htmx/entry/create?tracker_id={{$.Tracker.Id}}" hx-target="#entry_editor__response"
+<form hx-post="/htmx/entry/update?entry_id={{$.Entry.Id}}&tracker_id={{$.Tracker.Id}}" hx-target="#entry_editor__response"
     id="entry_editor__form" class="h-full flex-col gap-4 overflow">
 
     <!-- datetime -->
@@ -15,7 +15,7 @@
                 <div class="grow">Time</div>
                 <div id="entry_editor__entry_timezone_string" class="dim"></div>
             </label>
-            <input type="time" class="tt-input" id="entry_editor__entry_time" name="entry_time">
+            <input type="time" class="tt-input" id="entry_editor__entry_time" name="entry_time" step="1">
         </div>
 
         <div class="grid gap-1" hidden>
@@ -61,8 +61,8 @@
     <div class="grid gap-1">
         {{ range $Log := $.Entry.Logs }}
         {{ if eq $Log.Field_Id $Field.Id }}
-        <label class="tt-label" for="entry_editor__log_{{$Field.Id}}">{{ $Field.Name }}</label>
-        <input type="number" class="tt-input" id="entry_editor__log_{{$Log.Id}}" name="log_{{$Log.Id}}" placeholder="0"
+        <label class="tt-label" for="entry_editor__log_{{$Log.Id}}__field_{{$Field.Id}}">{{ $Field.Name }}</label>
+        <input type="number" class="tt-input" id="entry_editor__log_{{$Log.Id}}__field_{{$Field.Id}}" name="log_{{$Log.Id}}__field_{{$Field.Id}}" placeholder="0"
             value="{{$Log.Present}}" step="{{ decimal_places_to_step_size $Field.Number.Decimal_Places }}" required>
         {{ end }}
         {{ end }}
@@ -72,8 +72,8 @@
     <div class="grid gap-1">
         {{ range $Log := $.Entry.Logs }}
         {{ if eq $Log.Field_Id $Field.Id }}
-        <label class="tt-label" for="entry_editor__log_{{$Log.Id}}">{{ $Field.Name }}</label>
-        <select class="tt-input" id="entry_editor__log_{{$Log.Id}}" name="log_{{$Log.Id}}" required>
+        <label class="tt-label" for="entry_editor__log_{{$Log.Id}}__field_{{$Field.Id}}">{{ $Field.Name }}</label>
+        <select class="tt-input" id="entry_editor__log_{{$Log.Id}}__field_{{$Field.Id}}" name="log_{{$Log.Id}}__field_{{$Field.Id}}" required>
             {{ range $Option := $Field.Options }}
             {{ if eq $Log.Option_Value $Option.Value }}
             <option value="{{ $Option.Value }}" selected>{{ $Option.Value }}: {{ $Option.Name }}</option>
