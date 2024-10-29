@@ -35,10 +35,21 @@
     monaco.editor.defineTheme("light", monaco__theme_white);
     monaco.editor.defineTheme("white", monaco__theme_white);
 
+    let monaco_theme = 'dark'
+
+    const local_theme = localStorage.getItem("tracker_setting_theme")
+    console.log("theme", local_theme)
+
+    if (local_theme == "black.css" || local_theme == "purple.css") {
+        monaco_theme = "black"
+    } else if (local_theme == "light.css" || local_theme == "pink.css") {
+        monaco_theme = "white"
+    }
+
     const monaco__editor = monaco.editor.create(document.getElementById('monaco'), {
         automaticLayout: true,
 
-        theme: 'dark',
+        theme: monaco_theme,
         minimap: { enabled: false },
         fontSize: "14px",
         lineNumbers: "off",
