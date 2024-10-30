@@ -39,6 +39,9 @@
                     <div>
                         <label class="tt-label dim">Last Log Entry</label>
                         <div> {{ $Entry.Timestamp }} </div>
+                        <script>
+                            document.getElementById("entry_{{$Entry.Id}}").children[0].children[1].innerText = getRelativeTimeString('{{ $Entry.Timestamp }}')
+                        </script>
                     </div>
                     {{ range $Entry.Logs }}
                     <div class="too-big">
@@ -47,11 +50,6 @@
                     </div>
                     {{ end }}
                 </div>
-                <script>
-                    var date = new Date(document.getElementById("entry_{{$Entry.Id}}").children[0].children[1].innerText)
-                    var string = date.toLocaleString().replace(",", "")
-                    document.getElementById("entry_{{$Entry.Id}}").children[0].children[1].innerText = string
-                </script>
                 <style>
                     @media (max-width: 800px) {
                         .too-big {
