@@ -14,7 +14,11 @@
 
     <div id="entry_{{$Entry.Id}}" class="grid gap-2">
         <div class="flex items-center gap-4 dim">
-            <div class="grow">{{ $Entry.Timestamp }}</div>
+            <div class="grow" ondblclick="this.innerText = getRelativeTimeString('{{ $Entry.Timestamp }}')"
+                onclick="this.innerText = getTimeString('{{ $Entry.Timestamp }}')"></div>
+            <script>
+                document.getElementById("entry_{{$Entry.Id}}").children[0].children[0].innerText = getRelativeTimeString('{{ $Entry.Timestamp }}')
+            </script>
             <a href="/entry-view?tracker_id={{$.Tracker.Id}}&entry_id={{$Entry.Id}}"
                 class="tt-icon-button dim tt-color-primary-hover" title="View Entry">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -56,17 +60,17 @@
         <script>
             var md = document.getElementById("entry_notes_{{$Entry.Id}}")
             var md_count = 0
-    
+
             for (const child1 of md.children) {
                 if (child1.tagName === "UL") {
                     for (const child2 of child1.children) {
                         if (child2.tagName === "LI") {
                             if (child2.innerHTML.startsWith("[ ] ") || child2.innerHTML.startsWith("[x] ")) {
                                 md_count += 1
-    
+
                                 const div = document.createElement("div")
                                 div.classList = "flex items-baseline gap-4"
-    
+
                                 const input = document.createElement("input")
                                 input.classList = "tt-input"
                                 input.type = "checkbox"
@@ -74,14 +78,14 @@
                                 input.id = "chx-{{$Entry.Id}}-" + md_count
                                 input.addEventListener("click", event => event.preventDefault())
                                 div.appendChild(input)
-    
+
                                 const label = document.createElement("label")
                                 label.classList = "tt-label-inline"
                                 label.htmlFor = "chx-{{$Entry.Id}}-" + md_count
                                 label.innerText = "error label"
                                 label.style.fontSize = "var(--font-size)"
                                 div.appendChild(label)
-    
+
                                 // Empty Checkbox
                                 if (child2.innerHTML.startsWith("[ ] ")) {
                                     label.innerText = child2.innerText.replace("[ ] ", "")
@@ -89,7 +93,7 @@
                                     child2.innerHTML = ""
                                     child2.appendChild(div)
                                 }
-    
+
                                 // Checked Checkbox
                                 if (child2.innerHTML.startsWith("[x] ")) {
                                     const split = child2.innerHTML.split(/<br>(.*)/s)
@@ -109,12 +113,6 @@
             }
         </script>
     </div>
-
-    <script>
-        var tracker_history__date = new Date(document.getElementById("entry_{{$Entry.Id}}").children[0].children[0].innerText)
-        var tracker_history__string = tracker_history__date.toLocaleString().replace(",", "")
-        document.getElementById("entry_{{$Entry.Id}}").children[0].children[0].innerText = tracker_history__string
-    </script>
 
     {{ end }}
 
