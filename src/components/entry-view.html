@@ -20,7 +20,10 @@
     {{ end }}
 
     <div id="entry_notes_{{.Entry.Id}}" class="tt-markdown flow"> {{ render_markdown .Entry.Notes }} </div>
+    <div id="entry_notes_{{.Entry.Id}}_raw" hidden> {{ .Entry.Notes }} </div>
     <script>
+        var entry_notes__md_raw = document.getElementById("entry_notes_{{.Entry.Id}}_raw")
+        var entry_notes__string = entry_notes__md_raw.innerText
         var md = document.getElementById("entry_notes_{{.Entry.Id}}")
         var md_count = 0
 
@@ -55,6 +58,12 @@
                                 child2.style.display = "block"
                                 child2.innerHTML = ""
                                 child2.appendChild(div)
+                                
+                                // If clicked submit a new version of the notes with the checkbox checked
+                                input.addEventListener("click", event => {
+                                    const new_string = entry_notes__string.replace("- [ ] " + label.innerText, "- [x] " + label.innerText)
+                                    console.log(new_string)
+                                })
                             }
 
                             // Checked Checkbox
@@ -68,6 +77,12 @@
                                 child2.appendChild(div)
                                 child2.appendChild(child3)
                                 child3.outerHTML = split[1]
+
+                                // If clicked submit a new version of the notes with the checkbox checked
+                                input.addEventListener("click", event => {
+                                    const new_string = entry_notes__string.replace("- [x] " + label.innerText, "- [ ] " + label.innerText)
+                                    console.log(new_string)
+                                })
                             }
                         }
                     }
