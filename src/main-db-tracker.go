@@ -76,16 +76,6 @@ func Db_Tracker_Table_Create(db *sql.DB) (err error) {
 	return err
 }
 
-func Db_Tracker_Table_Delete(db *sql.DB) (err error) {
-	_, err = db.Exec(`
-		DROP TABLE IF EXISTS option;
-		DROP TABLE IF EXISTS number;
-		DROP TABLE IF EXISTS field;
-		DROP TABLE IF EXISTS tracker;
-	`)
-	return err
-}
-
 func Db_Tracker_Create(db *sql.DB, tracker_name string, tracker_notes string) (tracker_id int, err error) {
 	sql_string := fmt.Sprintf(
 		`INSERT INTO tracker (tracker_name, tracker_notes) VALUES ('%s', '%s');`,

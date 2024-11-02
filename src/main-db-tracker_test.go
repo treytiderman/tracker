@@ -1,59 +1,62 @@
 package main
 
-// import (
-// 	"database/sql"
-// 	"encoding/json"
-// 	"fmt"
-// 	"testing"
+import (
+	"database/sql"
+	"os"
+	// "encoding/json"
+	// "fmt"
+	"testing"
 
-// 	_ "modernc.org/sqlite"
-// )
+	_ "modernc.org/sqlite"
+)
 
-// var db *sql.DB
+var has_reset = false
+var db_test *sql.DB
 
-// func Test_Create_Db_Tables(t *testing.T) {
-// 	var err error
-// 	db, err = sql.Open("sqlite", "./data/test.db")
-// 	if err != nil {
-// 		t.Fatalf("Failed to read './data/test.db'")
-// 	}
+func test_setup_function() {
+	if has_reset {
+		return
+	}
+	os.Remove("../data/test.db")
+	db_test, _ = sql.Open("sqlite", "../data/test.db")
+	Db_Tracker_Table_Create(db_test)
+	has_reset = true
+}
 
-// 	Create_Db_Tables(db)
-// }
+func Test_Create_Db_Tables(t *testing.T) {
+	test_setup_function()
+}
 
-// func Test_Reset_Db_Tables(t *testing.T) {
-// 	Reset_Db_Tables(db)
-// }
+// Insert Data
 
-// // Insert Data
-
-// func Test_Create_Tracker(t *testing.T) {
-// 	var tests = []struct {
-// 		expected_id   int
-// 		tracker_name  string
-// 		tracker_notes string
-// 	}{
-// 		{1, "Journal", "Daily journal and notes"},
-// 		{2, "Weight", "How much do I weight in pounds"},
-// 		{3, "Money", "Transactions"},
-// 		{4, "DELETE_ME", "Tracker made just to delete"},
-// 		{5, "Brush Teeth", "Brush Teeth for 2 Minutes"},
-// 		{6, "AC Filter", "Replace every 3 months, Size: 14x25x1"},
-// 		{7, "Bathroom", ""},
-// 		{8, "Workout", "Complete various exercises"},
-// 	}
-// 	for _, tt := range tests {
-// 		t.Run(tt.tracker_name, func(t *testing.T) {
-// 			id, err := Create_Tracker(db, tt.tracker_name, tt.tracker_notes)
-// 			if err != nil {
-// 				t.Fatalf("got error, expected %d", tt.expected_id)
-// 			}
-// 			if id != tt.expected_id {
-// 				t.Errorf("got %d, expected %d", id, tt.expected_id)
-// 			}
-// 		})
-// 	}
-// }
+func Test_Db_Tracker_Create(t *testing.T) {
+	test_setup_function()
+	var tests = []struct {
+		expected_id   int
+		tracker_name  string
+		tracker_notes string
+	}{
+		{1, "Journal", "Daily journal and notes"},
+		{2, "Weight", "How much do I weight in pounds"},
+		{3, "Money", "Transactions"},
+		{4, "DELETE_ME", "Tracker made just to delete"},
+		{5, "Brush Teeth", "Brush Teeth for 2 Minutes"},
+		{6, "AC Filter", "Replace every 3 months, Size: 14x25x1"},
+		{7, "Bathroom", ""},
+		{8, "Workout", "Complete various exercises"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.tracker_name, func(t *testing.T) {
+			id, err := Db_Tracker_Create(db_test, tt.tracker_name, tt.tracker_notes)
+			if err != nil {
+				t.Fatalf("got error, expected %d", tt.expected_id)
+			}
+			if id != tt.expected_id {
+				t.Errorf("got %d, expected %d", id, tt.expected_id)
+			}
+		})
+	}
+}
 
 // func Test_Add_Number_Field(t *testing.T) {
 // 	var tests = []struct {
@@ -71,7 +74,7 @@ package main
 // 	}
 // 	for _, tt := range tests {
 // 		t.Run(tt.tracker_name, func(t *testing.T) {
-// 			id, err := Add_Number_Field(db, tt.tracker_name, tt.field_name, tt.field_notes, tt.decimal_places)
+// 			id, err := Add_Number_Field(db_test, tt.tracker_name, tt.field_name, tt.field_notes, tt.decimal_places)
 // 			if err != nil {
 // 				t.Fatalf("Failed to add number field to tracker")
 // 			}
@@ -119,7 +122,7 @@ package main
 // 	}
 // 	for _, tt := range tests {
 // 		t.Run(tt.tracker_name, func(t *testing.T) {
-// 			id, err := Add_Option_Field(db, tt.tracker_name, tt.field_name, tt.field_notes, tt.options)
+// 			id, err := Add_Option_Field(db_test, tt.tracker_name, tt.field_name, tt.field_notes, tt.options)
 // 			if err != nil {
 // 				t.Fatalf("Failed to add option field to tracker")
 // 			}
@@ -194,7 +197,7 @@ package main
 // 	}
 // 	for _, tt := range tests {
 // 		t.Run(tt.tracker_name, func(t *testing.T) {
-// 			id, err := Add_Entry(db, tt.tracker_name, tt.entry_notes, tt.logs)
+// 			id, err := Add_Entry(db_test, tt.tracker_name, tt.entry_notes, tt.logs)
 // 			if err != nil {
 // 				t.Fatalf("Failed to update tracker notes")
 // 			}
@@ -218,7 +221,7 @@ package main
 // 	}
 // 	for _, tt := range tests {
 // 		t.Run(tt.tracker_name, func(t *testing.T) {
-// 			id, err := Get_Tracker_Id_By_Name(db, tt.tracker_name)
+// 			id, err := Get_Tracker_Id_By_Name(db_test, tt.tracker_name)
 // 			if err != nil {
 // 				t.Fatalf("Failed to Test_Get_Tracker_Id_By_Name")
 // 			}
@@ -237,7 +240,7 @@ package main
 // 	}
 // 	for _, tt := range tests {
 // 		t.Run(fmt.Sprintf("tracker_id=%d", tt.tracker_id), func(t *testing.T) {
-// 			tracker, err := Get_Tracker_By_Id(db, tt.tracker_id)
+// 			tracker, err := Get_Tracker_By_Id(db_test, tt.tracker_id)
 // 			if err != nil {
 // 				t.Fatalf("Failed to Get_Tracker_By_Id")
 // 			}
@@ -249,7 +252,7 @@ package main
 // }
 
 // func Test_Get_Trackers(t *testing.T) {
-// 	trackers, err := Get_Trackers(db)
+// 	trackers, err := Get_Trackers(db_test)
 // 	if err != nil {
 // 		t.Fatalf("Failed to Get_Trackers")
 // 	}
@@ -267,7 +270,7 @@ package main
 // 	}
 // 	for _, tt := range tests {
 // 		t.Run(fmt.Sprintf("tracker_id=%d", tt.tracker_id), func(t *testing.T) {
-// 			entries, err := Get_Entries_By_Tracker_Id(db, tt.tracker_id)
+// 			entries, err := Get_Entries_By_Tracker_Id(db_test, tt.tracker_id)
 // 			if err != nil {
 // 				t.Fatalf("Failed to Get_Entries_By_Tracker_Id")
 // 			}
@@ -297,7 +300,7 @@ package main
 // 	}
 // 	for _, tt := range tests {
 // 		t.Run(fmt.Sprintf("tracker_id=%d", tt.tracker_id), func(t *testing.T) {
-// 			err := Update_Tracker_Notes_By_Id(db, tt.tracker_id, tt.tracker_notes)
+// 			err := Update_Tracker_Notes_By_Id(ddb_testb, tt.tracker_id, tt.tracker_notes)
 // 			if err != nil {
 // 				t.Fatalf("Failed to update tracker notes")
 // 			}
@@ -315,7 +318,7 @@ package main
 // 	}
 // 	for _, tt := range tests {
 // 		t.Run(fmt.Sprintf("tracker_id=%d", tt.tracker_id), func(t *testing.T) {
-// 			err := Delete_Tracker_By_Id(db, tt.tracker_id)
+// 			err := Delete_Tracker_By_Id(db_test, tt.tracker_id)
 // 			if err != nil {
 // 				t.Fatalf("Failed to delete tracker")
 // 			}
