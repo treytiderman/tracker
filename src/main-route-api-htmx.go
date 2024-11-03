@@ -413,7 +413,7 @@ func htmx_entry_update(w http.ResponseWriter, r *http.Request) {
 			log.Println("error getting log_id")
 			return
 		}
-		
+
 		field_id, err := strconv.Atoi(strings.ReplaceAll(ids[1], "field_", ""))
 		if err != nil {
 			log.Println("error getting field_id")
@@ -624,7 +624,7 @@ func htmx_log_delete(w http.ResponseWriter, r *http.Request) {
 // File
 
 func content_get(w http.ResponseWriter, r *http.Request) {
-	content_path := "../data/content/" + r.PathValue("content_path")
+	content_path := "../content/" + r.PathValue("content_path")
 
 	file, err := os.ReadFile(content_path)
 	if err != nil {
@@ -636,7 +636,7 @@ func content_get(w http.ResponseWriter, r *http.Request) {
 }
 
 func content_delete(w http.ResponseWriter, r *http.Request) {
-	content_path := "../data/content/" + r.PathValue("content_path")
+	content_path := "../content/" + r.PathValue("content_path")
 
 	err := os.Remove(content_path)
 	if err != nil {
@@ -678,7 +678,7 @@ func content_upload(w http.ResponseWriter, r *http.Request) {
 
 	timestamp := time.Now().Format(time.DateTime)
 	timestamp = strings.ReplaceAll(timestamp, " ", "_")
-	path := "../data/content/" + timestamp + ext
+	path := "../content/" + timestamp + ext
 
 	file, err := os.Create(path)
 	if err != nil {

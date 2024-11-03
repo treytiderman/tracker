@@ -6,4 +6,4 @@
 /data/*.db
 !demo.db
 
-/data/content/*
+/content/*
