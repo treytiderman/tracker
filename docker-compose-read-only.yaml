@@ -14,4 +14,5 @@ services:
       PASSWORD: "password"
     volumes:
       - ./data:/app/data
+      - ./content:/app/content
     restart: unless-stopped

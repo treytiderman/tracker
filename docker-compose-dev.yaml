@@ -17,3 +17,4 @@ services:
       - ./src:/app/src
       - ./data:/app/data
       - ./public:/app/public
+      - ./content:/app/content
