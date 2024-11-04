@@ -345,7 +345,8 @@ func htmx_entry_create(w http.ResponseWriter, r *http.Request) {
 	Db_Entry_Create_Timestamp(db, tracker.Id, entry_notes, logs, timestamp)
 
 	// Reload page
-	w.Header().Add("HX-Refresh", "true")
+	url := fmt.Sprintf("/tracker-history?id=%d", tracker.Id)
+	w.Header().Add("HX-Redirect", url)
 	w.Write([]byte("ok"))
 }
 
@@ -447,7 +448,8 @@ func htmx_entry_update(w http.ResponseWriter, r *http.Request) {
 	Db_Entry_Timestamp_Update(db, entry_id, timestamp)
 
 	// Reload page
-	w.Header().Add("HX-Refresh", "true")
+	url := fmt.Sprintf("/tracker-history?id=%d", tracker.Id)
+	w.Header().Add("HX-Redirect", url)
 	w.Write([]byte("ok"))
 }
 
