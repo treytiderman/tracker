@@ -6,15 +6,15 @@
     </div>
 
     <div id="app_nav__pages" class="tt-nav-links pad-2">
-        <a data-path="/trackers" href="./trackers"> All Trackers </a>
-        <a data-path="/tracker-create" href="./tracker-create"> New Tracker </a>
-        <a data-path="/tracker-info" href="./tracker-info?id={{.Tracker.Id}}">Info</a>
-        <a data-path="/tracker-log" href="./tracker-log?id={{.Tracker.Id}}">Log</a>
-        <a data-path="/tracker-records" href="./tracker-records?id={{.Tracker.Id}}">Records</a>
-        <a data-path="/tracker-history" href="./tracker-history?id={{.Tracker.Id}}">History</a>
-        <a data-path="/tracker-chart" href="./tracker-chart?id={{.Tracker.Id}}" hidden>Chart</a>
-        <a data-path="/tracker-reminders" href="./tracker-reminders?id={{.Tracker.Id}}" hidden>Reminders</a>
-        <a data-path="/tracker-goals" href="./tracker-goals?id={{.Tracker.Id}}" hidden>Goals</a>
+        <a data-path="/tracker-create" href="./tracker-create"> Create Tracker </a>
+        <a data-path="/trackers" href="./trackers"> Trackers </a>
+        <a data-path="/tracker-info" href="./tracker-info?id={{.Tracker.Id}}">Tracker Info</a>
+        <a data-path="/tracker-log" href="./tracker-log?id={{.Tracker.Id}}">Tracker Entry</a>
+        <a data-path="/tracker-records" href="./tracker-records?id={{.Tracker.Id}}" hidden>Tracker Records</a>
+        <a data-path="/tracker-history" href="./tracker-history?id={{.Tracker.Id}}">Tracker History</a>
+        <a data-path="/tracker-chart" href="./tracker-chart?id={{.Tracker.Id}}" hidden>Tracker Chart</a>
+        <a data-path="/tracker-reminders" href="./tracker-reminders?id={{.Tracker.Id}}" hidden>Tracker Reminders</a>
+        <a data-path="/tracker-goals" href="./tracker-goals?id={{.Tracker.Id}}" hidden>Tracker Goals</a>
         <a data-path="/settings" href="./settings">Settings</a>
     </div>
 
@@ -93,6 +93,11 @@
             link.hidden = hide
         }
     })
+    for (const link of navTrackerList.children) {
+        if (document.location.pathname.startsWith("/tracker-")) {
+            link.href = link.href.replace("/tracker-info", document.location.pathname)
+        }
+    }
 </script>
 
 <style>
