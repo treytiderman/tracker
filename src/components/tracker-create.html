@@ -2,13 +2,13 @@
 
 <form class="grid gap-8 pad-4" action="/htmx/tracker/create" method="post">
 
-    <div class="grid">
+    <div class="grid gap-1">
         <label for="tracker_name" class="tt-label">Name</label>
         <input type="text" name="tracker_name" id="tracker_name" value="" placeholder="Tracker Name" class="tt-input"
             required />
     </div>
 
-    <div class="grid">
+    <div class="grid gap-1">
         <label for="tracker_notes" class="tt-label">Notes</label>
         <textarea id="tracker_notes" name="tracker_notes" placeholder="Tracker Notes..." rows="4"
             class="tt-input"></textarea>
@@ -21,7 +21,7 @@
         <div id="field_a" class="grid gap-4" hidden>
 
             <div class="flex gap-2 items-center">
-                <div class="grid" style="width: 8rem;">
+                <div class="grid gap-1" style="width: 8rem;">
                     <label for="field_a_type" class="tt-label"> Field Type </label>
                     <select id="field_a_type" name="field_a_type" class="tt-input">
                         <option value="number">Number</option>
@@ -62,7 +62,7 @@
         <div id="field_b" class="grid gap-4" hidden>
 
             <div class="flex gap-2 items-center">
-                <div class="grid" style="width: 8rem;">
+                <div class="grid gap-1" style="width: 8rem;">
                     <label for="field_b_type" class="tt-label"> Field Type </label>
                     <select id="field_b_type" name="field_b_type" class="tt-input">
                         <option value="number">Number</option>
@@ -80,7 +80,7 @@
 
                 <div class="flex gap-2 items-end">
                     <div class="grid place-items-center dim" style="width: 2rem; height: 2rem;">#</div>
-                    <div class="grid">
+                    <div class="grid gap-1">
                         <label for="field_b_option_1_value" class="tt-label"> Option Value </label>
                         <input type="number" id="field_b_option_1_value" name="field_b_option_1_value" value=-1
                             placeholder=1 class="tt-input" style="width: 5.5rem;">
@@ -94,7 +94,7 @@
 
                 <div class="flex gap-2 items-end">
                     <div class="grid place-items-center dim" style="width: 2rem; height: 2rem;">#</div>
-                    <div class="grid">
+                    <div class="grid gap-1">
                         <label for="field_b_option_2_value" class="tt-label" hidden> Option Value
                         </label>
                         <input type="number" id="field_b_option_2_value" name="field_b_option_2_value" value=0
@@ -109,7 +109,7 @@
 
                 <div class="flex gap-2 items-end">
                     <div class="grid place-items-center dim" style="width: 2rem; height: 2rem;">#</div>
-                    <div class="grid">
+                    <div class="grid gap-1">
                         <label for="field_b_option_3_value" class="tt-label" hidden> Option Value
                         </label>
                         <input type="number" id="field_b_option_3_value" name="field_b_option_3_value" value=1
@@ -200,7 +200,7 @@
         select.appendChild(select_option_2)
 
         const div = document.createElement("div")
-        div.classList = "grid"
+        div.classList = "grid gap-1"
         div.style = "width: 8rem;"
         div.appendChild(label)
         div.appendChild(select)
@@ -229,7 +229,7 @@
         input.required = true
 
         const div = document.createElement("div")
-        div.classList = "grid grow"
+        div.classList = "grid gap-1 grow"
         div.appendChild(label)
         div.appendChild(input)
 
@@ -267,7 +267,7 @@
         input.required = true
 
         const label_and_input = document.createElement("div")
-        label_and_input.classList = "grid grow"
+        label_and_input.classList = "grid gap-1 grow"
         label_and_input.appendChild(label)
         label_and_input.appendChild(input)
 
@@ -281,7 +281,7 @@
 
     function create_option_element(id, index) {
         const icon = document.createElement("div")
-        icon.classList = "grid place-items-center dim"
+        icon.classList = "grid gap-1 place-items-center dim"
         icon.style = "width: 2rem; height: 2rem;"
         icon.innerText = "#"
 
@@ -316,7 +316,7 @@
         input.required = true
 
         const div = document.createElement("div")
-        div.classList = "grid"
+        div.classList = "grid gap-1"
         div.appendChild(label)
         div.appendChild(input)
 
@@ -339,7 +339,7 @@
         input.required = true
 
         const div = document.createElement("div")
-        div.classList = "grid grow"
+        div.classList = "grid gap-1 grow"
         div.appendChild(label)
         div.appendChild(input)
 
