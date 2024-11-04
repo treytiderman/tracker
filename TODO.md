@@ -13,6 +13,24 @@
         - Otherwise use entry_id 0 for orphaned content
     - Check for missing files on startup
     - Add rename files "PATCH /content/FILE_NAME?new_file_name=NEW_FILE_NAME"
+- [ ] Try Full Text Search id LIKE isn't enough
+    - https://www.sqlitetutorial.net/sqlite-full-text-search/
+- [ ] Statistics Each Tracker
+    - Entries logged
+    - Time of last Entry logged
+    - Current/Max/Min Days in a row logged
+    - Longest/Shortest time between logs
+- [ ] Statistics Each Tracker Field
+    - Notes
+        - Number of words
+        - Number of content
+        - Favorite Word
+    - Number
+        - Min/Max/Average
+        - Rate of Change
+    - Option
+        - Most/Least Common option logged
+        - Perecent/Average of all options logged
 
 # Ideas
 
