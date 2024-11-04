@@ -1,9 +1,22 @@
 {{ define "app_page" }}
 
-<section class="grid gap-4 pad-4">
+<section id="login" class="grid gap-4 pad-4">
+    <br><br>
+
+    <h1>Tracker Login</h1>
+
+    <hr>
 
     {{ template "enter_password" . }}
 
 </section>
+
+<style>
+    #login {
+        width: 100%;
+        max-width: 55ch;
+        margin-inline: auto;
+    }
+</style>
 
 {{ end }}
