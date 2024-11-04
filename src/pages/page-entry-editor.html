@@ -1,13 +1,34 @@
 {{ define "app_page" }}
 
-<section class="flex-col gap-4 pad-4">
+<section class="flex-col gap-4 pad-4" style="display: none;">
 
-    <h2>Edit Entry</h2>
+    <div class="flex items-center gap-4 dim">
+        <h1 class="grow">Edit Entry</h1>
+        <a href="./tracker-history?id={{$.Tracker.Id}}"
+            class="tt-icon-button dim tt-color-green-hover flex gap-2 items-center"
+            style="padding-left: 0.75rem; padding-right: 0.5rem;">
+            Back to History
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                <path d="M3 3v5h5" />
+                <path d="M12 7v5l4 2" />
+            </svg>
+        </a>
+    </div>
+
+    <hr>
 
     <div class="grow">
         {{ template "entry_editor" . }}
     </div>
 
 </section>
+
+<style>
+    section {
+        display: flex !important;
+    }
+</style>
 
 {{ end }}
