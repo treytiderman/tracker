@@ -79,7 +79,7 @@
     <!-- notes -->
     <div class="grow flex-col gap-1">
         <div class="flex gap-4 items-end">
-            <label for="entry_create__textarea" class="tt-label grow">Notes</label>
+            <label for="entry_create__textarea" class="tt-label grow" title="In Monaco (VS Code) use Ctrl+M to toggle Tabbing to the next element">Notes</label>
             <button id="entry_create__toggle_word_wrap" class="tt-icon-button dim tt-color-primary-hover" hidden>
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -313,7 +313,7 @@
                             paste_text = `[TXT Link: ${path}](${path})`
                         }
 
-                        event.target.focus()
+                        // event.target.focus()
                         document.execCommand('insertText', false, paste_text)
 
                         // Redraw Editor
