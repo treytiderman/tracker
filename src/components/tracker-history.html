@@ -4,7 +4,18 @@
 
     {{ if .Entries }}
 
-    <h2>History</h2>
+    <div class="flex items-center gap-4 dim">
+        <h1 class="grow">History</h1>
+        <a href="./tracker-log?id={{$.Tracker.Id}}" class="tt-icon-button dim tt-color-green-hover flex gap-2 items-center" style="padding-left: 0.75rem; padding-right: 0.5rem;">
+            New Entry
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M5 12h14" />
+                <path d="M12 5v14" />
+            </svg>
+        </a>
+    </div>
 
     {{ end }}
 
