@@ -1,8 +1,14 @@
 {{ define "app_page" }}
 
-<section class="grid gap-8 pad-4">
+<section class="grid gap-4 pad-4">
 
-    {{ template "tracker_info" . }}
+    <h1>Tracker Info</h1>
+
+    <hr>
+
+    <div class="grid gap-8">
+        {{ template "tracker_info" . }}
+    </div>
 
 </section>
 
