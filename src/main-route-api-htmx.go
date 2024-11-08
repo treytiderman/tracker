@@ -680,6 +680,7 @@ func content_upload(w http.ResponseWriter, r *http.Request) {
 
 	timestamp := time.Now().Format(time.DateTime)
 	timestamp = strings.ReplaceAll(timestamp, " ", "_")
+	timestamp = strings.ReplaceAll(timestamp, ":", "-")
 	path := "../content/" + timestamp + ext
 
 	file, err := os.Create(path)
