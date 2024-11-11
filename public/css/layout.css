@@ -47,6 +47,11 @@
 
 /* Article Layout */
 
+.flow {
+    display: grid;
+    align-content: flex-start;
+}
+
 .flow>*:not(:first-child) {
     margin-top: 1.2em;
 }
