@@ -4,6 +4,7 @@ import (
 	"log"
 	"math"
 	"net/http"
+	"regexp"
 	"strconv"
 	"text/template"
 
@@ -22,6 +23,7 @@ func handle_routes_page(mux *http.ServeMux) {
 	mux.Handle("/tracker-log", mw_logger(mw_auth(http.HandlerFunc(page_tracker_log))))
 	mux.Handle("/tracker-records", mw_logger(mw_auth(http.HandlerFunc(page_tracker_records))))
 	mux.Handle("/tracker-history", mw_logger(mw_auth(http.HandlerFunc(page_tracker_history))))
+	mux.Handle("POST /htmx/entry/history", mw_logger(mw_auth(http.HandlerFunc(htmx_entry_history))))
 
 	mux.Handle("/entry-view", mw_logger(mw_auth(http.HandlerFunc(page_entry_view))))
 	mux.Handle("/entry-editor", mw_logger(mw_auth(http.HandlerFunc(page_entry_editor))))
@@ -54,6 +56,21 @@ func parse_templates(page string) *template.Template {
 				),
 			)), bf.WithExtensions(bf.HardLineBreak|bf.CommonExtensions))
 			str := string(arr)
+
+			// Replace "- [ ]" and "- [x]" with check boxes
+			r_checked := regexp.MustCompile(`<li>\[x\]([\s\S]*?)<\/li>`)
+    		str = r_checked.ReplaceAllString(str, 
+				`<li style="list-style: none;"><div class="flex items-baseline gap-4">
+					<input type="checkbox" class="tt-input" onclick="event.preventDefault();" checked>
+					<label class="tt-label-inline" style="font-size: var(--font-size);"> ${1} </label>
+				</div></li>`)
+			r_unchecked := regexp.MustCompile(`<li>\[\s*\]([\s\S]*?)<\/li>`)
+    		str = r_unchecked.ReplaceAllString(str, 
+				`<li style="list-style: none;"><div class="flex items-baseline gap-4">
+					<input type="checkbox" class="tt-input" onclick="event.preventDefault();">
+					<label class="tt-label-inline" style="font-size: var(--font-size);"> ${1} </label>
+				</div></li>`)
+
 			return str
 		},
 	}
@@ -279,6 +296,45 @@ func page_tracker_history(w http.ResponseWriter, r *http.Request) {
 	}{
 		Title:    "History / " + tracker.Name,
 		Trackers: trackers,
+		Tracker:  tracker,
+		Entries:  entries,
+	})
+}
+
+func htmx_entry_history(w http.ResponseWriter, r *http.Request) {
+	tmp := parse_templates("page-tracker-create")
+
+	err := r.ParseForm()
+	if err != nil {
+		return
+	}
+
+	tracker_id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	if err != nil {
+		return
+	}
+	r.Form.Del("id")
+	log.Println("FORM: tracker_id =", tracker_id)
+
+	search := r.Form.Get("search")
+	r.Form.Del("search")
+	log.Println("FORM: search =", search)
+
+	tracker, err := Db_Tracker_Get(db, tracker_id)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	entries, err := Db_Entry_Filter_Notes_Get(db, tracker_id, search)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	tmp.ExecuteTemplate(w, "tracker_history", struct {
+		Tracker  Db_Tracker
+		Entries  []Db_Entry
+	}{
 		Tracker:  tracker,
 		Entries:  entries,
 	})

@@ -2,23 +2,6 @@
 
 <div class="grid gap-4">
 
-    {{ if .Entries }}
-
-    <div class="flex items-center gap-4 dim">
-        <h1 class="grow">History</h1>
-        <a href="./tracker-log?id={{$.Tracker.Id}}" class="tt-icon-button dim tt-color-green-hover flex gap-2 items-center" style="padding-left: 0.75rem; padding-right: 0.5rem;">
-            New Entry
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                stroke-linejoin="round">
-                <path d="M5 12h14" />
-                <path d="M12 5v14" />
-            </svg>
-        </a>
-    </div>
-
-    {{ end }}
-
     {{ range $Entry := .Entries }}
 
     <hr>
@@ -68,67 +51,10 @@
         {{ end }}
 
         <div id="entry_notes_{{$Entry.Id}}" class="tt-markdown flow"> {{ render_markdown $Entry.Notes }} </div>
-        <script>
-            var md = document.getElementById("entry_notes_{{$Entry.Id}}")
-            var md_count = 0
-
-            for (const child1 of md.children) {
-                if (child1.tagName === "UL") {
-                    for (const child2 of child1.children) {
-                        if (child2.tagName === "LI") {
-                            if (child2.innerHTML.startsWith("[ ] ") || child2.innerHTML.startsWith("[x] ")) {
-                                md_count += 1
-
-                                const div = document.createElement("div")
-                                div.classList = "flex items-baseline gap-4"
-
-                                const input = document.createElement("input")
-                                input.classList = "tt-input"
-                                input.type = "checkbox"
-                                input.name = "chx-{{$Entry.Id}}-" + md_count
-                                input.id = "chx-{{$Entry.Id}}-" + md_count
-                                input.addEventListener("click", event => event.preventDefault())
-                                div.appendChild(input)
-
-                                const label = document.createElement("label")
-                                label.classList = "tt-label-inline"
-                                label.htmlFor = "chx-{{$Entry.Id}}-" + md_count
-                                label.innerText = "error label"
-                                label.style.fontSize = "var(--font-size)"
-                                div.appendChild(label)
-
-                                // Empty Checkbox
-                                if (child2.innerHTML.startsWith("[ ] ")) {
-                                    label.innerText = child2.innerText.replace("[ ] ", "")
-                                    child2.style.display = "block"
-                                    child2.innerHTML = ""
-                                    child2.appendChild(div)
-                                }
-
-                                // Checked Checkbox
-                                if (child2.innerHTML.startsWith("[x] ")) {
-                                    const split = child2.innerHTML.split(/<br>(.*)/s)
-                                    label.innerText = split[0].replace("[x] ", "")
-                                    input.checked = true
-                                    child2.style.display = "block"
-                                    const child3 = document.createElement('div')
-                                    child2.innerHTML = ""
-                                    child2.appendChild(div)
-                                    child2.appendChild(child3)
-                                    child3.outerHTML = split[1]
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        </script>
     </div>
 
     {{ end }}
 
 </div>
-
-<br><br>
 
 {{ end }}

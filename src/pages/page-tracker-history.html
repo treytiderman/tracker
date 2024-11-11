@@ -1,15 +1,60 @@
 {{ define "app_page" }}
 
-<section class="grid gap-4 pad-4" style="display: none;">
+<section class="grid gap-4 pad-4">
 
-    {{ template "tracker_history" . }}
+    <div class="flex items-center gap-4 dim">
+        <h1 class="grow">History</h1>
+        <a href="./tracker-log?id={{$.Tracker.Id}}" class="tt-icon-button dim tt-color-green-hover flex gap-2 items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M5 12h14" />
+                <path d="M12 5v14" />
+            </svg>
+        </a>
+        <button class="tt-icon-button dim tt-color-primary-hover flex gap-2 items-center" id="tracker_history__search_toggle">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.3-4.3"/>
+            </svg>
+        </button>
+    </div>
+
+    <div class="grid gap-1" hidden>
+        <label for="tracker_history__search" class="tt-label" hidden>Name</label>
+        <input type="text" name="search" id="tracker_history__search"
+            value="" placeholder="Search..." class="tt-input"
+            hx-post="/htmx/entry/history?id={{$.Tracker.Id}}" hx-trigger="input changed delay:200ms, tracker_history__search" hx-target="#tracker_history"
+        />
+    </div>
+    <script>
+        const tracker_history__search = document.getElementById("tracker_history__search")
+        const tracker_history__search_toggle = document.getElementById("tracker_history__search_toggle")
+        tracker_history__search_toggle.addEventListener("click", (event) => {
+            tracker_history__search_toggle.classList.toggle("tt-color-primary")
+            tracker_history__search.parentElement.hidden = !tracker_history__search.parentElement.hidden
+            tracker_history__search.focus()
+        })
+    </script>
+
+    {{ if .Entries }}
+
+    <div id="tracker_history">
+        {{ template "tracker_history" . }}
+    </div>
+
+    {{ else }}
+
+    <hr>
+    <p>No entries yet... <a href="./tracker-log?id={{$.Tracker.Id}}" class="tt-link">add new entry?</a></p>
+    <script>
+        tracker_history__search_toggle.hidden = true
+    </script>
+
+    {{ end }}
+
+    <br><br>
 
 </section>
-
-<style>
-    section {
-        display: grid !important;
-    }
-</style>
 
 {{ end }}
