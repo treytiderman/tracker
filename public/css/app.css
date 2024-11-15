@@ -275,7 +275,7 @@ input[type=checkbox].tt-input:checked {
 .tt-markdown ul,
 .tt-markdown dl,
 .tt-markdown dd {
-    margin-left: 3rem;
+    margin-left: 2rem;
 }    
 
 .tt-markdown>ol,
