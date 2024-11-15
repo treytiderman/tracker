@@ -31,6 +31,7 @@
     - Option
         - Most/Least Common option logged
         - Perecent/Average of all options logged
+- [ ] Add checkbox toggle feature while viewing entry
 
 # Ideas
 

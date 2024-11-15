@@ -1,10 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"math"
 	"net/http"
-	"regexp"
 	"strconv"
 	"text/template"
 
@@ -24,12 +24,61 @@ func handle_routes_page(mux *http.ServeMux) {
 	mux.Handle("/tracker-records", mw_logger(mw_auth(http.HandlerFunc(page_tracker_records))))
 	mux.Handle("/tracker-history", mw_logger(mw_auth(http.HandlerFunc(page_tracker_history))))
 	mux.Handle("POST /htmx/entry/history", mw_logger(mw_auth(http.HandlerFunc(htmx_entry_history))))
+	mux.Handle("POST /htmx/entry/checkbox-toggle", mw_logger(mw_auth(http.HandlerFunc(htmx_entry_checkbox_toggle))))
 
 	mux.Handle("/entry-view", mw_logger(mw_auth(http.HandlerFunc(page_entry_view))))
 	mux.Handle("/entry-editor", mw_logger(mw_auth(http.HandlerFunc(page_entry_editor))))
 
 	mux.Handle("/settings", mw_logger(mw_auth(http.HandlerFunc(page_settings))))
 	mux.Handle("/test", mw_logger(mw_auth(http.HandlerFunc(page_test))))
+}
+
+func replace_with_checkbox(arr []byte, i int, task_count int) []byte {
+	end_pattern_length := 5
+	if i > len(arr)-end_pattern_length {
+		return arr
+	}
+
+	before_i := 4
+	after_i := 4
+	start_tag := string(arr[i-before_i : i+after_i])
+
+	if start_tag == "<li>[x] " || start_tag == "<li>[ ] " {
+		task_count++
+
+		checked := " "
+		if start_tag == "<li>[x] " {
+			checked = "checked"
+		}
+
+		j := 0
+		j_offset := 0
+		a := arr[i+after_i:]
+		for j = 0; j < len(a); j++ {
+			next_tag := string(a[j : j+end_pattern_length])
+			if next_tag == "<br /" {
+				j_offset = 7
+				break
+			} else if next_tag == "</li>" {
+				break
+			}
+		}
+
+		before := arr[:i-before_i]
+		after := a[j+j_offset:]
+		label := a[:j]
+
+		div := fmt.Sprintf(`<li style="list-style: none;">
+		<div class="flex items-baseline gap-4">
+		    <input type="checkbox" class="tt-input" onclick="event.preventDefault();" id="task_%d" name="task_%d" %s >
+		    <label class="tt-label-inline" style="font-size: var(--font-size);" for="task_%d"> %s </label>
+		</div>`, task_count, task_count, checked, task_count, label)
+
+		arr = []byte(string(before) + div + string(after))
+	}
+
+    i++
+	return replace_with_checkbox(arr, i, task_count)
 }
 
 func parse_templates(page string) *template.Template {
@@ -55,21 +104,10 @@ func parse_templates(page string) *template.Template {
 					bf_html.WithClasses(true),
 				),
 			)), bf.WithExtensions(bf.HardLineBreak|bf.CommonExtensions))
-			str := string(arr)
 
-			// Replace "- [ ]" and "- [x]" with check boxes
-			r_checked := regexp.MustCompile(`<li>\[x\]([\s\S]*?)<\/li>`)
-    		str = r_checked.ReplaceAllString(str, 
-				`<li style="list-style: none;"><div class="flex items-baseline gap-4">
-					<input type="checkbox" class="tt-input" onclick="event.preventDefault();" checked>
-					<label class="tt-label-inline" style="font-size: var(--font-size);"> ${1} </label>
-				</div></li>`)
-			r_unchecked := regexp.MustCompile(`<li>\[\s*\]([\s\S]*?)<\/li>`)
-    		str = r_unchecked.ReplaceAllString(str, 
-				`<li style="list-style: none;"><div class="flex items-baseline gap-4">
-					<input type="checkbox" class="tt-input" onclick="event.preventDefault();">
-					<label class="tt-label-inline" style="font-size: var(--font-size);"> ${1} </label>
-				</div></li>`)
+			arr = replace_with_checkbox(arr, 4, 0)
+
+			str := string(arr)
 
 			return str
 		},
@@ -332,12 +370,16 @@ func htmx_entry_history(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tmp.ExecuteTemplate(w, "tracker_history", struct {
-		Tracker  Db_Tracker
-		Entries  []Db_Entry
+		Tracker Db_Tracker
+		Entries []Db_Entry
 	}{
-		Tracker:  tracker,
-		Entries:  entries,
+		Tracker: tracker,
+		Entries: entries,
 	})
+}
+
+func htmx_entry_checkbox_toggle(w http.ResponseWriter, r *http.Request) {
+	// TODO
 }
 
 func page_entry_view(w http.ResponseWriter, r *http.Request) {
@@ -346,6 +388,11 @@ func page_entry_view(w http.ResponseWriter, r *http.Request) {
 	tracker_id, err := strconv.Atoi(r.URL.Query().Get("tracker_id"))
 	if err != nil {
 		tracker_id = 0
+	}
+
+	tracker, err := Db_Tracker_Get(db, tracker_id)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	entry_id, err := strconv.Atoi(r.URL.Query().Get("entry_id"))
@@ -367,11 +414,13 @@ func page_entry_view(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tmp.ExecuteTemplate(w, "app_page_only", struct {
-		Title string
-		Entry Db_Entry
+		Title   string
+		Tracker Db_Tracker
+		Entry   Db_Entry
 	}{
-		Title: "Entry",
-		Entry: entry,
+		Title:   "Entry",
+		Tracker: tracker,
+		Entry:   entry,
 	})
 }
 
