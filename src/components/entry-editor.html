@@ -92,7 +92,7 @@
     <div class="grow flex-col gap-1">
         <div class="flex gap-4 items-end">
             <label for="entry_editor__textarea" class="tt-label grow" title="In Monaco (VS Code) use Ctrl+M to toggle Tabbing to the next element">Notes</label>
-            <button id="entry_editor__toggle_word_wrap" class="tt-icon-button dim tt-color-primary-hover" hidden>
+            <button id="entry_editor__toggle_line_wrap" class="tt-icon-button dim tt-color-primary-hover" hidden>
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="3" x2="21" y1="6" y2="6" />
@@ -170,21 +170,23 @@
 
             monaco__value_set(entry_editor__textarea.value)
 
-            let entry_editor__word_wrap = false
+            let entry_create__line_wrap = false
             let entry_editor__line_numbers = false
-            const entry_editor__toggle_word_wrap = document.getElementById("entry_editor__toggle_word_wrap")
+            const entry_editor__toggle_line_wrap = document.getElementById("entry_editor__toggle_line_wrap")
             const entry_editor__toggle_line_numbers = document.getElementById("entry_editor__toggle_line_numbers")
 
-            entry_editor__toggle_word_wrap.addEventListener("click", event => {
+            entry_editor__toggle_line_wrap.addEventListener("click", event => {
                 event.preventDefault()
-                entry_editor__word_wrap = !entry_editor__word_wrap
-                monaco__word_wrap_set(entry_editor__word_wrap)
+                entry_create__line_wrap = !entry_create__line_wrap
+                monaco__word_wrap_set(entry_create__line_wrap)
+                localStorage.setItem("prefers_line_wrap", entry_create__line_wrap ? "true" : "false")
             })
 
             entry_editor__toggle_line_numbers.addEventListener("click", event => {
                 event.preventDefault()
                 entry_editor__line_numbers = !entry_editor__line_numbers
                 monaco__line_numbers_set(entry_editor__line_numbers)
+                localStorage.setItem("prefers_line_numbers", entry_editor__line_numbers ? "true" : "false")
             })
 
             const entry_editor__toggle_monaco = document.getElementById("entry_editor__toggle_monaco")
@@ -195,8 +197,9 @@
                 event.preventDefault()
                 entry_editor__monaco.hidden = !entry_editor__monaco.hidden
                 entry_editor__textarea.hidden = !entry_editor__textarea.hidden
-                entry_editor__toggle_word_wrap.hidden = !entry_editor__toggle_word_wrap.hidden
+                entry_editor__toggle_line_wrap.hidden = !entry_editor__toggle_line_wrap.hidden
                 entry_editor__toggle_line_numbers.hidden = !entry_editor__toggle_line_numbers.hidden
+                localStorage.setItem("prefers_monaco", entry_editor__monaco.hidden ? "false" : "true")
             })
 
             entry_editor__fullscreen_notes.addEventListener("pointerdown", event => {
@@ -224,6 +227,16 @@
                 }
                 entry_editor__fullscreen_notes_exit.hidden = true
             })
+
+            if (localStorage.getItem("prefers_monaco") === "true") {
+                entry_editor__toggle_monaco.click()
+            }
+            if (localStorage.getItem("prefers_line_numbers") === "true") {
+                entry_editor__toggle_line_numbers.click()
+            }
+            if (localStorage.getItem("prefers_line_wrap") === "true") {
+                entry_editor__toggle_line_wrap.click()
+            }
         </script>
     </div>
 
