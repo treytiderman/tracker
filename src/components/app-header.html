@@ -1,5 +1,20 @@
 {{ define "app_header" }}
 
+<style>
+    .app_header_header {
+        height: 3rem;
+        color: var(--color-text-heading);
+        border-bottom: var(--border);
+        background-color: var(--color-bg-header);
+    }
+
+    #app_header__title {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>
+
 <header class="app_header_header flex items-center gap-4 pad-2">
 
     <button id="navShowButton" idz="app_header__nav_show" class="tt-icon-button" title="Toggle Sidebar / Nav (Ctrl+B)">
@@ -36,20 +51,5 @@
         location.reload()
     })
 </script>
-
-<style>
-    .app_header_header {
-        height: 3rem;
-        color: var(--color-text-heading);
-        border-bottom: var(--border);
-        background-color: var(--color-bg-header);
-    }
-
-    #app_header__title {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-</style>
 
 {{ end }}

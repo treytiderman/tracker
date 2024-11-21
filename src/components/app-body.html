@@ -1,16 +1,5 @@
 {{ define "app_body" }}
 
-<body class="flex-col" style="height: 100svh;">
-    <a href="#main-content" id="app_body__skip" class="tt-button" style="position: fixed; display: none;">Skip to main content</a>
-    {{ template "app_header" . }}
-    <div class="flex" style="position: relative;">
-        {{ template "app_nav" . }}
-        <main id="main-content" tabindex="0" class="grow overflow" style="height: calc(100svh - 3rem);">
-            {{ template "app_page" . }}
-        </main>
-    </div>
-</body>
-
 <style>
     main {
         height: calc(100svh - 3rem);
@@ -35,5 +24,16 @@
         translate: 0;
     }
 </style>
+
+<body class="flex-col" style="height: 100svh;">
+    <a href="#main-content" id="app_body__skip" class="tt-button" style="position: fixed; display: none;">Skip to main content</a>
+    {{ template "app_header" . }}
+    <div class="flex" style="position: relative;">
+        {{ template "app_nav" . }}
+        <main id="main-content" tabindex="0" class="grow overflow" style="height: calc(100svh - 3rem);">
+            {{ template "app_page" . }}
+        </main>
+    </div>
+</body>
 
 {{ end }}
