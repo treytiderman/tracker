@@ -23,9 +23,10 @@
         border: var(--border);
         border-radius: var(--border-radius);
     }
+
     .monaco-editor {
         /* flash of blue when unhiding */
-        --vscode-focusBorder: black !important; 
+        --vscode-focusBorder: black !important;
     }
 </style>
 
@@ -34,6 +35,23 @@
     monaco.editor.defineTheme("dark", monaco__theme_dark);
     monaco.editor.defineTheme("light", monaco__theme_white);
     monaco.editor.defineTheme("white", monaco__theme_white);
+
+    // monaco.languages.registerInlineCompletionsProvider("markdown", {
+    //     provideInlineCompletions: async function (model, position, context, token) {
+    //         return Promise.resolve({
+    //             items: [
+    //                 {
+    //                     // "label": "#Money",
+    //                     // "sortText": "a",
+    //                     "insertText": "#Money",
+    //                 },
+    //             ]
+    //         })
+    //     },
+    //     freeInlineCompletions(arg) {
+    //         console.log('freeInlineCompletions', arg);
+    //     }
+    // });
 
     let monaco_theme = 'dark'
 
@@ -51,18 +69,33 @@
 
         theme: monaco_theme,
         minimap: { enabled: false },
-        fontSize: "14px",
+        fontSize: "16px",
         lineNumbers: "off",
         folding: false,
         wordWrap: "on",
 
-        language: 'markdown',
         value: "",
+        language: 'markdown',
+        inlineSuggest: {
+            enabled: true,
+            showToolbar: 'onHover',
+            mode: 'subword',
+            suppressSuggestions: false,
+        },
+        suggest: {
+            preview: true,
+            selectionMode: 'whenQuickSuggestion',
+        },
+        automaticLayout: true,
     })
 
     function monaco__value_set(value, language = "markdown") {
         monaco.editor.setModelLanguage(monaco__editor.getModel(), language)
         monaco__editor.setValue(value)
+    }
+
+    function monaco__focus() {
+        monaco__editor.focus()
     }
 
     function monaco__value_get() {
