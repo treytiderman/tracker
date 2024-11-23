@@ -192,6 +192,7 @@
 
 /* Vertical + Horizontal Center */
 .place-items-center {
+    display: grid;
     place-items: center;
 }
 
