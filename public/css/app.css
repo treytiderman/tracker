@@ -25,6 +25,7 @@
     max-width: 80ch;
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
+    z-index: 99;
 }
 
 .tt-dialog>* {
@@ -115,6 +116,8 @@ input[type=file].tt-input {
 
 .tt-link {
     color: var(--color-text-link);
+    text-underline-position: under left;
+    border-radius: 4px;
 }
 
 .tt-link:hover,
