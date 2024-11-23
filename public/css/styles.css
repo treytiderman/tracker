@@ -194,7 +194,7 @@ a {
     color: var(--color-text-heading);
     text-underline-position: under left;
     text-decoration: none;
-    border-radius: 1px;
+    border-radius: 4px;
 }
 
 label {
