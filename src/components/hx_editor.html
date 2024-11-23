@@ -1,0 +1,95 @@
+{{ define "hx_editor" }}
+
+<form id="editor" class="flex-col grow gap-2">
+    <div class="flex gap-4 items-end">
+        <button id="hx_editor_search_toggle" class="tt-icon-button dim tt-color-primary-hover">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+            </svg>
+        </button>
+        <div class="grow"></div>
+        <button type="submit" id="hx_editor_submit" class="tt-icon-button dim tt-color-green-hover">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 6 9 17l-5-5"/>
+            </svg>
+        </button>
+    </div>
+
+    <textarea name="notes" id="minimal__textarea" hidden></textarea>
+    <div id="minimal__monaco" class="grow">
+        {{ template "monaco" . }}
+    </div>
+</form>
+
+<script>
+    document.getElementById("hx_editor_search_toggle").addEventListener("click", event => {
+        event.preventDefault()
+        document.getElementById("hx_search_dialog").showModal()
+    })
+
+    monaco__line_numbers_set(true)
+
+    if (localStorage.getItem("memory")) {
+        monaco__value_set(localStorage.getItem("memory"))
+    }
+
+    monaco__value_oninput(event => {
+        localStorage.setItem("memory", monaco__value_get())
+        document.getElementById("minimal__textarea").value = monaco__value_get()
+    })
+
+    document.getElementById("minimal__textarea").addEventListener("input", event => {
+        monaco__value_set(entry_editor__textarea.value)
+    })
+
+    document.getElementById("editor").addEventListener("paste", async (event) => {
+        if (!document.getElementById("minimal__monaco").hidden) event.preventDefault() // so this triggers
+        const items = (event.clipboardData || event.originalEvent.clipboardData).items
+        for (let index in items) {
+            const item = items[index]
+            if (item.kind === "file") {
+
+                // Upload file
+                const blob = item.getAsFile()
+                const res = await fetch("/content-upload", {
+                    method: "POST",
+                    body: blob
+                })
+
+                // Wait for file path
+                const path = await res.text()
+                console.log("path", path)
+
+                // Insert Markdown Link into entry_notes
+                let paste_text = ""
+
+                if (path.endsWith(".png")) {
+                    paste_text = `![image](${path})`
+                } else if (path.endsWith(".mp4")) {
+                    paste_text = `<video controls><source src="${path}" type="video/mp4"></video>`
+                } else if (path.endsWith(".pdf")) {
+                    const text = `<object data="${path}" type="application/pdf" width="800px" height="800px">
+                        <embed src="${path}">
+                            <p> This browser does not support PDFs. Please download the PDF to view it:
+                                <a href="${path}">Download PDF</a>
+                            </p>
+                        </embed>
+                    </object>`
+                    paste_text = `[PDF Link: ${path}](${path})`
+                } else if (path.endsWith(".mp3")) {
+                    paste_text = `[MP3 Link: ${path}](${path})`
+                } else if (path.endsWith(".txt")) {
+                    paste_text = `[TXT Link: ${path}](${path})`
+                }
+
+                event.target.focus()
+                document.execCommand('insertText', false, paste_text)
+            }
+        }
+    }, true)
+</script>
+
+{{ end }}

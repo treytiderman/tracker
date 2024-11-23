@@ -25,6 +25,7 @@ func http_server_start() {
 	mux.Handle("/time", mw_logger(http.HandlerFunc(handler_time)))
 	mux.Handle("/public/", mw_logger(http.StripPrefix("/public/", http.FileServer(http.Dir("../public")))))
 
+	handle_routes_ui(mux)
 	handle_routes_page(mux)
 	handle_routes_api_htmx(mux)
 
