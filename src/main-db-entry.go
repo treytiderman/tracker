@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"log"
 
 	_ "modernc.org/sqlite"
 )
@@ -113,7 +114,7 @@ func Db_Entry_Create_Timestamp(db *sql.DB, tracker_id int, entry_notes string, l
 	return entry_id, nil
 }
 
-func Db_Entry_Get_By_Entry_Id(db *sql.DB, tracker_id int) (Db_Entry, error) {
+func Db_Entry_Get_By_Entry_Id(db *sql.DB, entry_id int) (Db_Entry, error) {
 	entries := make([]Db_Entry, 0)
 
 	sql_string := fmt.Sprintf(
@@ -142,7 +143,7 @@ func Db_Entry_Get_By_Entry_Id(db *sql.DB, tracker_id int) (Db_Entry, error) {
 		LEFT JOIN option ON log.field_id = option.field_id AND log.log_value = option.option_value
 		WHERE entry.entry_id = ?;`)
 
-	rows, err := db.Query(sql_string, tracker_id)
+	rows, err := db.Query(sql_string, entry_id)
 	if err != nil {
 		return entries[0], err
 	}
@@ -162,6 +163,8 @@ func Db_Entry_Get_By_Entry_Id(db *sql.DB, tracker_id int) (Db_Entry, error) {
 		if err != nil {
 			return entries[0], err
 		}
+
+		log.Println(entry_scan, log_scan)
 
 		if entry_scan_last_id != entry_scan.Id {
 			entries = append(entries, entry_scan)

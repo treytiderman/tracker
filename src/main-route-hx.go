@@ -1,16 +1,17 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 func handle_routes_ui(mux *http.ServeMux) {
 	mux.Handle("/hx", mw_logger(mw_auth(http.HandlerFunc(hx_home_page))))
 	mux.Handle("/hx/search", mw_logger(mw_auth(http.HandlerFunc(hx_search_results))))
 
-	mux.Handle("/hx/new", mw_logger(mw_auth(http.HandlerFunc(hx_home_page))))
-	mux.Handle("/hx/edit", mw_logger(mw_auth(http.HandlerFunc(hx_home_page))))
+	mux.Handle("/hx/entry", mw_logger(mw_auth(http.HandlerFunc(hx_entry))))
 
 	mux.Handle("/hx/hello", mw_logger(mw_auth(http.HandlerFunc(hx_hello))))
 }
@@ -22,10 +23,30 @@ func hx_hello(w http.ResponseWriter, r *http.Request) {
 func hx_home_page(w http.ResponseWriter, r *http.Request) {
 	tmp := parse_templates("page-hx")
 
+	entry_id, err := strconv.Atoi(r.URL.Query().Get("entry"))
+	if err != nil {
+		entry_id = 1
+	}
+	log.Println("entry_id", entry_id)
+
+	entries, err := Db_Entry_All_Get(db)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var entry Db_Entry
+	for _, ent := range entries {
+		if ent.Id == entry_id {
+			entry = ent
+		}
+	}
+
 	tmp.ExecuteTemplate(w, "app_page_only", struct {
 		Title string
+		Entry Db_Entry
 	}{
 		Title: "Log",
+		Entry: entry,
 	})
 }
 
@@ -61,4 +82,38 @@ func hx_search_results(w http.ResponseWriter, r *http.Request) {
 		Trackers: trackers,
 		Entries:  entries,
 	})
+}
+
+func hx_entry(w http.ResponseWriter, r *http.Request) {
+	entry_id, err := strconv.Atoi(r.URL.Query().Get("entry"))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = r.ParseForm()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	entry_note := r.Form.Get("notes")
+
+	logs := make([]struct{Field_Id int; Value int}, 0)
+
+	if entry_id == 0 {
+		entry_id, err = Db_Entry_Create(db, 1, entry_note, logs)
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else {		
+		err = Db_Entry_Notes_Update(db, entry_id, entry_note)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	// url := fmt.Sprintf("/hx")
+	url := fmt.Sprintf("/hx?entry=%d", entry_id)
+	log.Println("url", url)
+	w.Header().Add("HX-Redirect", url)
+	w.Write([]byte("ok"))
 }

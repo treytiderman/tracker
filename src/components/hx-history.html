@@ -1,0 +1,62 @@
+{{ define "hx_history" }}
+
+<div class="grid gap-4">
+
+    {{ range $Entry := .Entries }}
+
+    <hr>
+
+    <div id="entry_{{$Entry.Id}}" class="grid gap-2">
+        <div class="flex items-center gap-4 dim">
+            <div class="grow" ondblclick="this.innerText = getRelativeTimeString('{{ $Entry.Timestamp }}')"
+                onclick="this.innerText = getTimeString('{{ $Entry.Timestamp }}')"></div>
+            <script>
+                document.getElementById("entry_{{$Entry.Id}}").children[0].children[0].innerText = getRelativeTimeString('{{ $Entry.Timestamp }}')
+            </script>
+            <a href="/entry-view?tracker_id={{$.Tracker.Id}}&entry_id={{$Entry.Id}}"
+                class="tt-icon-button dim tt-color-primary-hover" title="View Entry">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                </svg>
+            </a>
+            <a href="/hx?entry={{$Entry.Id}}"
+                class="tt-icon-button dim tt-color-yellow-hover" title="View Entry">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                        d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+                    <path d="m15 5 4 4" />
+                </svg>
+            </a>
+            <a href="/htmx/tracker/log-delete?tracker_id={{$.Tracker.Id}}&entry_id={{$Entry.Id}}"
+                class="tt-icon-button dim tt-color-red-hover"
+                onclick="return confirm('Are you sure you want to delete this log?')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 6h18" />
+                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                </svg>
+            </a>
+        </div>
+
+        {{ range $Entry.Logs }}
+        <div class="flex items-center gap-4">
+            <div class="dim"> > </div>
+            <div>{{ .Present }}</div>
+            <label class="dim">{{ .Field_Name }}</label>
+        </div>
+        {{ end }}
+
+        <div id="entry_notes_{{$Entry.Id}}" class="tt-markdown flow"> {{ render_markdown $Entry.Notes }} </div>
+    </div>
+
+    {{ end }}
+
+    <br>
+
+</div>
+
+{{ end }}
