@@ -1,6 +1,6 @@
 {{ define "hx_editor" }}
 
-<form id="editor" class="flex-col grow gap-2">
+<form id="editor" class="flex-col grow gap-2" hx-post="/hx/entry?entry={{$.Entry.Id}}">
     <div class="flex gap-4 items-end">
         <button id="hx_editor_search_toggle" class="tt-icon-button dim tt-color-primary-hover">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -9,16 +9,26 @@
                 <path d="m21 21-4.3-4.3" />
             </svg>
         </button>
-        <div class="grow"></div>
+
+        {{ if eq $.Entry.Id 0 }}
+        <div class="grow place-items-center">New Entry</div>
+        {{ else }}
+        <div class="grow place-items-center" ondblclick="this.innerText = getRelativeTimeString('{{ $.Entry.Timestamp }}')"
+            onclick="this.innerText = getTimeString('{{ $.Entry.Timestamp }}')"></div>
+        <script>
+            document.getElementById("editor").children[0].children[1].innerText = getRelativeTimeString('{{ $.Entry.Timestamp }}')
+        </script>
+        {{ end }}
+
         <button type="submit" id="hx_editor_submit" class="tt-icon-button dim tt-color-green-hover">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20 6 9 17l-5-5"/>
+                <path d="M20 6 9 17l-5-5" />
             </svg>
         </button>
     </div>
 
-    <textarea name="notes" id="minimal__textarea" hidden></textarea>
+    <textarea name="notes" id="minimal__textarea" hidden>{{ $.Entry.Notes }}</textarea>
     <div id="minimal__monaco" class="grow">
         {{ template "monaco" . }}
     </div>
@@ -32,17 +42,24 @@
 
     monaco__line_numbers_set(true)
 
-    if (localStorage.getItem("memory")) {
+    monaco__value_set(document.getElementById("minimal__textarea").value)
+
+    if (localStorage.getItem("memory") && !document.getElementById("minimal__textarea").value) {
+        document.getElementById("minimal__textarea").value = localStorage.getItem("memory")
         monaco__value_set(localStorage.getItem("memory"))
     }
-
+    
     monaco__value_oninput(event => {
         localStorage.setItem("memory", monaco__value_get())
         document.getElementById("minimal__textarea").value = monaco__value_get()
     })
 
     document.getElementById("minimal__textarea").addEventListener("input", event => {
-        monaco__value_set(entry_editor__textarea.value)
+        monaco__value_set(document.getElementById("minimal__textarea").value)
+    })
+
+    document.getElementById("hx_editor_submit").addEventListener("click", event => {
+        localStorage.setItem("memory", "")
     })
 
     document.getElementById("editor").addEventListener("paste", async (event) => {
