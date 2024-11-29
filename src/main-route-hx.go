@@ -66,7 +66,7 @@ func hx_search_results(w http.ResponseWriter, r *http.Request) {
 	search := r.Form.Get("search")
 	log.Println("SEARCH:", search)
 
-	entries, err := Db_Entry_All_Filter_Notes_Get(db, search)
+	entries, err := Db_Entry_Filter_Notes_Get(db, 1, search)
 	if err != nil {
 		log.Fatal(err)
 	}
