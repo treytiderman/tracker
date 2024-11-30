@@ -28,10 +28,16 @@
         </button>
     </div>
 
-    <textarea name="notes" id="minimal__textarea" hidden>{{ $.Entry.Notes }}</textarea>
-    <div id="minimal__monaco" class="grow">
-        {{ template "monaco" . }}
-    </div>
+    <style>
+        #minimal__textarea:focus-visible {
+            border-color: red !important;
+            outline-color: red !important;
+            border-color: var(--color-border) !important;
+            outline-color: var(--color-border) !important;
+        }
+    </style>
+    <textarea name="notes" id="minimal__textarea" class="tt-input h-full" style="resize: none;" hidden>{{ $.Entry.Notes }}</textarea>
+    <div id="minimal__monaco" class="grow">{{ template "monaco" . }}</div>
 </form>
 
 <script>
@@ -61,6 +67,11 @@
     document.getElementById("hx_editor_submit").addEventListener("click", event => {
         localStorage.setItem("memory", "")
     })
+
+    if (document.body.clientWidth < 640) {
+        document.getElementById("minimal__textarea").hidden = false
+        document.getElementById("minimal__monaco").hidden = true
+    }
 
     document.getElementById("editor").addEventListener("paste", async (event) => {
         if (!document.getElementById("minimal__monaco").hidden) event.preventDefault() // so this triggers
