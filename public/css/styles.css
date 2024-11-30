@@ -426,6 +426,7 @@ tr:hover td {
 }
 
 dialog {
+    color: var(--color-text);
     background-color: transparent;
     padding: 0;
     border: 0;
