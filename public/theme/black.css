@@ -1,6 +1,8 @@
 :root {
     color-scheme: dark;
 
+    --max-width-main: 120ch;
+
     --color-bg: black;
     --color-text: var(--color-zinc-300);
     --color-border: var(--color-zinc-600);
