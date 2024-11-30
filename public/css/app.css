@@ -22,7 +22,7 @@
 
 .tt-dialog {
     width: calc(100% - 1rem);
-    max-width: 80ch;
+    max-width: var(--max-width);
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
     z-index: 99;
