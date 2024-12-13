@@ -24,7 +24,7 @@ func main() {
 	log.Printf("DATABASE SQLite: %s\n", db_path)
 	defer db.Close()
 
-	err = Db_Tracker_Table_Create(db)
+	err = Create_Tracker_Tables(db)
 	if err != nil {
 		log.Fatal(err)
 	}

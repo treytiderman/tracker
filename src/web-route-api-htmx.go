@@ -127,7 +127,7 @@ func htmx_tracker_create(w http.ResponseWriter, r *http.Request) {
 	tracker_name := r.Form.Get("tracker_name")
 	tracker_notes := r.Form.Get("tracker_notes")
 
-	tracker_id, err := Db_Tracker_Create(db, tracker_name, tracker_notes)
+	tracker_id, err := Create_Tracker(db, tracker_name, tracker_notes)
 	if err != nil {
 		w.Write([]byte(err.Error()))
 		return
@@ -146,7 +146,7 @@ func htmx_tracker_create(w http.ResponseWriter, r *http.Request) {
 					decimal_places, _ = strconv.Atoi(r.Form.Get(fmt.Sprintf("field_%d_decimal_places", field_id)))
 				}
 
-				_, err := Db_Tracker_Field_Number_Create(db, tracker_id, field_name, field_notes, decimal_places)
+				_, err := Add_Number_Field(db, tracker_id, field_name, field_notes, decimal_places)
 				if err != nil {
 					return
 				}
@@ -170,7 +170,7 @@ func htmx_tracker_create(w http.ResponseWriter, r *http.Request) {
 					}
 				}
 
-				_, err := Db_Tracker_Field_Option_Create(db, tracker_id, field_name, field_notes, options)
+				_, err := Add_Option_Field_With_Options(db, tracker_id, field_name, field_notes, options)
 				if err != nil {
 					return
 				}
@@ -199,7 +199,7 @@ func htmx_tracker_name(w http.ResponseWriter, r *http.Request) {
 	tracker_name := r.Form.Get("tracker_name")
 
 	// Update Tracker Name
-	err = Db_Tracker_Name_Update(db, id, tracker_name)
+	err = Update_Tracker_Name(db, id, tracker_name)
 	if err != nil {
 		return
 	}
@@ -226,7 +226,7 @@ func htmx_tracker_notes(w http.ResponseWriter, r *http.Request) {
 	tracker_notes := r.Form.Get("tracker_notes")
 
 	// Update Tracker Notes
-	err = Db_Tracker_Notes_Update(db, id, tracker_notes)
+	err = Update_Tracker_Notes(db, id, tracker_notes)
 	if err != nil {
 		return
 	}
@@ -243,7 +243,7 @@ func htmx_tracker_delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Delete Tracker
-	err = Db_Tracker_Delete(db, id)
+	err = Delete_Tracker(db, id)
 	if err != nil {
 		return
 	}
@@ -296,7 +296,7 @@ func htmx_entry_create(w http.ResponseWriter, r *http.Request) {
 	timestamp := dt.UTC().Format("2006-01-02 15:04:05")
 
 	// Get Tracker by Id
-	tracker, err := Db_Tracker_Get(db, id)
+	tracker, err := Get_Tracker(db, id)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -374,7 +374,7 @@ func htmx_entry_update(w http.ResponseWriter, r *http.Request) {
 	}
 	r.Form.Del("tracker_id")
 
-	tracker, err := Db_Tracker_Get(db, tracker_id)
+	tracker, err := Get_Tracker(db, tracker_id)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -474,7 +474,7 @@ func htmx_log_create(w http.ResponseWriter, r *http.Request) {
 	r.Form.Del("id")
 
 	// Get Tracker by Id
-	tracker, err := Db_Tracker_Get(db, id)
+	tracker, err := Get_Tracker(db, id)
 	if err != nil {
 		log.Fatal(err)
 	}

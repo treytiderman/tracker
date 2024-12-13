@@ -3,7 +3,6 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"log"
 
 	_ "modernc.org/sqlite"
 )
@@ -164,7 +163,7 @@ func Db_Entry_Get_By_Entry_Id(db *sql.DB, entry_id int) (Db_Entry, error) {
 			return entries[0], err
 		}
 
-		log.Println(entry_scan, log_scan)
+		fmt.Println(entry_scan, log_scan)
 
 		if entry_scan_last_id != entry_scan.Id {
 			entries = append(entries, entry_scan)

@@ -77,7 +77,7 @@ func replace_with_checkbox(arr []byte, i int, task_count int) []byte {
 		arr = []byte(string(before) + div + string(after))
 	}
 
-    i++
+	i++
 	return replace_with_checkbox(arr, i, task_count)
 }
 
@@ -140,7 +140,7 @@ func page_login(w http.ResponseWriter, r *http.Request) {
 func page_trackers(w http.ResponseWriter, r *http.Request) {
 	tmp := parse_templates("page-trackers")
 
-	trackers, err := Db_Tracker_All_Get(db)
+	trackers, err := Get_Trackers(db)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -167,7 +167,7 @@ func page_trackers(w http.ResponseWriter, r *http.Request) {
 func page_tracker_create(w http.ResponseWriter, r *http.Request) {
 	tmp := parse_templates("page-tracker-create")
 
-	trackers, err := Db_Tracker_All_Get(db)
+	trackers, err := Get_Trackers(db)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -186,7 +186,7 @@ func page_tracker_create(w http.ResponseWriter, r *http.Request) {
 func page_tracker_info(w http.ResponseWriter, r *http.Request) {
 	tmp := parse_templates("page-tracker-info")
 
-	trackers, err := Db_Tracker_All_Get(db)
+	trackers, err := Get_Trackers(db)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -200,7 +200,7 @@ func page_tracker_info(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	tracker, err := Db_Tracker_Get(db, id)
+	tracker, err := Get_Tracker(db, id)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -219,7 +219,7 @@ func page_tracker_info(w http.ResponseWriter, r *http.Request) {
 func page_tracker_log(w http.ResponseWriter, r *http.Request) {
 	tmp := parse_templates("page-tracker-log")
 
-	trackers, err := Db_Tracker_All_Get(db)
+	trackers, err := Get_Trackers(db)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -233,7 +233,7 @@ func page_tracker_log(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	tracker, err := Db_Tracker_Get(db, id)
+	tracker, err := Get_Tracker(db, id)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -260,7 +260,7 @@ func page_tracker_log(w http.ResponseWriter, r *http.Request) {
 func page_tracker_records(w http.ResponseWriter, r *http.Request) {
 	tmp := parse_templates("page-tracker-records")
 
-	trackers, err := Db_Tracker_All_Get(db)
+	trackers, err := Get_Trackers(db)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -274,7 +274,7 @@ func page_tracker_records(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	tracker, err := Db_Tracker_Get(db, id)
+	tracker, err := Get_Tracker(db, id)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -301,7 +301,7 @@ func page_tracker_records(w http.ResponseWriter, r *http.Request) {
 func page_tracker_history(w http.ResponseWriter, r *http.Request) {
 	tmp := parse_templates("page-tracker-history")
 
-	trackers, err := Db_Tracker_All_Get(db)
+	trackers, err := Get_Trackers(db)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -315,7 +315,7 @@ func page_tracker_history(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	tracker, err := Db_Tracker_Get(db, id)
+	tracker, err := Get_Tracker(db, id)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -358,7 +358,7 @@ func htmx_entry_history(w http.ResponseWriter, r *http.Request) {
 	r.Form.Del("search")
 	log.Println("FORM: search =", search)
 
-	tracker, err := Db_Tracker_Get(db, tracker_id)
+	tracker, err := Get_Tracker(db, tracker_id)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -390,7 +390,7 @@ func page_entry_view(w http.ResponseWriter, r *http.Request) {
 		tracker_id = 0
 	}
 
-	tracker, err := Db_Tracker_Get(db, tracker_id)
+	tracker, err := Get_Tracker(db, tracker_id)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -427,7 +427,7 @@ func page_entry_view(w http.ResponseWriter, r *http.Request) {
 func page_entry_editor(w http.ResponseWriter, r *http.Request) {
 	tmp := parse_templates("page-entry-editor")
 
-	trackers, err := Db_Tracker_All_Get(db)
+	trackers, err := Get_Trackers(db)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -437,7 +437,7 @@ func page_entry_editor(w http.ResponseWriter, r *http.Request) {
 		tracker_id = 0
 	}
 
-	tracker, err := Db_Tracker_Get(db, tracker_id)
+	tracker, err := Get_Tracker(db, tracker_id)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -476,7 +476,7 @@ func page_entry_editor(w http.ResponseWriter, r *http.Request) {
 func page_settings(w http.ResponseWriter, r *http.Request) {
 	tmp := parse_templates("page-settings")
 
-	trackers, err := Db_Tracker_All_Get(db)
+	trackers, err := Get_Trackers(db)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -495,7 +495,7 @@ func page_settings(w http.ResponseWriter, r *http.Request) {
 func page_test(w http.ResponseWriter, r *http.Request) {
 	tmp := parse_templates("page-test")
 
-	trackers, err := Db_Tracker_All_Get(db)
+	trackers, err := Get_Trackers(db)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -505,7 +505,7 @@ func page_test(w http.ResponseWriter, r *http.Request) {
 		tracker_id = 1
 	}
 
-	tracker, err := Db_Tracker_Get(db, tracker_id)
+	tracker, err := Get_Tracker(db, tracker_id)
 	if err != nil {
 		log.Fatal(err)
 	}

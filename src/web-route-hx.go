@@ -53,7 +53,7 @@ func hx_home_page(w http.ResponseWriter, r *http.Request) {
 func hx_search_results(w http.ResponseWriter, r *http.Request) {
 	tmp := parse_templates("page-hx")
 
-	trackers, err := Db_Tracker_All_Get(db)
+	trackers, err := Get_Trackers(db)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -97,14 +97,17 @@ func hx_entry(w http.ResponseWriter, r *http.Request) {
 
 	entry_note := r.Form.Get("notes")
 
-	logs := make([]struct{Field_Id int; Value int}, 0)
+	logs := make([]struct {
+		Field_Id int
+		Value    int
+	}, 0)
 
 	if entry_id == 0 {
 		entry_id, err = Db_Entry_Create(db, 1, entry_note, logs)
 		if err != nil {
 			log.Fatal(err)
 		}
-	} else {		
+	} else {
 		err = Db_Entry_Notes_Update(db, entry_id, entry_note)
 		if err != nil {
 			log.Fatal(err)
