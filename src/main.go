@@ -29,7 +29,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	err = Db_Entry_Table_Create(db)
+	err = Create_Entry_Tables(db)
 	if err != nil {
 		log.Fatal(err)
 	}

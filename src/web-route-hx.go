@@ -103,7 +103,7 @@ func hx_entry(w http.ResponseWriter, r *http.Request) {
 	}, 0)
 
 	if entry_id == 0 {
-		entry_id, err = Db_Entry_Create(db, 1, entry_note, logs)
+		entry_id, err = Create_Entry_With_Logs(db, 1, entry_note, logs)
 		if err != nil {
 			log.Fatal(err)
 		}

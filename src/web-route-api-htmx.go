@@ -342,7 +342,7 @@ func htmx_entry_create(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	Db_Entry_Create_Timestamp(db, tracker.Id, entry_notes, logs, timestamp)
+	Create_Entry_With_Logs_Timestamp(db, tracker.Id, entry_notes, timestamp, logs)
 
 	// Reload page
 	url := fmt.Sprintf("/tracker-history?id=%d", tracker.Id)
@@ -520,7 +520,7 @@ func htmx_log_create(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	Db_Entry_Create(db, tracker.Id, entry_notes, logs)
+	Create_Entry_With_Logs(db, tracker.Id, entry_notes, logs)
 
 	// Reload page
 	url := fmt.Sprintf("/tracker-log?id=%d", id)

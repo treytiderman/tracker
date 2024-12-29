@@ -3,6 +3,8 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"math"
+	"strconv"
 
 	_ "modernc.org/sqlite"
 )
@@ -27,8 +29,24 @@ type Db_Log struct {
 	Present        string
 }
 
-func Db_Entry_Table_Create(db *sql.DB) (err error) {
-	_, err = db.Exec(`
+// Helper
+
+func Parse_String_To_Number(str string, decimal_places int) (int, error) {
+	log_value_float, err := strconv.ParseFloat(str, 64)
+	if err != nil {
+		return 0, err
+	}
+
+	log_value_adjusted := float64(log_value_float) * float64(math.Pow10(decimal_places))
+	log_value_int := int(math.Floor(log_value_adjusted))
+	return log_value_int, nil
+}
+
+
+// Create
+
+func Create_Entry_Tables(db *sql.DB) error {
+	_, err := db.Exec(`
 		CREATE TABLE IF NOT EXISTS entry (
 			entry_id INTEGER NOT NULL UNIQUE,
 			tracker_id INTEGER NOT NULL,
@@ -51,15 +69,67 @@ func Db_Entry_Table_Create(db *sql.DB) (err error) {
 	return err
 }
 
-func Db_Entry_Table_Delete(db *sql.DB) (err error) {
-	_, err = db.Exec(`
-		DROP TABLE IF EXISTS log;
-		DROP TABLE IF EXISTS entry;
-	`)
-	return err
+func Create_Entry(db *sql.DB, tracker_id int, entry_notes string) (int, error) {
+	fmt.Printf(
+		"SQL: INSERT INTO entry (tracker_id, entry_notes) VALUES (%d,'%s');",
+		tracker_id, entry_notes)
+
+	result, err := db.Exec(
+		"INSERT INTO entry (tracker_id, entry_notes) VALUES (?,?);",
+		tracker_id, entry_notes)
+	if err != nil {
+		return 0, err
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	return int(id), nil
 }
 
-func Db_Entry_Create(db *sql.DB, tracker_id int, entry_notes string, logs []struct {
+func Create_Entry_With_Timestamp(db *sql.DB, tracker_id int, entry_notes string, timestamp string) (int, error) {
+	fmt.Printf(
+		"SQL: INSERT INTO entry (tracker_id, entry_notes, timestamp) VALUES (%d,'%s','%s');",
+		tracker_id, entry_notes, timestamp)
+
+	result, err := db.Exec(
+		"INSERT INTO entry (tracker_id, entry_notes, timestamp) VALUES (?,?,?);",
+		tracker_id, entry_notes, timestamp)
+	if err != nil {
+		return 0, err
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	return int(id), nil
+}
+
+func Add_Log_To_Entry(db *sql.DB, entry_id int, field_id int, log_value int) (int, error) {
+	fmt.Printf(
+		"SQL: INSERT INTO log (entry_id, field_id, log_value) VALUES (%d,%d,%d);",
+		entry_id, field_id, log_value)
+
+	result, err := db.Exec(
+		"INSERT INTO log (entry_id, field_id, log_value) VALUES (?,?,?);",
+		entry_id, field_id, log_value)
+	if err != nil {
+		return 0, err
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	return int(id), nil
+}
+
+func Create_Entry_With_Logs(db *sql.DB, tracker_id int, entry_notes string, logs []struct {
 	Field_Id int
 	Value    int
 }) (entry_id int, err error) {
@@ -86,12 +156,17 @@ func Db_Entry_Create(db *sql.DB, tracker_id int, entry_notes string, logs []stru
 	return entry_id, nil
 }
 
-func Db_Entry_Create_Timestamp(db *sql.DB, tracker_id int, entry_notes string, logs []struct {
+func Create_Entry_With_Logs_Timestamp(db *sql.DB, tracker_id int, entry_notes string, timestamp string, logs []struct {
 	Field_Id int
 	Value    int
-}, timestamp string) (entry_id int, err error) {
-	fmt.Printf("SQL: INSERT INTO entry (tracker_id, entry_notes, timestamp) VALUES (%d,'%s','%s');", tracker_id, entry_notes, timestamp)
-	result, err := db.Exec("INSERT INTO entry (tracker_id, entry_notes, timestamp) VALUES (?,?,?);", tracker_id, entry_notes, timestamp)
+}) (int, error) {
+	fmt.Printf(
+		"SQL: INSERT INTO entry (tracker_id, entry_notes, timestamp) VALUES (%d,'%s','%s');",
+		tracker_id, entry_notes, timestamp)
+
+	result, err := db.Exec(
+		"INSERT INTO entry (tracker_id, entry_notes, timestamp) VALUES (?,?,?);",
+		tracker_id, entry_notes, timestamp)
 	if err != nil {
 		return 0, err
 	}
@@ -100,18 +175,34 @@ func Db_Entry_Create_Timestamp(db *sql.DB, tracker_id int, entry_notes string, l
 	if err != nil {
 		return 0, err
 	}
-	entry_id = int(id)
+
+	entry_id := int(id)
 
 	for _, log := range logs {
-		fmt.Printf("SQL: INSERT INTO log (entry_id, field_id, log_value) VALUES (%d,%d,%d);", entry_id, log.Field_Id, log.Value)
-		_, err = db.Exec("INSERT INTO log (entry_id, field_id, log_value) VALUES (?,?,?);", entry_id, log.Field_Id, log.Value)
+		fmt.Printf(
+			"SQL: INSERT INTO log (entry_id, field_id, log_value) VALUES (%d,%d,%d);",
+			entry_id, log.Field_Id, log.Value)
+
+		_, err = db.Exec(
+			"INSERT INTO log (entry_id, field_id, log_value) VALUES (?,?,?);",
+			entry_id, log.Field_Id, log.Value)
 		if err != nil {
 			return 0, err
 		}
 	}
 
-	return entry_id, nil
+	return int(id), nil
 }
+
+
+// Read
+
+
+// Update
+
+
+// Delete
+
 
 func Db_Entry_Get_By_Entry_Id(db *sql.DB, entry_id int) (Db_Entry, error) {
 	entries := make([]Db_Entry, 0)
