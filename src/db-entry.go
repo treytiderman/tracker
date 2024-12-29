@@ -42,7 +42,6 @@ func Parse_String_To_Number(str string, decimal_places int) (int, error) {
 	return log_value_int, nil
 }
 
-
 // Create
 
 func Create_Entry_Tables(db *sql.DB) error {
@@ -132,7 +131,7 @@ func Add_Log_To_Entry(db *sql.DB, entry_id int, field_id int, log_value int) (in
 func Create_Entry_With_Logs(db *sql.DB, tracker_id int, entry_notes string, logs []struct {
 	Field_Id int
 	Value    int
-}) (entry_id int, err error) {
+}) (int, error) {
 	fmt.Printf("SQL: INSERT INTO entry (tracker_id, entry_notes) VALUES (%d,'%s');", tracker_id, entry_notes)
 	result, err := db.Exec("INSERT INTO entry (tracker_id, entry_notes) VALUES (?,?);", tracker_id, entry_notes)
 	if err != nil {
@@ -143,7 +142,7 @@ func Create_Entry_With_Logs(db *sql.DB, tracker_id int, entry_notes string, logs
 	if err != nil {
 		return 0, err
 	}
-	entry_id = int(id)
+	entry_id := int(id)
 
 	for _, log := range logs {
 		fmt.Printf("SQL: INSERT INTO log (entry_id, field_id, log_value) VALUES (%d,%d,%d);", entry_id, log.Field_Id, log.Value)
@@ -194,21 +193,12 @@ func Create_Entry_With_Logs_Timestamp(db *sql.DB, tracker_id int, entry_notes st
 	return int(id), nil
 }
 
-
 // Read
 
-
-// Update
-
-
-// Delete
-
-
-func Db_Entry_Get_By_Entry_Id(db *sql.DB, entry_id int) (Db_Entry, error) {
+func Get_Entry_By_Entry_Id(db *sql.DB, entry_id int) (Db_Entry, error) {
 	entries := make([]Db_Entry, 0)
 
-	sql_string := fmt.Sprintf(
-		`SELECT
+	rows, err := db.Query(`SELECT
 			entry.entry_id,
 			entry.tracker_id,
 			entry.timestamp,
@@ -231,15 +221,13 @@ func Db_Entry_Get_By_Entry_Id(db *sql.DB, entry_id int) (Db_Entry, error) {
 		LEFT JOIN field USING (field_id)
 		LEFT JOIN number USING (field_id)
 		LEFT JOIN option ON log.field_id = option.field_id AND log.log_value = option.option_value
-		WHERE entry.entry_id = ?;`)
-
-	rows, err := db.Query(sql_string, entry_id)
+		WHERE entry.entry_id = ?;`, entry_id)
 	if err != nil {
 		return entries[0], err
 	}
 	defer rows.Close()
 
-	var log_scan_last_id = 0
+	// var log_scan_last_id = 0
 	var entry_scan_last_id = 0
 
 	for rows.Next() {
@@ -254,7 +242,7 @@ func Db_Entry_Get_By_Entry_Id(db *sql.DB, entry_id int) (Db_Entry, error) {
 			return entries[0], err
 		}
 
-		fmt.Println(entry_scan, log_scan)
+		// fmt.Println(entry_scan, log_scan)
 
 		if entry_scan_last_id != entry_scan.Id {
 			entries = append(entries, entry_scan)
@@ -262,14 +250,14 @@ func Db_Entry_Get_By_Entry_Id(db *sql.DB, entry_id int) (Db_Entry, error) {
 
 		// Why am I getting duplicate log_scan ids?
 		// This check for log_scan_last_id should not be needed
-		if log_scan_last_id != log_scan.Id {
-			if log_scan.Id > 0 {
-				entries[len(entries)-1].Logs = append(entries[len(entries)-1].Logs, log_scan)
-			}
-		}
+		// if log_scan_last_id != log_scan.Id {
+		// 	if log_scan.Id > 0 {
+		// 		entries[len(entries)-1].Logs = append(entries[len(entries)-1].Logs, log_scan)
+		// 	}
+		// }
 
 		entry_scan_last_id = entry_scan.Id
-		log_scan_last_id = log_scan.Id
+		// log_scan_last_id = log_scan.Id
 	}
 
 	if err := rows.Err(); err != nil {
@@ -278,6 +266,10 @@ func Db_Entry_Get_By_Entry_Id(db *sql.DB, entry_id int) (Db_Entry, error) {
 
 	return entries[0], nil
 }
+
+// Update
+
+// Delete
 
 func Db_Entry_Get(db *sql.DB, tracker_id int) (entries []Db_Entry, err error) {
 	sql_string := fmt.Sprintf(

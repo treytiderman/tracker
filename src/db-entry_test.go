@@ -9,9 +9,9 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-// var db_test *sql.DB // init in db-tracker.go
+// var db_test *sql.DB // init in db-tracker_test.go
 
-func Entry_Test__Reset_Database(t *testing.T) {
+func _test_Reset_Entry_Database(t *testing.T) {
 	path := "../data/test.db"
 
 	err := os.Remove(path)
@@ -39,8 +39,26 @@ func Entry_Test__Reset_Database(t *testing.T) {
 	fmt.Println("Database Entry Tables Created")
 }
 
-func Test_Add_Entry(t *testing.T) {
-	Entry_Test__Reset_Database(t)
+func _test_Add_Entries_To_Journal(t *testing.T) {
+	var tests = []struct {
+		expected_id int
+		entry_notes string
+		timestamp   string
+	}{
+		{1, "Entry 1", "2049-12-13 19:15:56"},
+		{2, "Why is green sometimes blue", "2095-12-14 19:16:56"},
+		{3, "If Franky can be a robot maybe I can too", "2094-12-13 19:17:56"},
+		{4, "", "2093-12-13 19:18:56"},
+		{5, "I got lost in a square", "2124-12-13 19:19:56"},
+		{6, "The circle showed me the way", "2999-12-13 19:20:56"},
+	}
+
+	for _, tt := range tests {
+		_, err := Create_Entry_With_Timestamp(db_test, 1, tt.entry_notes, tt.timestamp)
+		if err != nil {
+			t.Error(err)
+		}
+	}
 }
 
 // Helper
@@ -57,8 +75,8 @@ func Test_Parse_String_To_Number(t *testing.T) {
 		{72440, "72.440", 3},
 		{4, "410", -2},
 		{54, "543210", -4},
-		// {0, "", 0},
-		// {0, "awdzsd", 0},
+		// {0, "", 0}, FAILS
+		// {0, "awdzsd", 0}, FAILS
 	}
 
 	for _, tt := range tests {
@@ -74,12 +92,11 @@ func Test_Parse_String_To_Number(t *testing.T) {
 	}
 }
 
-
 // Create
 
 func Test_Create_Entry(t *testing.T) {
-	Entry_Test__Reset_Database(t)
-	Tracker_Test__Create_Journal(t)
+	_test_Reset_Entry_Database(t)
+	_test_Create_Tracker_Journal(t)
 
 	var tests = []struct {
 		expected_id int
@@ -107,8 +124,8 @@ func Test_Create_Entry(t *testing.T) {
 }
 
 func Test_Add_Log_To_Entry(t *testing.T) {
-	Entry_Test__Reset_Database(t)
-	Tracker_Test__Create_Money(t)
+	_test_Reset_Entry_Database(t)
+	_test_Create_Tracker_Money(t)
 
 	entry_id, err := Create_Entry(db_test, 1, "Logged some things")
 	if err != nil {
@@ -127,20 +144,20 @@ func Test_Add_Log_To_Entry(t *testing.T) {
 }
 
 func Test_Create_Entry_With_Timestamp(t *testing.T) {
-	Entry_Test__Reset_Database(t)
-	Tracker_Test__Create_Journal(t)
+	_test_Reset_Entry_Database(t)
+	_test_Create_Tracker_Journal(t)
 
 	var tests = []struct {
 		expected_id int
 		entry_notes string
 		timestamp   string
 	}{
-		{1, "Entry 1", "2024-12-13 19:15:56"},
-		{2, "Why is green sometimes blue", "2024-12-13 19:16:56"},
-		{3, "If Franky can be a robot maybe I can too", "2024-12-13 19:17:56"},
-		{4, "", "2024-12-13 19:18:56"},
-		{5, "I got lost in a square", "2024-12-13 19:19:56"},
-		{6, "The circle showed me the way", "2024-12-13 19:20:56"},
+		{1, "Entry 1", "2049-12-13 19:15:56"},
+		{2, "Why is green sometimes blue", "2095-12-14 19:16:56"},
+		{3, "If Franky can be a robot maybe I can too", "2094-12-13 19:17:56"},
+		{4, "", "2093-12-13 19:18:56"},
+		{5, "I got lost in a square", "2124-12-13 19:19:56"},
+		{6, "The circle showed me the way", "2999-12-13 19:20:56"},
 	}
 
 	for _, tt := range tests {
@@ -151,6 +168,38 @@ func Test_Create_Entry_With_Timestamp(t *testing.T) {
 			}
 			if id != tt.expected_id {
 				t.Errorf("got %d, expected %d", id, tt.expected_id)
+			}
+		})
+	}
+}
+
+// Read
+
+func Test_Get_Entry_By_Entry_Id(t *testing.T) {
+	_test_Reset_Entry_Database(t)
+	_test_Create_Tracker_Journal(t)
+	_test_Add_Entries_To_Journal(t)
+
+	var tests = []struct {
+		expected_notes string
+		entry_id int
+	}{
+		{"Entry 1", 1},
+		{"Why is green sometimes blue", 2},
+		{"If Franky can be a robot maybe I can too", 3},
+		{"", 4},
+		{"I got lost in a square", 5},
+		{"The circle showed me the way", 6},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.expected_notes, func(t *testing.T) {
+			entry, err := Get_Entry_By_Entry_Id(db_test, tt.entry_id)
+			if err != nil {
+				t.Error(err)
+			}
+			if entry.Notes != tt.expected_notes {
+				t.Errorf("got %s, expected %s", entry.Notes, tt.expected_notes)
 			}
 		})
 	}
