@@ -34,6 +34,8 @@ type Db_Option struct {
 	Name  string
 }
 
+// Create
+
 func Create_Tracker_Tables(db *sql.DB) error {
 	_, err := db.Exec(`
 		PRAGMA foreign_keys = ON;
@@ -76,8 +78,6 @@ func Create_Tracker_Tables(db *sql.DB) error {
 	`)
 	return err
 }
-
-// Create
 
 func Create_Tracker(db *sql.DB, tracker_name string, tracker_notes string) (int, error) {
 	sql_string := fmt.Sprintf(

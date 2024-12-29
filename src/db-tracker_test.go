@@ -12,36 +12,36 @@ import (
 
 var db_test *sql.DB
 
-func Db_Tracker_Test_Reset_Database(t *testing.T) {
+func Tracker_Test__Reset_Database(t *testing.T) {
 	path := "../data/test.db"
 
 	err := os.Remove(path)
-    if err != nil {
+	if err != nil {
 		t.Error(err)
 	}
 	fmt.Println("Database Deleted", path)
 
 	db_test, err = sql.Open("sqlite", path)
-    if err != nil {
-        t.Error(err)
+	if err != nil {
+		t.Error(err)
 	}
-    fmt.Println("Database Opened", path)
-    
+	fmt.Println("Database Opened", path)
+
 	err = Create_Tracker_Tables(db_test)
-    if err != nil {
-        t.Error(err)
+	if err != nil {
+		t.Error(err)
 	}
-    fmt.Println("Database Tracker Tables Created", path)
+	fmt.Println("Database Tracker Tables Created")
 }
 
-func Db_Tracker_Test_Tracker_Journal(t *testing.T) {
+func Tracker_Test__Create_Journal(t *testing.T) {
 	_, err := Create_Tracker(db_test, "Journal", "Daily journal and notes")
 	if err != nil {
 		t.Error(err)
 	}
 }
 
-func Db_Tracker_Test_Tracker_Weight(t *testing.T) {
+func Tracker_Test__Create_Weight(t *testing.T) {
 	tracker_id, err := Create_Tracker(db_test, "Weight", "Body weight over time")
 	if err != nil {
 		t.Error(err)
@@ -53,7 +53,7 @@ func Db_Tracker_Test_Tracker_Weight(t *testing.T) {
 	}
 }
 
-func Db_Tracker_Test_Tracker_Money(t *testing.T) {
+func Tracker_Test__Create_Money(t *testing.T) {
 	tracker_id, err := Create_Tracker(db_test, "Money", "Transactions")
 	if err != nil {
 		t.Error(err)
@@ -87,8 +87,8 @@ func Db_Tracker_Test_Tracker_Money(t *testing.T) {
 
 // Create
 
-func Test_Db_Tracker_Create(t *testing.T) {
-	Db_Tracker_Test_Reset_Database(t)
+func Test_Create_Tracker(t *testing.T) {
+	Tracker_Test__Reset_Database(t)
 
 	var tests = []struct {
 		expected_id   int
@@ -124,9 +124,9 @@ func Test_Db_Tracker_Create(t *testing.T) {
 }
 
 func Test_Add_Number_Field(t *testing.T) {
-	Db_Tracker_Test_Reset_Database(t)
-	Db_Tracker_Test_Tracker_Journal(t)
-	Db_Tracker_Test_Tracker_Weight(t)
+	Tracker_Test__Reset_Database(t)
+	Tracker_Test__Create_Journal(t)
+	Tracker_Test__Create_Weight(t)
 
 	var tests = []struct {
 		expected_id    int
@@ -154,8 +154,8 @@ func Test_Add_Number_Field(t *testing.T) {
 }
 
 func Test_Add_Option_Field(t *testing.T) {
-	Db_Tracker_Test_Reset_Database(t)
-	Db_Tracker_Test_Tracker_Journal(t)
+	Tracker_Test__Reset_Database(t)
+	Tracker_Test__Create_Journal(t)
 
 	var tests = []struct {
 		expected_id int
@@ -182,8 +182,8 @@ func Test_Add_Option_Field(t *testing.T) {
 }
 
 func Test_Add_Option_To_Field(t *testing.T) {
-	Db_Tracker_Test_Reset_Database(t)
-	Db_Tracker_Test_Tracker_Journal(t)
+	Tracker_Test__Reset_Database(t)
+	Tracker_Test__Create_Journal(t)
 
 	field_id, err := Add_Option_Field(db_test, 1, "Card", "Which Credit or Debit Card was used?")
 	if err != nil {
@@ -213,8 +213,8 @@ func Test_Add_Option_To_Field(t *testing.T) {
 }
 
 func Test_Add_Option_Field_With_Options(t *testing.T) {
-	Db_Tracker_Test_Reset_Database(t)
-	Db_Tracker_Test_Tracker_Journal(t)
+	Tracker_Test__Reset_Database(t)
+	Tracker_Test__Create_Journal(t)
 
 	var tests = []struct {
 		expected_id int
@@ -274,10 +274,10 @@ func Test_Add_Option_Field_With_Options(t *testing.T) {
 // Read
 
 func Test_Get_Trackers(t *testing.T) {
-	Db_Tracker_Test_Reset_Database(t)
-	Db_Tracker_Test_Tracker_Journal(t)
-	Db_Tracker_Test_Tracker_Weight(t)
-	Db_Tracker_Test_Tracker_Money(t)
+	Tracker_Test__Reset_Database(t)
+	Tracker_Test__Create_Journal(t)
+	Tracker_Test__Create_Weight(t)
+	Tracker_Test__Create_Money(t)
 
 	trackers, err := Get_Trackers(db_test)
 	if err != nil {
@@ -300,8 +300,8 @@ func Test_Get_Trackers(t *testing.T) {
 }
 
 func Test_Get_Tracker_By_Id(t *testing.T) {
-	Db_Tracker_Test_Reset_Database(t)
-	Db_Tracker_Test_Tracker_Money(t)
+	Tracker_Test__Reset_Database(t)
+	Tracker_Test__Create_Money(t)
 
 	test_json := `{
     "Id": 1,
@@ -364,10 +364,10 @@ func Test_Get_Tracker_By_Id(t *testing.T) {
 }
 
 func Test_Get_Tracker_Id_By_Name(t *testing.T) {
-	Db_Tracker_Test_Reset_Database(t)
-	Db_Tracker_Test_Tracker_Journal(t)
-	Db_Tracker_Test_Tracker_Weight(t)
-	Db_Tracker_Test_Tracker_Money(t)
+	Tracker_Test__Reset_Database(t)
+	Tracker_Test__Create_Journal(t)
+	Tracker_Test__Create_Weight(t)
+	Tracker_Test__Create_Money(t)
 
 	var tests = []struct {
 		expected_id  int
@@ -393,125 +393,125 @@ func Test_Get_Tracker_Id_By_Name(t *testing.T) {
 // Update
 
 func Test_Update_Tracker_Name(t *testing.T) {
-	Db_Tracker_Test_Reset_Database(t)
-	Db_Tracker_Test_Tracker_Journal(t)
+	Tracker_Test__Reset_Database(t)
+	Tracker_Test__Create_Journal(t)
 
-    err := Update_Tracker_Name(db_test, 1, "Notes")
-    if err != nil {
-        t.Error(err)
-    }
+	err := Update_Tracker_Name(db_test, 1, "Notes")
+	if err != nil {
+		t.Error(err)
+	}
 
-    tracker, err := Get_Tracker(db_test, 1)
-    if err != nil {
-        t.Error(err)
-    }
-    if tracker.Name != "Notes" {
-        t.Errorf("got %s, expected %s", tracker.Name, "Notes")
-    }
+	tracker, err := Get_Tracker(db_test, 1)
+	if err != nil {
+		t.Error(err)
+	}
+	if tracker.Name != "Notes" {
+		t.Errorf("got %s, expected %s", tracker.Name, "Notes")
+	}
 
-    err = Update_Tracker_Name(db_test, 1, "Journal")
-    if err != nil {
-        t.Error(err)
-    }
+	err = Update_Tracker_Name(db_test, 1, "Journal")
+	if err != nil {
+		t.Error(err)
+	}
 
-    tracker, err = Get_Tracker(db_test, 1)
-    if err != nil {
-        t.Error(err)
-    }
-    if tracker.Name != "Journal" {
-        t.Errorf("got %s, expected %s", tracker.Name, "Journal")
-    }
+	tracker, err = Get_Tracker(db_test, 1)
+	if err != nil {
+		t.Error(err)
+	}
+	if tracker.Name != "Journal" {
+		t.Errorf("got %s, expected %s", tracker.Name, "Journal")
+	}
 }
 
 func Test_Update_Tracker_Notes(t *testing.T) {
-	Db_Tracker_Test_Reset_Database(t)
-	Db_Tracker_Test_Tracker_Journal(t)
+	Tracker_Test__Reset_Database(t)
+	Tracker_Test__Create_Journal(t)
 
-    err := Update_Tracker_Notes(db_test, 1, "Some notes")
-    if err != nil {
-        t.Error(err)
-    }
+	err := Update_Tracker_Notes(db_test, 1, "Some notes")
+	if err != nil {
+		t.Error(err)
+	}
 
-    tracker, err := Get_Tracker(db_test, 1)
-    if err != nil {
-        t.Error(err)
-    }
-    if tracker.Notes != "Some notes" {
-        t.Errorf("got %s, expected %s", tracker.Notes, "Some notes")
-    }
+	tracker, err := Get_Tracker(db_test, 1)
+	if err != nil {
+		t.Error(err)
+	}
+	if tracker.Notes != "Some notes" {
+		t.Errorf("got %s, expected %s", tracker.Notes, "Some notes")
+	}
 }
 
 func Test_Update_Field_Name(t *testing.T) {
-	Db_Tracker_Test_Reset_Database(t)
-	Db_Tracker_Test_Tracker_Money(t)
+	Tracker_Test__Reset_Database(t)
+	Tracker_Test__Create_Money(t)
 
-    err := Update_Field_Name(db_test, 1, "Dollar Amount")
-    if err != nil {
-        t.Error(err)
-    }
+	err := Update_Field_Name(db_test, 1, "Dollar Amount")
+	if err != nil {
+		t.Error(err)
+	}
 
-    err = Update_Field_Name(db_test, 2, "Payment Method")
-    if err != nil {
-        t.Error(err)
-    }
+	err = Update_Field_Name(db_test, 2, "Payment Method")
+	if err != nil {
+		t.Error(err)
+	}
 
-    tracker, err := Get_Tracker(db_test, 1)
-    if err != nil {
-        t.Error(err)
-    }
-    if tracker.Fields[0].Name != "Dollar Amount" {
-        t.Errorf("got %s, expected %s", tracker.Fields[0].Name, "Dollar Amount")
-    }
-    if tracker.Fields[1].Name != "Payment Method" {
-        t.Errorf("got %s, expected %s", tracker.Fields[0].Name, "Payment Method")
-    }
+	tracker, err := Get_Tracker(db_test, 1)
+	if err != nil {
+		t.Error(err)
+	}
+	if tracker.Fields[0].Name != "Dollar Amount" {
+		t.Errorf("got %s, expected %s", tracker.Fields[0].Name, "Dollar Amount")
+	}
+	if tracker.Fields[1].Name != "Payment Method" {
+		t.Errorf("got %s, expected %s", tracker.Fields[0].Name, "Payment Method")
+	}
 }
 
 func Test_Update_Field_Notes(t *testing.T) {
-	Db_Tracker_Test_Reset_Database(t)
-	Db_Tracker_Test_Tracker_Money(t)
+	Tracker_Test__Reset_Database(t)
+	Tracker_Test__Create_Money(t)
 
-    err := Update_Field_Notes(db_test, 1, "monies")
-    if err != nil {
-        t.Error(err)
-    }
+	err := Update_Field_Notes(db_test, 1, "monies")
+	if err != nil {
+		t.Error(err)
+	}
 
-    err = Update_Field_Notes(db_test, 2, "card")
-    if err != nil {
-        t.Error(err)
-    }
+	err = Update_Field_Notes(db_test, 2, "card")
+	if err != nil {
+		t.Error(err)
+	}
 
-    tracker, err := Get_Tracker(db_test, 1)
-    if err != nil {
-        t.Error(err)
-    }
-    if tracker.Fields[0].Notes != "monies" {
-        t.Errorf("got %s, expected %s", tracker.Fields[0].Notes, "monies")
-    }
-    if tracker.Fields[1].Notes != "card" {
-        t.Errorf("got %s, expected %s", tracker.Fields[0].Notes, "card")
-    }
+	tracker, err := Get_Tracker(db_test, 1)
+	if err != nil {
+		t.Error(err)
+	}
+	if tracker.Fields[0].Notes != "monies" {
+		t.Errorf("got %s, expected %s", tracker.Fields[0].Notes, "monies")
+	}
+	if tracker.Fields[1].Notes != "card" {
+		t.Errorf("got %s, expected %s", tracker.Fields[0].Notes, "card")
+	}
 }
 
 // Delete
 
 func Test_Delete_Tracker(t *testing.T) {
-	Db_Tracker_Test_Reset_Database(t)
-	Db_Tracker_Test_Tracker_Weight(t)
-	Db_Tracker_Test_Tracker_Money(t)
+	Tracker_Test__Reset_Database(t)
+	Tracker_Test__Create_Weight(t)
+	Tracker_Test__Create_Money(t)
 
-    err := Delete_Tracker(db_test, 1)
-    if err != nil {
-        t.Error(err)
-    }
+	err := Delete_Tracker(db_test, 1)
+	if err != nil {
+		t.Error(err)
+	}
 
-    trackers, err := Get_Trackers(db_test)
-    if err != nil {
-        t.Error(err)
-    }
-    if len(trackers) != 1 {
-        t.Errorf("got %d, expected %d", len(trackers), 1)
-    }
+	trackers, err := Get_Trackers(db_test)
+	if err != nil {
+		t.Error(err)
+	}
+	if len(trackers) != 1 {
+		t.Errorf("got %d, expected %d", len(trackers), 1)
+	}
 }
 
 // func Test_Delete_Field(t *testing.T) {
@@ -535,7 +535,7 @@ func Test_Delete_Tracker(t *testing.T) {
 // Other
 
 func Test_Create_Trackers_x100(t *testing.T) {
-	Db_Tracker_Test_Reset_Database(t)
+	Tracker_Test__Reset_Database(t)
 
 	for i := 0; i < 100; i++ {
 		name := fmt.Sprintf("tracker_%d", i)
