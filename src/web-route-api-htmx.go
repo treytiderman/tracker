@@ -434,18 +434,18 @@ func htmx_entry_update(w http.ResponseWriter, r *http.Request) {
 			field_value_float, _ := strconv.ParseFloat(v[0], 64)
 			field_value_adjusted := float64(field_value_float) * float64(math.Pow10(field.Number.Decimal_Places))
 			log_value = int(math.Floor(field_value_adjusted))
-			Db_Entry_Log_Update(db, log_id, log_value)
+			Update_Log(db, log_id, log_value)
 		} else if field.Type == "option" {
 			log_value, err = strconv.Atoi(v[0])
 			if err != nil {
 				return
 			}
-			Db_Entry_Log_Update(db, log_id, log_value)
+			Update_Log(db, log_id, log_value)
 		}
 	}
 
-	Db_Entry_Notes_Update(db, entry_id, entry_notes)
-	Db_Entry_Timestamp_Update(db, entry_id, timestamp)
+	Update_Entry_Notes(db, entry_id, entry_notes)
+	Update_Entry_Timestamp(db, entry_id, timestamp)
 
 	// Reload page
 	url := fmt.Sprintf("/tracker-history?id=%d", tracker.Id)
@@ -546,7 +546,7 @@ func htmx_log_update(w http.ResponseWriter, r *http.Request) {
 
 	entry_note := r.Form.Get("entry_note")
 
-	err = Db_Entry_Notes_Update(db, entry_id, entry_note)
+	err = Update_Entry_Notes(db, entry_id, entry_note)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -556,7 +556,7 @@ func htmx_log_update(w http.ResponseWriter, r *http.Request) {
 	r.Form.Del("entry_note")
 
 	// Get Tracker by Id
-	entries, err := Get_Entries_By_Tracker_Id(db, tracker_id)
+	entries, err := Get_Entries(db, tracker_id)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -589,7 +589,7 @@ func htmx_log_update(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		err = Db_Entry_Log_Update(db, log_id, log_value)
+		err = Update_Log(db, log_id, log_value)
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -613,7 +613,7 @@ func htmx_log_delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Delete Entry
-	err = Db_Entry_Delete(db, entry_id)
+	err = Delete_Entry(db, entry_id)
 	if err != nil {
 		log.Fatalln(err)
 	}

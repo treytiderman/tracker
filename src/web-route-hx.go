@@ -108,7 +108,7 @@ func hx_entry(w http.ResponseWriter, r *http.Request) {
 			log.Fatal(err)
 		}
 	} else {
-		err = Db_Entry_Notes_Update(db, entry_id, entry_note)
+		err = Update_Entry_Notes(db, entry_id, entry_note)
 		if err != nil {
 			log.Fatal(err)
 		}

@@ -364,15 +364,11 @@ func Get_Tracker_Id_By_Name(db *sql.DB, tracker_name string) (int, error) {
 	return tracker_id, nil
 }
 
-// Get_Fields
-
-// Get_Field_By_Id
-
-// Get_Field_Id_By_Name
-
-// Get_Option_By_Id
-
-// Get_Option_Id_By_Name
+// func Get_Fields(db *sql.DB, tracker_id int) ([]Db_Fields, error)
+// func Get_Field_By_Id(db *sql.DB, field_id int) (Db_Fields, error)
+// func Get_Field_Id_By_Name(db *sql.DB, field_name string) (int, error)
+// func Get_Option_By_Id(db *sql.DB, option_id int) (Db_Option, error)
+// func Get_Option_Id_By_Name(db *sql.DB, option_name string) (int, error)
 
 // Update
 
