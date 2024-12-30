@@ -556,7 +556,7 @@ func htmx_log_update(w http.ResponseWriter, r *http.Request) {
 	r.Form.Del("entry_note")
 
 	// Get Tracker by Id
-	entries, err := Db_Entry_Get(db, tracker_id)
+	entries, err := Get_Entries_By_Tracker_Id(db, tracker_id)
 	if err != nil {
 		log.Fatal(err)
 	}

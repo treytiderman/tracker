@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"os"
 	"testing"
@@ -39,7 +40,7 @@ func _test_Reset_Entry_Database(t *testing.T) {
 	fmt.Println("Database Entry Tables Created")
 }
 
-func _test_Add_Entries_To_Journal(t *testing.T) {
+func _test_Add_Entries_To_Journal(t *testing.T, tracker_id int) {
 	var tests = []struct {
 		expected_id int
 		entry_notes string
@@ -54,7 +55,7 @@ func _test_Add_Entries_To_Journal(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		_, err := Create_Entry_With_Timestamp(db_test, 1, tt.entry_notes, tt.timestamp)
+		_, err := Create_Entry_With_Timestamp(db_test, tracker_id, tt.entry_notes, tt.timestamp)
 		if err != nil {
 			t.Error(err)
 		}
@@ -178,11 +179,11 @@ func Test_Create_Entry_With_Timestamp(t *testing.T) {
 func Test_Get_Entry_By_Entry_Id(t *testing.T) {
 	_test_Reset_Entry_Database(t)
 	_test_Create_Tracker_Journal(t)
-	_test_Add_Entries_To_Journal(t)
+	_test_Add_Entries_To_Journal(t, 1)
 
 	var tests = []struct {
 		expected_notes string
-		entry_id int
+		entry_id       int
 	}{
 		{"Entry 1", 1},
 		{"Why is green sometimes blue", 2},
@@ -202,6 +203,59 @@ func Test_Get_Entry_By_Entry_Id(t *testing.T) {
 				t.Errorf("got %s, expected %s", entry.Notes, tt.expected_notes)
 			}
 		})
+	}
+}
+
+func Test_Get_Entries_By_Tracker_ID(t *testing.T) {
+	_test_Reset_Entry_Database(t)
+
+	journal_id, _ := Create_Tracker(db_test, "Journal", "Daily journal and notes")
+	Create_Entry_With_Timestamp(db_test, journal_id, "Entry 1", "2049-12-13 19:15:56")
+	Create_Entry_With_Timestamp(db_test, journal_id, "Why is green sometimes blue", "2095-12-14 19:16:56")
+	Create_Entry_With_Timestamp(db_test, journal_id, "If Franky can be a robot maybe I can too", "2094-12-13 19:17:56")
+	Create_Entry_With_Timestamp(db_test, journal_id, "", "2093-12-13 19:18:56")
+	Create_Entry_With_Timestamp(db_test, journal_id, "I got lost in a square", "2124-12-13 19:19:56")
+	Create_Entry_With_Timestamp(db_test, journal_id, "The circle showed me the way", "2999-12-13 19:20:56")
+
+	money_id, _ := Create_Tracker(db_test, "Money", "Transactions")
+	money_amount_id, _ := Add_Number_Field(db_test, money_id, "Amount", "Amount of money in dollars", 2)
+	money_card_id, _ := Add_Option_Field(db_test, money_id, "Card", "Payment Method")
+	Add_Option_to_Field(db_test, money_card_id, 1, "Discover")
+	Add_Option_to_Field(db_test, money_card_id, 2, "Visa")
+	Add_Option_to_Field(db_test, money_card_id, 3, "American Express")
+	money_entry_1, _ := Create_Entry(db_test, money_id, "9.99 dollars entered as 999")
+	Add_Log_To_Entry(db_test, money_entry_1, money_amount_id, -999)
+	Add_Log_To_Entry(db_test, money_entry_1, money_card_id, 1)
+	money_entry_2, _ := Create_Entry(db_test, money_id, "not for what you think")
+	Add_Log_To_Entry(db_test, money_entry_2, money_amount_id, -42069)
+	Add_Log_To_Entry(db_test, money_entry_2, money_card_id, 3)
+	money_entry_3, _ := Create_Entry(db_test, money_id, "big spendin")
+	Add_Log_To_Entry(db_test, money_entry_3, money_amount_id, 2000_00)
+	Add_Log_To_Entry(db_test, money_entry_3, money_card_id, 2)
+
+	// Test Start
+	entries, err := Get_Entries_By_Tracker_Id(db_test, 2)
+	if err != nil {
+		t.Error(err)
+	}
+
+	s, _ := json.MarshalIndent(entries, "", "    ")
+	fmt.Println("JSON:", string(s))
+
+	if entries[0].Id != 9 {
+		t.Errorf("got %d, expected %d", entries[0].Id, 9)
+	}
+
+	if entries[2].Notes != "9.99 dollars entered as 999" {
+		t.Errorf("got %s, expected %s", entries[2].Notes, "9.99 dollars entered as 999")
+	}
+
+	if entries[1].Logs[0].Present != "-420.69" {
+		t.Errorf("got %s, expected %s", entries[1].Logs[0].Present, "-420.69")
+	}
+
+	if entries[1].Logs[1].Present != "American Express" {
+		t.Errorf("got %s, expected %s", entries[1].Logs[1].Present, "American Express")
 	}
 }
 
@@ -296,14 +350,12 @@ func Test_Get_Entry_By_Entry_Id(t *testing.T) {
 // 			if err != nil {
 // 				t.Fatalf("Failed to Get_Entries_By_Tracker_Id")
 // 			}
-
 // 			// Error with library? See function...
 // 			if tt.tracker_id == 8 {
 // 				if len(entries[0].Logs) > 3 {
 // 					t.Fatalf("Error too many logs")
 // 				}
 // 			}
-
 // 			s, _ := json.Marshal(entries)
 // 			fmt.Sprintln("JSON:", string(s))
 // 			// fmt.Println("JSON:", string(s))

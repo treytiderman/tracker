@@ -238,7 +238,7 @@ func page_tracker_log(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	entries, err := Db_Entry_Get(db, id)
+	entries, err := Get_Entries_By_Tracker_Id(db, id)
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -279,7 +279,7 @@ func page_tracker_records(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	entries, err := Db_Entry_Get(db, id)
+	entries, err := Get_Entries_By_Tracker_Id(db, id)
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -320,7 +320,7 @@ func page_tracker_history(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	entries, err := Db_Entry_Get(db, id)
+	entries, err := Get_Entries_By_Tracker_Id(db, id)
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -400,7 +400,7 @@ func page_entry_view(w http.ResponseWriter, r *http.Request) {
 		entry_id = 0
 	}
 
-	entries, err := Db_Entry_Get(db, tracker_id)
+	entries, err := Get_Entries_By_Tracker_Id(db, tracker_id)
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -447,7 +447,7 @@ func page_entry_editor(w http.ResponseWriter, r *http.Request) {
 		entry_id = 0
 	}
 
-	entries, err := Db_Entry_Get(db, tracker_id)
+	entries, err := Get_Entries_By_Tracker_Id(db, tracker_id)
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -510,7 +510,7 @@ func page_test(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	entries, err := Db_Entry_Get(db, tracker_id)
+	entries, err := Get_Entries_By_Tracker_Id(db, tracker_id)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -70,7 +70,7 @@ func Create_Entry_Tables(db *sql.DB) error {
 
 func Create_Entry(db *sql.DB, tracker_id int, entry_notes string) (int, error) {
 	fmt.Printf(
-		"SQL: INSERT INTO entry (tracker_id, entry_notes) VALUES (%d,'%s');",
+		"SQL: INSERT INTO entry (tracker_id, entry_notes) VALUES (%d,'%s');\n",
 		tracker_id, entry_notes)
 
 	result, err := db.Exec(
@@ -88,29 +88,9 @@ func Create_Entry(db *sql.DB, tracker_id int, entry_notes string) (int, error) {
 	return int(id), nil
 }
 
-func Create_Entry_With_Timestamp(db *sql.DB, tracker_id int, entry_notes string, timestamp string) (int, error) {
-	fmt.Printf(
-		"SQL: INSERT INTO entry (tracker_id, entry_notes, timestamp) VALUES (%d,'%s','%s');",
-		tracker_id, entry_notes, timestamp)
-
-	result, err := db.Exec(
-		"INSERT INTO entry (tracker_id, entry_notes, timestamp) VALUES (?,?,?);",
-		tracker_id, entry_notes, timestamp)
-	if err != nil {
-		return 0, err
-	}
-
-	id, err := result.LastInsertId()
-	if err != nil {
-		return 0, err
-	}
-
-	return int(id), nil
-}
-
 func Add_Log_To_Entry(db *sql.DB, entry_id int, field_id int, log_value int) (int, error) {
 	fmt.Printf(
-		"SQL: INSERT INTO log (entry_id, field_id, log_value) VALUES (%d,%d,%d);",
+		"SQL: INSERT INTO log (entry_id, field_id, log_value) VALUES (%d,%d,%d);\n",
 		entry_id, field_id, log_value)
 
 	result, err := db.Exec(
@@ -128,11 +108,33 @@ func Add_Log_To_Entry(db *sql.DB, entry_id int, field_id int, log_value int) (in
 	return int(id), nil
 }
 
+// Create functions that could be deleted
+
+func Create_Entry_With_Timestamp(db *sql.DB, tracker_id int, entry_notes string, timestamp string) (int, error) {
+	fmt.Printf(
+		"SQL: INSERT INTO entry (tracker_id, entry_notes, timestamp) VALUES (%d,'%s','%s');\n",
+		tracker_id, entry_notes, timestamp)
+
+	result, err := db.Exec(
+		"INSERT INTO entry (tracker_id, entry_notes, timestamp) VALUES (?,?,?);",
+		tracker_id, entry_notes, timestamp)
+	if err != nil {
+		return 0, err
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	return int(id), nil
+}
+
 func Create_Entry_With_Logs(db *sql.DB, tracker_id int, entry_notes string, logs []struct {
 	Field_Id int
 	Value    int
 }) (int, error) {
-	fmt.Printf("SQL: INSERT INTO entry (tracker_id, entry_notes) VALUES (%d,'%s');", tracker_id, entry_notes)
+	fmt.Printf("SQL: INSERT INTO entry (tracker_id, entry_notes) VALUES (%d,'%s');\n", tracker_id, entry_notes)
 	result, err := db.Exec("INSERT INTO entry (tracker_id, entry_notes) VALUES (?,?);", tracker_id, entry_notes)
 	if err != nil {
 		return 0, err
@@ -145,7 +147,7 @@ func Create_Entry_With_Logs(db *sql.DB, tracker_id int, entry_notes string, logs
 	entry_id := int(id)
 
 	for _, log := range logs {
-		fmt.Printf("SQL: INSERT INTO log (entry_id, field_id, log_value) VALUES (%d,%d,%d);", entry_id, log.Field_Id, log.Value)
+		fmt.Printf("SQL: INSERT INTO log (entry_id, field_id, log_value) VALUES (%d,%d,%d);\n", entry_id, log.Field_Id, log.Value)
 		_, err = db.Exec("INSERT INTO log (entry_id, field_id, log_value) VALUES (?,?,?);", entry_id, log.Field_Id, log.Value)
 		if err != nil {
 			return 0, err
@@ -160,7 +162,7 @@ func Create_Entry_With_Logs_Timestamp(db *sql.DB, tracker_id int, entry_notes st
 	Value    int
 }) (int, error) {
 	fmt.Printf(
-		"SQL: INSERT INTO entry (tracker_id, entry_notes, timestamp) VALUES (%d,'%s','%s');",
+		"SQL: INSERT INTO entry (tracker_id, entry_notes, timestamp) VALUES (%d,'%s','%s');\n",
 		tracker_id, entry_notes, timestamp)
 
 	result, err := db.Exec(
@@ -179,7 +181,7 @@ func Create_Entry_With_Logs_Timestamp(db *sql.DB, tracker_id int, entry_notes st
 
 	for _, log := range logs {
 		fmt.Printf(
-			"SQL: INSERT INTO log (entry_id, field_id, log_value) VALUES (%d,%d,%d);",
+			"SQL: INSERT INTO log (entry_id, field_id, log_value) VALUES (%d,%d,%d);\n",
 			entry_id, log.Field_Id, log.Value)
 
 		_, err = db.Exec(
@@ -212,7 +214,7 @@ func Get_Entry_By_Entry_Id(db *sql.DB, entry_id int) (Db_Entry, error) {
 			IFNULL(option.option_value, 0) AS option_value,
 			IFNULL(option.option_name, "") AS option_name,
 			IFNULL((CASE WHEN field.field_type == "number" THEN
-				printf(("%%." || number.decimal_places || "f"), log.log_value / power(10, number.decimal_places))
+				printf(("%." || number.decimal_places || "f"), log.log_value / power(10, number.decimal_places))
 			ELSE
 				option.option_name
 			END), "") AS present
@@ -227,7 +229,6 @@ func Get_Entry_By_Entry_Id(db *sql.DB, entry_id int) (Db_Entry, error) {
 	}
 	defer rows.Close()
 
-	// var log_scan_last_id = 0
 	var entry_scan_last_id = 0
 
 	for rows.Next() {
@@ -242,22 +243,11 @@ func Get_Entry_By_Entry_Id(db *sql.DB, entry_id int) (Db_Entry, error) {
 			return entries[0], err
 		}
 
-		// fmt.Println(entry_scan, log_scan)
-
 		if entry_scan_last_id != entry_scan.Id {
 			entries = append(entries, entry_scan)
 		}
 
-		// Why am I getting duplicate log_scan ids?
-		// This check for log_scan_last_id should not be needed
-		// if log_scan_last_id != log_scan.Id {
-		// 	if log_scan.Id > 0 {
-		// 		entries[len(entries)-1].Logs = append(entries[len(entries)-1].Logs, log_scan)
-		// 	}
-		// }
-
 		entry_scan_last_id = entry_scan.Id
-		// log_scan_last_id = log_scan.Id
 	}
 
 	if err := rows.Err(); err != nil {
@@ -267,12 +257,11 @@ func Get_Entry_By_Entry_Id(db *sql.DB, entry_id int) (Db_Entry, error) {
 	return entries[0], nil
 }
 
-// Update
+// In reverse entry_id order
+func Get_Entries_By_Tracker_Id(db *sql.DB, tracker_id int) ([]Db_Entry, error) {
+	entries := make([]Db_Entry, 0)
 
-// Delete
-
-func Db_Entry_Get(db *sql.DB, tracker_id int) (entries []Db_Entry, err error) {
-	sql_string := fmt.Sprintf(
+	rows, err := db.Query(
 		`SELECT
 			entry.entry_id,
 			entry.tracker_id,
@@ -287,7 +276,7 @@ func Db_Entry_Get(db *sql.DB, tracker_id int) (entries []Db_Entry, err error) {
 			IFNULL(option.option_value, 0) AS option_value,
 			IFNULL(option.option_name, "") AS option_name,
 			IFNULL((CASE WHEN field.field_type == "number" THEN
-				printf(("%%." || number.decimal_places || "f"), log.log_value / power(10, number.decimal_places))
+				printf(("%." || number.decimal_places || "f"), log.log_value / power(10, number.decimal_places))
 			ELSE
 				option.option_name
 			END), "") AS present
@@ -296,11 +285,9 @@ func Db_Entry_Get(db *sql.DB, tracker_id int) (entries []Db_Entry, err error) {
 		LEFT JOIN field USING (field_id)
 		LEFT JOIN number USING (field_id)
 		LEFT JOIN option ON log.field_id = option.field_id AND log.log_value = option.option_value
-		WHERE entry.tracker_id = %d
+		WHERE entry.tracker_id = ?
 		ORDER BY entry.entry_id DESC, field.field_id;`,
 		tracker_id)
-
-	rows, err := db.Query(sql_string)
 	if err != nil {
 		return entries, err
 	}
@@ -344,10 +331,16 @@ func Db_Entry_Get(db *sql.DB, tracker_id int) (entries []Db_Entry, err error) {
 	return entries, nil
 }
 
+// Get_Entries_By_Tracker_Id_Sort
+// Get_Entries_By_Tracker_Id_Filter
+
+// Update
+
+// Delete
+
 func Db_Entry_Filter_Notes_Get(db *sql.DB, tracker_id int, search string) (entries []Db_Entry, err error) {
-	search_pattern := "%" + search + "%"
-	sql_string := fmt.Sprintf(
-		`SELECT
+	search_pattern := "%" + search + "%" // contains
+	rows, err := db.Query(`SELECT
 			entry.entry_id,
 			entry.tracker_id,
 			entry.timestamp,
@@ -361,7 +354,7 @@ func Db_Entry_Filter_Notes_Get(db *sql.DB, tracker_id int, search string) (entri
 			IFNULL(option.option_value, 0) AS option_value,
 			IFNULL(option.option_name, "") AS option_name,
 			IFNULL((CASE WHEN field.field_type == "number" THEN
-				printf(("%%." || number.decimal_places || "f"), log.log_value / power(10, number.decimal_places))
+				printf(("%." || number.decimal_places || "f"), log.log_value / power(10, number.decimal_places))
 			ELSE
 				option.option_name
 			END), "") AS present
@@ -370,11 +363,9 @@ func Db_Entry_Filter_Notes_Get(db *sql.DB, tracker_id int, search string) (entri
 		LEFT JOIN field USING (field_id)
 		LEFT JOIN number USING (field_id)
 		LEFT JOIN option ON log.field_id = option.field_id AND log.log_value = option.option_value
-		WHERE entry.tracker_id = %d AND entry.entry_notes LIKE '%s'
+		WHERE entry.tracker_id = ? AND entry.entry_notes LIKE ?
 		ORDER BY entry.entry_id DESC, field.field_id;`,
 		tracker_id, search_pattern)
-
-	rows, err := db.Query(sql_string)
 	if err != nil {
 		return entries, err
 	}
@@ -490,9 +481,8 @@ func Db_Entry_All_Get(db *sql.DB) (entries []Db_Entry, err error) {
 }
 
 func Db_Entry_All_Filter_Notes_Get(db *sql.DB, search string) (entries []Db_Entry, err error) {
-	search_pattern := "%" + search + "%"
-	sql_string := fmt.Sprintf(
-		`SELECT
+	search_pattern := "%" + search + "%" // contains
+	rows, err := db.Query(`SELECT
 			entry.entry_id,
 			entry.tracker_id,
 			entry.timestamp,
@@ -506,7 +496,7 @@ func Db_Entry_All_Filter_Notes_Get(db *sql.DB, search string) (entries []Db_Entr
 			IFNULL(option.option_value, 0) AS option_value,
 			IFNULL(option.option_name, "") AS option_name,
 			IFNULL((CASE WHEN field.field_type == "number" THEN
-				printf(("%%." || number.decimal_places || "f"), log.log_value / power(10, number.decimal_places))
+				printf(("%." || number.decimal_places || "f"), log.log_value / power(10, number.decimal_places))
 			ELSE
 				option.option_name
 			END), "") AS present
@@ -515,11 +505,9 @@ func Db_Entry_All_Filter_Notes_Get(db *sql.DB, search string) (entries []Db_Entr
 		LEFT JOIN field USING (field_id)
 		LEFT JOIN number USING (field_id)
 		LEFT JOIN option ON log.field_id = option.field_id AND log.log_value = option.option_value
-		WHERE entry.entry_notes LIKE '%s'
+		WHERE entry.entry_notes LIKE ?
 		ORDER BY entry.entry_id DESC, field.field_id;`,
 		search_pattern)
-
-	rows, err := db.Query(sql_string)
 	if err != nil {
 		return entries, err
 	}
