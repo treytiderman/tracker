@@ -142,6 +142,7 @@ func Get_Entry(db *sql.DB, entry_id int) (Db_Entry, error) {
 	}
 	defer rows.Close()
 
+	var log_scan_last_id = 0
 	var entry_scan_last_id = 0
 
 	for rows.Next() {
@@ -160,7 +161,16 @@ func Get_Entry(db *sql.DB, entry_id int) (Db_Entry, error) {
 			entries = append(entries, entry_scan)
 		}
 
+		// Why am I getting duplicate log_scan ids?
+		// This check for log_scan_last_id should not be needed
+		if log_scan_last_id != log_scan.Id {
+			if log_scan.Id > 0 {
+				entries[len(entries)-1].Logs = append(entries[len(entries)-1].Logs, log_scan)
+			}
+		}
+
 		entry_scan_last_id = entry_scan.Id
+		log_scan_last_id = log_scan.Id
 	}
 
 	if err := rows.Err(); err != nil {
@@ -318,46 +328,33 @@ func Get_Entries_Filter(db *sql.DB, tracker_id int, search string) ([]Db_Entry, 
 	return entries, nil
 }
 
+// func Get_Log(db *sql.DB, log_id int) (Db_Log, error) {}
+
 // Update
 
-func Update_Entry_Timestamp(db *sql.DB, entry_id int, timestamp string) (err error) {
-	sql_string := fmt.Sprintf(
-		`UPDATE entry SET timestamp = '%s' WHERE entry_id = %d;`,
-		timestamp, entry_id)
-
-	fmt.Println("SQL:", sql_string)
-	_, err = db.Exec(sql_string)
-
+func Update_Entry_Timestamp(db *sql.DB, entry_id int, timestamp string) error {
+	fmt.Printf("SQL: UPDATE entry SET timestamp = '%s' WHERE entry_id = %d;\n", timestamp, entry_id)
+	_, err := db.Exec("UPDATE entry SET timestamp = ? WHERE entry_id = ?;", timestamp, entry_id)
 	return err
 }
 
-func Update_Entry_Notes(db *sql.DB, entry_id int, entry_notes string) (err error) {
-	fmt.Printf("SQL: UPDATE entry SET entry_notes = '%s' WHERE entry_id = %d;", entry_notes, entry_id)
-	_, err = db.Exec("UPDATE entry SET entry_notes = ? WHERE entry_id = ?;", entry_notes, entry_id)
+func Update_Entry_Notes(db *sql.DB, entry_id int, entry_notes string) error {
+	fmt.Printf("SQL: UPDATE entry SET entry_notes = '%s' WHERE entry_id = %d;\n", entry_notes, entry_id)
+	_, err := db.Exec("UPDATE entry SET entry_notes = ? WHERE entry_id = ?;", entry_notes, entry_id)
 	return err
 }
 
-func Update_Log(db *sql.DB, log_id int, log_value int) (err error) {
-	sql_string := fmt.Sprintf(
-		`UPDATE log SET log_value = %d WHERE log_id = %d;`,
-		log_value, log_id)
-
-	fmt.Println("SQL:", sql_string)
-	_, err = db.Exec(sql_string)
-
+func Update_Log(db *sql.DB, log_id int, log_value int) error {
+	fmt.Printf("SQL: UPDATE log SET log_value = %d WHERE log_id = %d;\n", log_value, log_id)
+	_, err := db.Exec("UPDATE log SET log_value = ? WHERE log_id = ?;", log_value, log_id)
 	return err
 }
 
 // Delete
 
-func Delete_Entry(db *sql.DB, entry_id int) (err error) {
-	sql_string := fmt.Sprintf(
-		`DELETE FROM entry WHERE entry_id = %d; DELETE FROM log WHERE entry_id = %d;`,
-		entry_id, entry_id)
-
-	fmt.Println("SQL:", sql_string)
-	_, err = db.Exec(sql_string)
-
+func Delete_Entry(db *sql.DB, entry_id int) error {
+	fmt.Printf("SQL: DELETE FROM entry WHERE entry_id = %d; DELETE FROM log WHERE entry_id = %d;\n", entry_id, entry_id)
+	_, err := db.Exec("DELETE FROM entry WHERE entry_id = ?; DELETE FROM log WHERE entry_id = ?;", entry_id, entry_id)
 	return err
 }
 
