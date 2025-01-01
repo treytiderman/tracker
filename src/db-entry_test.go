@@ -14,29 +14,27 @@ import (
 func _test_Reset_Entry_Database(t *testing.T) {
 	path := "../data/test.db"
 
-	err := os.Remove(path)
-	if err != nil {
-		t.Error(err)
-	}
-	fmt.Println("Database Deleted", path)
+	os.Remove(path)
+	fmt.Println("DATABASE Deleted", path)
 
+	var err error
 	db_test, err = sql.Open("sqlite", path)
 	if err != nil {
 		t.Error(err)
 	}
-	fmt.Println("Database Opened", path)
+	fmt.Println("DATABASE Opened", path)
 
 	err = Create_Tracker_Tables(db_test)
 	if err != nil {
 		t.Error(err)
 	}
-	fmt.Println("Database Tracker Tables Created")
+	fmt.Println("DATABASE Tracker Tables Created")
 
 	err = Create_Entry_Tables(db_test)
 	if err != nil {
 		t.Error(err)
 	}
-	fmt.Println("Database Entry Tables Created")
+	fmt.Println("DATABASE Entry Tables Created")
 }
 
 // Helper

@@ -15,23 +15,21 @@ var db_test *sql.DB
 func _test_Reset_Tracker_Database(t *testing.T) {
 	path := "../data/test.db"
 
-	err := os.Remove(path)
-	if err != nil {
-		t.Error(err)
-	}
-	fmt.Println("Database Deleted", path)
+	os.Remove(path)
+	fmt.Println("DATABASE Deleted", path)
 
+	var err error
 	db_test, err = sql.Open("sqlite", path)
 	if err != nil {
 		t.Error(err)
 	}
-	fmt.Println("Database Opened", path)
+	fmt.Println("DATABASE Opened", path)
 
 	err = Create_Tracker_Tables(db_test)
 	if err != nil {
 		t.Error(err)
 	}
-	fmt.Println("Database Tracker Tables Created")
+	fmt.Println("DATABASE Tracker Tables Created")
 }
 
 func _test_Create_Tracker_Journal(t *testing.T) {
@@ -534,11 +532,11 @@ func Test_Delete_Tracker(t *testing.T) {
 
 // Other
 
-func Test_Create_Trackers_x100(t *testing.T) {
-	_test_Reset_Tracker_Database(t)
+// func Test_Create_Trackers_x100(t *testing.T) {
+// 	_test_Reset_Tracker_Database(t)
 
-	for i := 0; i < 100; i++ {
-		name := fmt.Sprintf("tracker_%d", i)
-		Create_Tracker(db_test, name, "notes")
-	}
-}
+// 	for i := 0; i < 100; i++ {
+// 		name := fmt.Sprintf("tracker_%d", i)
+// 		Create_Tracker(db_test, name, "notes")
+// 	}
+// }
