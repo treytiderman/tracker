@@ -301,11 +301,15 @@ func htmx_entry_create(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	// Logs Memory
-	var logs = make([]struct {
-		Field_Id int
-		Value    int
-	}, 0)
+	entry_id, err := Create_Entry(db, tracker.Id, entry_notes)
+	if err != nil {
+		return
+	}
+
+	err = Update_Entry_Timestamp(db, entry_id, timestamp)
+	if err != nil {
+		return
+	}
 
 	for k, v := range r.Form {
 
@@ -333,16 +337,8 @@ func htmx_entry_create(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		logs = append(logs, struct {
-			Field_Id int
-			Value    int
-		}{
-			field_id,
-			value,
-		})
+		Add_Log_To_Entry(db, entry_id, field_id, value)
 	}
-
-	Create_Entry_With_Logs_Timestamp(db, tracker.Id, entry_notes, timestamp, logs)
 
 	// Reload page
 	url := fmt.Sprintf("/tracker-history?id=%d", tracker.Id)

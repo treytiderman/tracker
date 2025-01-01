@@ -362,26 +362,6 @@ func Delete_Entry(db *sql.DB, entry_id int) error {
 // ------------------- Functions To Delete -------------------
 // -----------------------------------------------------------
 
-func Create_Entry_With_Timestamp(db *sql.DB, tracker_id int, entry_notes string, timestamp string) (int, error) {
-	fmt.Printf(
-		"SQL: INSERT INTO entry (tracker_id, entry_notes, timestamp) VALUES (%d,'%s','%s');\n",
-		tracker_id, entry_notes, timestamp)
-
-	result, err := db.Exec(
-		"INSERT INTO entry (tracker_id, entry_notes, timestamp) VALUES (?,?,?);",
-		tracker_id, entry_notes, timestamp)
-	if err != nil {
-		return 0, err
-	}
-
-	id, err := result.LastInsertId()
-	if err != nil {
-		return 0, err
-	}
-
-	return int(id), nil
-}
-
 func Create_Entry_With_Logs(db *sql.DB, tracker_id int, entry_notes string, logs []struct {
 	Field_Id int
 	Value    int
@@ -407,44 +387,6 @@ func Create_Entry_With_Logs(db *sql.DB, tracker_id int, entry_notes string, logs
 	}
 
 	return entry_id, nil
-}
-
-func Create_Entry_With_Logs_Timestamp(db *sql.DB, tracker_id int, entry_notes string, timestamp string, logs []struct {
-	Field_Id int
-	Value    int
-}) (int, error) {
-	fmt.Printf(
-		"SQL: INSERT INTO entry (tracker_id, entry_notes, timestamp) VALUES (%d,'%s','%s');\n",
-		tracker_id, entry_notes, timestamp)
-
-	result, err := db.Exec(
-		"INSERT INTO entry (tracker_id, entry_notes, timestamp) VALUES (?,?,?);",
-		tracker_id, entry_notes, timestamp)
-	if err != nil {
-		return 0, err
-	}
-
-	id, err := result.LastInsertId()
-	if err != nil {
-		return 0, err
-	}
-
-	entry_id := int(id)
-
-	for _, log := range logs {
-		fmt.Printf(
-			"SQL: INSERT INTO log (entry_id, field_id, log_value) VALUES (%d,%d,%d);\n",
-			entry_id, log.Field_Id, log.Value)
-
-		_, err = db.Exec(
-			"INSERT INTO log (entry_id, field_id, log_value) VALUES (?,?,?);",
-			entry_id, log.Field_Id, log.Value)
-		if err != nil {
-			return 0, err
-		}
-	}
-
-	return int(id), nil
 }
 
 func Db_Entry_All_Get(db *sql.DB) (entries []Db_Entry, err error) {

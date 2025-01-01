@@ -121,48 +121,18 @@ func Test_Add_Log_To_Entry(t *testing.T) {
 	}
 }
 
-func Test_Create_Entry_With_Timestamp(t *testing.T) {
-	_test_Reset_Entry_Database(t)
-	_test_Create_Tracker_Journal(t)
-
-	var tests = []struct {
-		expected_id int
-		entry_notes string
-		timestamp   string
-	}{
-		{1, "Entry 1", "2049-12-13 19:15:56"},
-		{2, "Why is green sometimes blue", "2095-12-14 19:16:56"},
-		{3, "If Franky can be a robot maybe I can too", "2094-12-13 19:17:56"},
-		{4, "", "2093-12-13 19:18:56"},
-		{5, "I got lost in a square", "2124-12-13 19:19:56"},
-		{6, "The circle showed me the way", "2999-12-13 19:20:56"},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.entry_notes, func(t *testing.T) {
-			id, err := Create_Entry_With_Timestamp(db_test, 1, tt.entry_notes, tt.timestamp)
-			if err != nil {
-				t.Error(err)
-			}
-			if id != tt.expected_id {
-				t.Errorf("got %d, expected %d", id, tt.expected_id)
-			}
-		})
-	}
-}
-
 // Read
 
 func Test_Get_Entry(t *testing.T) {
 	_test_Reset_Entry_Database(t)
 
 	journal_id, _ := Create_Tracker(db_test, "Journal", "Daily journal and notes")
-	Create_Entry_With_Timestamp(db_test, journal_id, "Entry 1", "2049-12-13 19:15:56")
-	Create_Entry_With_Timestamp(db_test, journal_id, "Why is green sometimes blue", "2095-12-14 19:16:56")
-	Create_Entry_With_Timestamp(db_test, journal_id, "If Franky can be a robot maybe I can too", "2094-12-13 19:17:56")
-	Create_Entry_With_Timestamp(db_test, journal_id, "", "2093-12-13 19:18:56")
-	Create_Entry_With_Timestamp(db_test, journal_id, "I got lost in a square", "2124-12-13 19:19:56")
-	Create_Entry_With_Timestamp(db_test, journal_id, "The circle showed me the way", "2999-12-13 19:20:56")
+	Create_Entry(db_test, journal_id, "Entry 1")
+	Create_Entry(db_test, journal_id, "Why is green sometimes blue")
+	Create_Entry(db_test, journal_id, "If Franky can be a robot maybe I can too")
+	Create_Entry(db_test, journal_id, "")
+	Create_Entry(db_test, journal_id, "I got lost in a square")
+	Create_Entry(db_test, journal_id, "The circle showed me the way")
 
 	var tests = []struct {
 		entry_id       int
@@ -232,12 +202,12 @@ func Test_Get_Entries(t *testing.T) {
 	_test_Reset_Entry_Database(t)
 
 	journal_id, _ := Create_Tracker(db_test, "Journal", "Daily journal and notes")
-	Create_Entry_With_Timestamp(db_test, journal_id, "Entry 1", "2049-12-13 19:15:56")
-	Create_Entry_With_Timestamp(db_test, journal_id, "Why is green sometimes blue", "2095-12-14 19:16:56")
-	Create_Entry_With_Timestamp(db_test, journal_id, "If Franky can be a robot maybe I can too", "2094-12-13 19:17:56")
-	Create_Entry_With_Timestamp(db_test, journal_id, "", "2093-12-13 19:18:56")
-	Create_Entry_With_Timestamp(db_test, journal_id, "I got lost in a square", "2124-12-13 19:19:56")
-	Create_Entry_With_Timestamp(db_test, journal_id, "The circle showed me the way", "2999-12-13 19:20:56")
+	Create_Entry(db_test, journal_id, "Entry 1")
+	Create_Entry(db_test, journal_id, "Why is green sometimes blue")
+	Create_Entry(db_test, journal_id, "If Franky can be a robot maybe I can too")
+	Create_Entry(db_test, journal_id, "")
+	Create_Entry(db_test, journal_id, "I got lost in a square")
+	Create_Entry(db_test, journal_id, "The circle showed me the way")
 
 	money_id, _ := Create_Tracker(db_test, "Money", "Transactions")
 	money_amount_id, _ := Add_Number_Field(db_test, money_id, "Amount", "Amount of money in dollars", 2)
@@ -359,7 +329,7 @@ func Test_Update_Entry_Notes(t *testing.T) {
 	entry_id, _ := Create_Entry(db_test, journal_id, "Why is green sometimes blue")
 	Create_Entry(db_test, journal_id, "If Franky can be a robot maybe I can too")
 
-	// Test 
+	// Test
 	err := Update_Entry_Notes(db_test, entry_id, "Why is green sometimes cyan")
 	if err != nil {
 		t.Error(err)
