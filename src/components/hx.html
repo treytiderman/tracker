@@ -3,8 +3,9 @@
 <style>
     .tt-dialog>* {
         height: 90svh;
+        max-width: var(--max-width-main);
+        margin-inline: auto;
     }
-
 </style>
 <dialog id="hx_search_dialog" class="tt-dialog">
     {{ template "hx_search" . }}
