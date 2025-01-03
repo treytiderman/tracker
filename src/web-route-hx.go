@@ -29,7 +29,7 @@ func hx_home_page(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Println("entry_id", entry_id)
 
-	entries, err := Db_Entry_All_Get(db)
+	entries, err := Get_Entries(db, 1)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -66,7 +66,7 @@ func hx_search_results(w http.ResponseWriter, r *http.Request) {
 	search := r.Form.Get("search")
 	log.Println("SEARCH:", search)
 
-	entries, err := Db_Entry_All_Filter_Notes_Get(db, search)
+	entries, err := Get_Entries_Filter(db, 1, search)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -97,13 +97,8 @@ func hx_entry(w http.ResponseWriter, r *http.Request) {
 
 	entry_note := r.Form.Get("notes")
 
-	logs := make([]struct {
-		Field_Id int
-		Value    int
-	}, 0)
-
 	if entry_id == 0 {
-		entry_id, err = Create_Entry_With_Logs(db, 1, entry_note, logs)
+		entry_id, err = Create_Entry(db, 1, entry_note)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -114,7 +109,6 @@ func hx_entry(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// url := fmt.Sprintf("/hx")
 	url := fmt.Sprintf("/hx?entry=%d", entry_id)
 	log.Println("url", url)
 	w.Header().Add("HX-Redirect", url)
