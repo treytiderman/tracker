@@ -491,6 +491,45 @@ func Test_Update_Field_Notes(t *testing.T) {
 	}
 }
 
+// Update - Effects Logged Data
+
+func Test_Update_Number_Decimal_Places(t *testing.T) {
+	_test_Reset_Entry_Database(t)
+
+	// Create "Money" tracker, add fields, and add entries
+	money_id, _ := Create_Tracker(db_test, "Money", "Transactions")
+	money_amount_id, _ := Add_Number_Field(db_test, money_id, "Amount", "Amount of money in dollars", 2)
+	money_card_id, _ := Add_Option_Field(db_test, money_id, "Card", "Payment Method")
+	Add_Option_to_Field(db_test, money_card_id, 1, "Discover")
+	Add_Option_to_Field(db_test, money_card_id, 2, "Visa")
+	Add_Option_to_Field(db_test, money_card_id, 3, "American Express")
+	money_entry_1, _ := Create_Entry(db_test, money_id, "9.99 dollars entered as 999")
+	Add_Log_To_Entry(db_test, money_entry_1, money_amount_id, -9_99)
+	Add_Log_To_Entry(db_test, money_entry_1, money_card_id, 1)
+	money_entry_2, _ := Create_Entry(db_test, money_id, "not for what you think")
+	log_id, _ := Add_Log_To_Entry(db_test, money_entry_2, money_amount_id, -420_69)
+	Add_Log_To_Entry(db_test, money_entry_2, money_card_id, 3)
+	money_entry_3, _ := Create_Entry(db_test, money_id, "big spendin")
+	Add_Log_To_Entry(db_test, money_entry_3, money_amount_id, 2000_00)
+	Add_Log_To_Entry(db_test, money_entry_3, money_card_id, 2)
+
+	// Test
+	err := Update_Number_Decimal_Places(db_test, money_amount_id, 0)
+	if err != nil {
+		t.Error(err)
+	}
+
+	log, _ := Get_Log(db_test, log_id)
+
+	if log.Value != -421 {
+		t.Errorf("got %d, expected %d", log.Value, -421)
+	}
+	if log.Present != "-421" {
+		t.Errorf("got %s, expected %s", log.Present, "-421")
+	}
+
+}
+
 // Delete
 
 func Test_Delete_Tracker(t *testing.T) {

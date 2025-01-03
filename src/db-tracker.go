@@ -364,10 +364,14 @@ func Get_Tracker_Id_By_Name(db *sql.DB, tracker_name string) (int, error) {
 	return tracker_id, nil
 }
 
-// func Get_Fields(db *sql.DB, tracker_id int) ([]Db_Fields, error)
-// func Get_Field_By_Id(db *sql.DB, field_id int) (Db_Fields, error)
+// func Get_Field(db *sql.DB, field_id int) (Db_Fields, error)
+
 // func Get_Field_Id_By_Name(db *sql.DB, field_name string) (int, error)
-// func Get_Option_By_Id(db *sql.DB, option_id int) (Db_Option, error)
+
+// func Get_Fields(db *sql.DB, tracker_id int) ([]Db_Fields, error)
+
+// func Get_Option(db *sql.DB, option_id int) (Db_Option, error)
+
 // func Get_Option_Id_By_Name(db *sql.DB, option_name string) (int, error)
 
 // Update
@@ -429,24 +433,37 @@ func Update_Field_Notes(db *sql.DB, field_id int, field_notes string) error {
 func Update_Number_Decimal_Places(db *sql.DB, field_id int, decimal_places int) error {
 	sql_string := fmt.Sprintf(
 		`UPDATE log
-		SET log_value = log_value * power(10, %d - (SELECT decimal_places FROM number WHERE field_id = %d))
-		WHERE field_id = %d;
+     SET log_value = ROUND(log_value * POWER(10, %d - (SELECT decimal_places FROM number WHERE field_id = %d)))
+     WHERE field_id = %d;
 
-		UPDATE number
-		SET decimal_places = %d
-		WHERE field_id = %d;`,
+     UPDATE number
+     SET decimal_places = %d
+     WHERE field_id = %d;`,
 		decimal_places, field_id, field_id, decimal_places, field_id)
 	fmt.Println("SQL:", sql_string)
 
 	_, err := db.Exec(
 		`UPDATE log
-		SET log_value = log_value * power(10, ? - (SELECT decimal_places FROM number WHERE field_id = ?))
+		SET log_value = ROUND(log_value * POWER(10, ? - (SELECT decimal_places FROM number WHERE field_id = ?)))
 		WHERE field_id = ?;
 
 		UPDATE number
 		SET decimal_places = ?
 		WHERE field_id = ?;`,
 		decimal_places, field_id, field_id, decimal_places, field_id)
+
+	return err
+}
+
+func Update_Option_Name(db *sql.DB, option_id int, option_name string) error {
+	sql_string := fmt.Sprintf(
+		`UPDATE option SET option_name = '%s' WHERE option_id = %d;`,
+		option_name, option_id)
+
+	fmt.Println("SQL:", sql_string)
+	_, err := db.Exec(
+		`UPDATE option SET option_name = ? WHERE option_id = ?;`,
+		option_name, option_id)
 
 	return err
 }
@@ -470,19 +487,6 @@ func Update_Option_Value(db *sql.DB, option_id int, option_value int) error {
 
 		UPDATE option SET option_value = ? WHERE option_id = ?;`,
 		option_value, option_id, option_value, option_id)
-
-	return err
-}
-
-func Update_Option_Name(db *sql.DB, option_id int, option_name string) error {
-	sql_string := fmt.Sprintf(
-		`UPDATE option SET option_name = '%s' WHERE option_id = %d;`,
-		option_name, option_id)
-
-	fmt.Println("SQL:", sql_string)
-	_, err := db.Exec(
-		`UPDATE option SET option_name = ? WHERE option_id = ?;`,
-		option_name, option_id)
 
 	return err
 }
