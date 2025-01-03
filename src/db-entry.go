@@ -108,6 +108,25 @@ func Add_Log_To_Entry(db *sql.DB, entry_id int, field_id int, log_value int) (in
 	return int(id), nil
 }
 
+func Create_Entry_With_Logs(db *sql.DB, tracker_id int, entry_notes string, logs []struct {
+	Value    int
+	Field_Id int
+}) (int, error) {
+	entry_id, err := Create_Entry(db, tracker_id, entry_notes)
+	if err != nil {
+		return 0, err
+	}
+	
+	for _, log := range logs {
+		_, err := Add_Log_To_Entry(db, entry_id, log.Field_Id, log.Value)
+		if err != nil {
+			return 0, err
+		}
+	}
+
+	return entry_id, nil
+}
+
 // Read
 
 func Get_Entry(db *sql.DB, entry_id int) (Db_Entry, error) {
