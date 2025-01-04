@@ -127,7 +127,7 @@ func htmx_tracker_create(w http.ResponseWriter, r *http.Request) {
 	tracker_name := r.Form.Get("tracker_name")
 	tracker_notes := r.Form.Get("tracker_notes")
 
-	tracker_id, err := Db_Tracker_Create(db, tracker_name, tracker_notes)
+	tracker_id, err := Create_Tracker(db, tracker_name, tracker_notes)
 	if err != nil {
 		w.Write([]byte(err.Error()))
 		return
@@ -146,7 +146,7 @@ func htmx_tracker_create(w http.ResponseWriter, r *http.Request) {
 					decimal_places, _ = strconv.Atoi(r.Form.Get(fmt.Sprintf("field_%d_decimal_places", field_id)))
 				}
 
-				_, err := Db_Tracker_Field_Number_Create(db, tracker_id, field_name, field_notes, decimal_places)
+				_, err := Add_Number_Field(db, tracker_id, field_name, field_notes, decimal_places)
 				if err != nil {
 					return
 				}
@@ -170,7 +170,7 @@ func htmx_tracker_create(w http.ResponseWriter, r *http.Request) {
 					}
 				}
 
-				_, err := Db_Tracker_Field_Option_Create(db, tracker_id, field_name, field_notes, options)
+				_, err := Add_Option_Field_With_Options(db, tracker_id, field_name, field_notes, options)
 				if err != nil {
 					return
 				}
@@ -199,7 +199,7 @@ func htmx_tracker_name(w http.ResponseWriter, r *http.Request) {
 	tracker_name := r.Form.Get("tracker_name")
 
 	// Update Tracker Name
-	err = Db_Tracker_Name_Update(db, id, tracker_name)
+	err = Update_Tracker_Name(db, id, tracker_name)
 	if err != nil {
 		return
 	}
@@ -226,7 +226,7 @@ func htmx_tracker_notes(w http.ResponseWriter, r *http.Request) {
 	tracker_notes := r.Form.Get("tracker_notes")
 
 	// Update Tracker Notes
-	err = Db_Tracker_Notes_Update(db, id, tracker_notes)
+	err = Update_Tracker_Notes(db, id, tracker_notes)
 	if err != nil {
 		return
 	}
@@ -243,7 +243,7 @@ func htmx_tracker_delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Delete Tracker
-	err = Db_Tracker_Delete(db, id)
+	err = Delete_Tracker(db, id)
 	if err != nil {
 		return
 	}
@@ -296,16 +296,20 @@ func htmx_entry_create(w http.ResponseWriter, r *http.Request) {
 	timestamp := dt.UTC().Format("2006-01-02 15:04:05")
 
 	// Get Tracker by Id
-	tracker, err := Db_Tracker_Get(db, id)
+	tracker, err := Get_Tracker(db, id)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// Logs Memory
-	var logs = make([]struct {
-		Field_Id int
-		Value    int
-	}, 0)
+	entry_id, err := Create_Entry(db, tracker.Id, entry_notes)
+	if err != nil {
+		return
+	}
+
+	err = Update_Entry_Timestamp(db, entry_id, timestamp)
+	if err != nil {
+		return
+	}
 
 	for k, v := range r.Form {
 
@@ -333,16 +337,8 @@ func htmx_entry_create(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		logs = append(logs, struct {
-			Field_Id int
-			Value    int
-		}{
-			field_id,
-			value,
-		})
+		Add_Log_To_Entry(db, entry_id, field_id, value)
 	}
-
-	Db_Entry_Create_Timestamp(db, tracker.Id, entry_notes, logs, timestamp)
 
 	// Reload page
 	url := fmt.Sprintf("/tracker-history?id=%d", tracker.Id)
@@ -374,7 +370,7 @@ func htmx_entry_update(w http.ResponseWriter, r *http.Request) {
 	}
 	r.Form.Del("tracker_id")
 
-	tracker, err := Db_Tracker_Get(db, tracker_id)
+	tracker, err := Get_Tracker(db, tracker_id)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -434,18 +430,18 @@ func htmx_entry_update(w http.ResponseWriter, r *http.Request) {
 			field_value_float, _ := strconv.ParseFloat(v[0], 64)
 			field_value_adjusted := float64(field_value_float) * float64(math.Pow10(field.Number.Decimal_Places))
 			log_value = int(math.Floor(field_value_adjusted))
-			Db_Entry_Log_Update(db, log_id, log_value)
+			Update_Log(db, log_id, log_value)
 		} else if field.Type == "option" {
 			log_value, err = strconv.Atoi(v[0])
 			if err != nil {
 				return
 			}
-			Db_Entry_Log_Update(db, log_id, log_value)
+			Update_Log(db, log_id, log_value)
 		}
 	}
 
-	Db_Entry_Notes_Update(db, entry_id, entry_notes)
-	Db_Entry_Timestamp_Update(db, entry_id, timestamp)
+	Update_Entry_Notes(db, entry_id, entry_notes)
+	Update_Entry_Timestamp(db, entry_id, timestamp)
 
 	// Reload page
 	url := fmt.Sprintf("/tracker-history?id=%d", tracker.Id)
@@ -474,16 +470,15 @@ func htmx_log_create(w http.ResponseWriter, r *http.Request) {
 	r.Form.Del("id")
 
 	// Get Tracker by Id
-	tracker, err := Db_Tracker_Get(db, id)
+	tracker, err := Get_Tracker(db, id)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// Logs Memory
-	var logs = make([]struct {
-		Field_Id int
-		Value    int
-	}, 0)
+	entry_id, err := Create_Entry(db, tracker.Id, entry_notes)
+	if err != nil {
+		return
+	}
 
 	for k, v := range r.Form {
 
@@ -511,16 +506,8 @@ func htmx_log_create(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		logs = append(logs, struct {
-			Field_Id int
-			Value    int
-		}{
-			field_id,
-			value,
-		})
+		Add_Log_To_Entry(db, entry_id, field_id, value)
 	}
-
-	Db_Entry_Create(db, tracker.Id, entry_notes, logs)
 
 	// Reload page
 	url := fmt.Sprintf("/tracker-log?id=%d", id)
@@ -546,7 +533,7 @@ func htmx_log_update(w http.ResponseWriter, r *http.Request) {
 
 	entry_note := r.Form.Get("entry_note")
 
-	err = Db_Entry_Notes_Update(db, entry_id, entry_note)
+	err = Update_Entry_Notes(db, entry_id, entry_note)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -556,7 +543,7 @@ func htmx_log_update(w http.ResponseWriter, r *http.Request) {
 	r.Form.Del("entry_note")
 
 	// Get Tracker by Id
-	entries, err := Db_Entry_Get(db, tracker_id)
+	entries, err := Get_Entries(db, tracker_id)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -589,7 +576,7 @@ func htmx_log_update(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		err = Db_Entry_Log_Update(db, log_id, log_value)
+		err = Update_Log(db, log_id, log_value)
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -613,7 +600,7 @@ func htmx_log_delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Delete Entry
-	err = Db_Entry_Delete(db, entry_id)
+	err = Delete_Entry(db, entry_id)
 	if err != nil {
 		log.Fatalln(err)
 	}

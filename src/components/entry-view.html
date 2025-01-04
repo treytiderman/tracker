@@ -1,6 +1,6 @@
 {{ define "entry_view" }}
 
-<div id="entry_{{.Entry.Id}}" class="grid gap-4">
+<div id="entry_{{.Entry.Id}}" class="grid gap-4 max-width">
     <div class="flex items-center gap-4 dim">
         <div class="grow">{{ .Entry.Timestamp }}</div>
         <button class="tt-icon-button dim tt-color-primary-hover" onclick="history.back()" title="Back">

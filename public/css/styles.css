@@ -158,7 +158,7 @@ h6 {
 }
 
 p {
-    max-width: var(--max-p-width);
+    /* max-width: var(--max-p-width); */
     line-height: var(--line-height);
     overflow-wrap: break-word;
     text-wrap: pretty;

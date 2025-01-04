@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"time"
@@ -37,9 +36,9 @@ func http_server_start() {
 	port = fmt.Sprintf(":%s", port)
 
 	// Start Web Server
-	log.Printf("HTTP SERVER: http://%s%s\n", "localhost", port)
+	fmt.Printf("HTTP SERVER: http://%s%s\n", "localhost", port)
 	err := http.ListenAndServe(port, mux)
-	log.Fatal(err)
+	fmt.Print(err)
 }
 
 // Middleware
@@ -47,7 +46,7 @@ func http_server_start() {
 func mw_logger(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/favicon.ico" {
-			log.Printf("%s: %s\n", r.Method, r.URL.Path)
+			fmt.Printf("%s: %s\n", r.Method, r.URL.Path)
 			next.ServeHTTP(w, r)
 		}
 	})

@@ -54,6 +54,8 @@
 /* KeywordPseudo */ .chroma .kp { color: #79c0ff }
 /* KeywordReserved */ .chroma .kr { color: #ff7b72 }
 /* KeywordType */ .chroma .kt { color: #ff7b72 }
+/* NameAttribute */ .chroma .na { color: #b392f0 }
+/* NameBuiltin */ .chroma .nb { color: #79b8f2 }
 /* NameClass */ .chroma .nc { color: #f0883e; font-weight: xbold }
 /* NameConstant */ .chroma .no { color: #79c0ff; font-weight: xbold }
 /* NameDecorator */ .chroma .nd { color: #d2a8ff; font-weight: xbold }

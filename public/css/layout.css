@@ -25,6 +25,12 @@
     overflow: hidden;
 }
 
+.max-width {
+    width: 100%;
+    margin-inline: auto;
+    max-width: var(--max-width-main);
+}
+
 .max-width-sm {
     max-width: 640px;
     margin-inline: auto;
