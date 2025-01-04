@@ -528,6 +528,33 @@ func Test_Update_Number_Decimal_Places(t *testing.T) {
 		t.Errorf("got %s, expected %s", log.Present, "-421")
 	}
 
+	err = Update_Number_Decimal_Places(db_test, money_amount_id, 2)
+	if err != nil {
+		t.Error(err)
+	}
+
+	log, _ = Get_Log(db_test, log_id)
+
+	if log.Value != -42100 {
+		t.Errorf("got %d, expected %d", log.Value, -42100)
+	}
+	if log.Present != "-421.00" {
+		t.Errorf("got %s, expected %s", log.Present, "-421.00")
+	}
+
+	err = Update_Number_Decimal_Places(db_test, money_amount_id, -2)
+	if err != nil {
+		t.Error(err)
+	}
+
+	log, _ = Get_Log(db_test, log_id)
+
+	if log.Value != -4 {
+		t.Errorf("got %d, expected %d", log.Value, -4)
+	}
+	if log.Present != "-400" {
+		t.Errorf("got %s, expected %s", log.Present, "-400")
+	}
 }
 
 // Delete

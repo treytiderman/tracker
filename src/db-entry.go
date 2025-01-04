@@ -146,7 +146,9 @@ func Get_Entry(db *sql.DB, entry_id int) (Db_Entry, error) {
 			IFNULL(option.option_value, 0) AS option_value,
 			IFNULL(option.option_name, "") AS option_name,
 			IFNULL((CASE WHEN field.field_type == "number" THEN
-				printf(("%." || number.decimal_places || "f"), log.log_value / power(10, number.decimal_places))
+				printf(("%." || (
+					CASE WHEN number.decimal_places < 0 THEN 0 ELSE number.decimal_places END
+				) || "f"), log.log_value / power(10, number.decimal_places))
 			ELSE
 				option.option_name
 			END), "") AS present
@@ -218,7 +220,9 @@ func Get_Entries(db *sql.DB, tracker_id int) ([]Db_Entry, error) {
 			IFNULL(option.option_value, 0) AS option_value,
 			IFNULL(option.option_name, "") AS option_name,
 			IFNULL((CASE WHEN field.field_type == "number" THEN
-				printf(("%." || number.decimal_places || "f"), log.log_value / power(10, number.decimal_places))
+				printf(("%." || (
+					CASE WHEN number.decimal_places < 0 THEN 0 ELSE number.decimal_places END
+				) || "f"), log.log_value / power(10, number.decimal_places))
 			ELSE
 				option.option_name
 			END), "") AS present
@@ -292,7 +296,9 @@ func Get_Entries_Filter(db *sql.DB, tracker_id int, search string) ([]Db_Entry, 
 			IFNULL(option.option_value, 0) AS option_value,
 			IFNULL(option.option_name, "") AS option_name,
 			IFNULL((CASE WHEN field.field_type == "number" THEN
-				printf(("%." || number.decimal_places || "f"), log.log_value / power(10, number.decimal_places))
+				printf(("%." || (
+					CASE WHEN number.decimal_places < 0 THEN 0 ELSE number.decimal_places END
+				) || "f"), log.log_value / power(10, number.decimal_places))
 			ELSE
 				option.option_name
 			END), "") AS present
@@ -365,7 +371,9 @@ func Get_All_Entries(db *sql.DB) ([]Db_Entry, error) {
 			IFNULL(option.option_value, 0) AS option_value,
 			IFNULL(option.option_name, "") AS option_name,
 			IFNULL((CASE WHEN field.field_type == "number" THEN
-				printf(("%." || number.decimal_places || "f"), log.log_value / power(10, number.decimal_places))
+				printf(("%." || (
+					CASE WHEN number.decimal_places < 0 THEN 0 ELSE number.decimal_places END
+				) || "f"), log.log_value / power(10, number.decimal_places))
 			ELSE
 				option.option_name
 			END), "") AS present
@@ -430,7 +438,9 @@ func Get_Log(db *sql.DB, log_id int) (Db_Log, error) {
 			IFNULL(option.option_value, 0) AS option_value,
 			IFNULL(option.option_name, "") AS option_name,
 			IFNULL((CASE WHEN field.field_type == "number" THEN
-				printf(("%." || number.decimal_places || "f"), log.log_value / power(10, number.decimal_places))
+				printf(("%." || (
+					CASE WHEN number.decimal_places < 0 THEN 0 ELSE number.decimal_places END
+				) || "f"), log.log_value / power(10, number.decimal_places))
 			ELSE
 				option.option_name
 			END), "") AS present
