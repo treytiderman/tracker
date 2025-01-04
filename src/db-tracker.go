@@ -364,15 +364,70 @@ func Get_Tracker_Id_By_Name(db *sql.DB, tracker_name string) (int, error) {
 	return tracker_id, nil
 }
 
-// func Get_Field(db *sql.DB, field_id int) (Db_Fields, error)
+func Get_Field(db *sql.DB, field_id int) (Db_Field, error) {
+	var field Db_Field
 
-// func Get_Field_Id_By_Name(db *sql.DB, field_name string) (int, error)
+	trackers, err := Get_Trackers(db)
+	if err != nil {
+		return field, err
+	}
 
-// func Get_Fields(db *sql.DB, tracker_id int) ([]Db_Fields, error)
+	for _, tracker := range trackers {
+		for _, f := range tracker.Fields {
+			if f.Id == field_id {
+				field = f
+				return field, nil
+			}
+		}
+	}
 
-// func Get_Option(db *sql.DB, option_id int) (Db_Option, error)
+	return field, nil
+}
 
-// func Get_Option_Id_By_Name(db *sql.DB, option_name string) (int, error)
+func Get_Field_Id_By_Name(db *sql.DB, field_name string) (int, error) {
+	row := db.QueryRow(
+		`SELECT field_id FROM field WHERE field_name = ?;`,
+		field_name)
+
+	var field_id int
+
+	err := row.Scan(&field_id)
+	if err != nil {
+		return 0, err
+	}
+
+	return field_id, nil
+}
+
+func Get_Option(db *sql.DB, option_id int) (Db_Option, error) {
+	row := db.QueryRow(
+		`SELECT option_id, option_value, option_name FROM option WHERE option_id = ?;`,
+		option_id)
+
+	var option Db_Option
+
+	err := row.Scan(&option.Id, &option.Value, &option.Name)
+	if err != nil {
+		return option, err
+	}
+
+	return option, nil
+}
+
+func Get_Option_Id_By_Name(db *sql.DB, option_name string) (int, error) {
+	row := db.QueryRow(
+		`SELECT option_id FROM option WHERE option_name = ?;`,
+		option_name)
+
+	var option_id int
+
+	err := row.Scan(&option_id)
+	if err != nil {
+		return 0, err
+	}
+
+	return option_id, nil
+}
 
 // Update
 
