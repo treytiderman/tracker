@@ -8,20 +8,20 @@ import (
 )
 
 func handle_routes_ui(mux *http.ServeMux) {
-	mux.Handle("/hx", mw_logger(mw_auth(http.HandlerFunc(hx_home_page))))
-	mux.Handle("/hx/search", mw_logger(mw_auth(http.HandlerFunc(hx_search_results))))
+	mux.Handle("/notes", mw_logger(mw_auth(http.HandlerFunc(notes_home_page))))
+	mux.Handle("/notes/search", mw_logger(mw_auth(http.HandlerFunc(notes_search_results))))
 
-	mux.Handle("/hx/entry", mw_logger(mw_auth(http.HandlerFunc(hx_entry))))
+	mux.Handle("/notes/entry", mw_logger(mw_auth(http.HandlerFunc(notes_entry))))
 
-	mux.Handle("/hx/hello", mw_logger(mw_auth(http.HandlerFunc(hx_hello))))
+	mux.Handle("/notes/hello", mw_logger(mw_auth(http.HandlerFunc(notes_hello))))
 }
 
-func hx_hello(w http.ResponseWriter, r *http.Request) {
+func notes_hello(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Hello"))
 }
 
-func hx_home_page(w http.ResponseWriter, r *http.Request) {
-	tmp := parse_templates("page-hx")
+func notes_home_page(w http.ResponseWriter, r *http.Request) {
+	tmp := parse_templates("page-notes")
 
 	entry_id, err := strconv.Atoi(r.URL.Query().Get("entry"))
 	if err != nil {
@@ -50,8 +50,8 @@ func hx_home_page(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func hx_search_results(w http.ResponseWriter, r *http.Request) {
-	tmp := parse_templates("page-hx")
+func notes_search_results(w http.ResponseWriter, r *http.Request) {
+	tmp := parse_templates("page-notes")
 
 	trackers, err := Get_Trackers(db)
 	if err != nil {
@@ -71,7 +71,7 @@ func hx_search_results(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	tmp.ExecuteTemplate(w, "hx_search_results", struct {
+	tmp.ExecuteTemplate(w, "notes_search_results", struct {
 		Search   string
 		Tracker  Db_Tracker
 		Trackers []Db_Tracker
@@ -84,7 +84,7 @@ func hx_search_results(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func hx_entry(w http.ResponseWriter, r *http.Request) {
+func notes_entry(w http.ResponseWriter, r *http.Request) {
 	entry_id, err := strconv.Atoi(r.URL.Query().Get("entry"))
 	if err != nil {
 		log.Fatal(err)
@@ -109,7 +109,7 @@ func hx_entry(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	url := fmt.Sprintf("/hx?entry=%d", entry_id)
+	url := fmt.Sprintf("/notes?entry=%d", entry_id)
 	log.Println("url", url)
 	w.Header().Add("HX-Redirect", url)
 	w.Write([]byte("ok"))

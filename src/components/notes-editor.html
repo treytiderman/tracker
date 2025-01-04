@@ -1,8 +1,8 @@
-{{ define "hx_editor" }}
+{{ define "notes_editor" }}
 
-<form id="editor" class="flex-col grow gap-2" hx-post="/hx/entry?entry={{$.Entry.Id}}">
+<form id="editor" class="flex-col grow gap-2" hx-post="/notes/entry?entry={{$.Entry.Id}}">
     <div class="flex gap-4 items-end">
-        <button id="hx_editor_search_toggle" class="tt-icon-button dim tt-color-primary-hover">
+        <button id="notes_editor_search_toggle" class="tt-icon-button dim tt-color-primary-hover">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="11" cy="11" r="8" />
@@ -20,7 +20,7 @@
         </script>
         {{ end }}
 
-        <button type="submit" id="hx_editor_submit" class="tt-icon-button dim tt-color-green-hover">
+        <button type="submit" id="notes_editor_submit" class="tt-icon-button dim tt-color-green-hover">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M20 6 9 17l-5-5" />
@@ -41,9 +41,9 @@
 </form>
 
 <script>
-    document.getElementById("hx_editor_search_toggle").addEventListener("click", event => {
+    document.getElementById("notes_editor_search_toggle").addEventListener("click", event => {
         event.preventDefault()
-        document.getElementById("hx_search_dialog").showModal()
+        document.getElementById("notes_search_dialog").showModal()
     })
 
     monaco__line_numbers_set(true)
@@ -64,7 +64,7 @@
         monaco__value_set(document.getElementById("minimal__textarea").value)
     })
 
-    document.getElementById("hx_editor_submit").addEventListener("click", event => {
+    document.getElementById("notes_editor_submit").addEventListener("click", event => {
         localStorage.setItem("memory", "")
     })
 
