@@ -557,6 +557,80 @@ func Test_Update_Number_Decimal_Places(t *testing.T) {
 	}
 }
 
+func Test_Update_Option_Name(t *testing.T) {
+	_test_Reset_Entry_Database(t)
+
+	// Create "Money" tracker, add fields, and add entries
+	money_id, _ := Create_Tracker(db_test, "Money", "Transactions")
+	money_amount_id, _ := Add_Number_Field(db_test, money_id, "Amount", "Amount of money in dollars", 2)
+	money_card_id, _ := Add_Option_Field(db_test, money_id, "Card", "Payment Method")
+	Add_Option_to_Field(db_test, money_card_id, 1, "Discover")
+	Add_Option_to_Field(db_test, money_card_id, 2, "Visa")
+	option_id_3, _ := Add_Option_to_Field(db_test, money_card_id, 3, "American Express")
+	money_entry_1, _ := Create_Entry(db_test, money_id, "9.99 dollars entered as 999")
+	Add_Log_To_Entry(db_test, money_entry_1, money_amount_id, -9_99)
+	Add_Log_To_Entry(db_test, money_entry_1, money_card_id, 1)
+	money_entry_2, _ := Create_Entry(db_test, money_id, "not for what you think")
+	Add_Log_To_Entry(db_test, money_entry_2, money_amount_id, -420_69)
+	log_id, _ := Add_Log_To_Entry(db_test, money_entry_2, money_card_id, 3)
+	money_entry_3, _ := Create_Entry(db_test, money_id, "big spendin")
+	Add_Log_To_Entry(db_test, money_entry_3, money_amount_id, 2000_00)
+	Add_Log_To_Entry(db_test, money_entry_3, money_card_id, 2)
+
+	// Test
+	err := Update_Option_Name(db_test, option_id_3, "Bitcoin")
+	if err != nil {
+		t.Error(err)
+	}
+
+	log, _ := Get_Log(db_test, log_id)
+
+	if log.Value != 3 {
+		t.Errorf("got %d, expected %d", log.Value, 3)
+	}
+	if log.Present != "Bitcoin" {
+		t.Errorf("got %s, expected %s", log.Present, "Bitcoin")
+	}
+
+}
+
+func Test_Update_Option_Value(t *testing.T) {
+	_test_Reset_Entry_Database(t)
+
+	// Create "Money" tracker, add fields, and add entries
+	money_id, _ := Create_Tracker(db_test, "Money", "Transactions")
+	money_amount_id, _ := Add_Number_Field(db_test, money_id, "Amount", "Amount of money in dollars", 2)
+	money_card_id, _ := Add_Option_Field(db_test, money_id, "Card", "Payment Method")
+	Add_Option_to_Field(db_test, money_card_id, 1, "Discover")
+	Add_Option_to_Field(db_test, money_card_id, 2, "Visa")
+	option_id_3, _ := Add_Option_to_Field(db_test, money_card_id, 3, "American Express")
+	money_entry_1, _ := Create_Entry(db_test, money_id, "9.99 dollars entered as 999")
+	Add_Log_To_Entry(db_test, money_entry_1, money_amount_id, -9_99)
+	Add_Log_To_Entry(db_test, money_entry_1, money_card_id, 1)
+	money_entry_2, _ := Create_Entry(db_test, money_id, "not for what you think")
+	Add_Log_To_Entry(db_test, money_entry_2, money_amount_id, -420_69)
+	log_id, _ := Add_Log_To_Entry(db_test, money_entry_2, money_card_id, 3)
+	money_entry_3, _ := Create_Entry(db_test, money_id, "big spendin")
+	Add_Log_To_Entry(db_test, money_entry_3, money_amount_id, 2000_00)
+	Add_Log_To_Entry(db_test, money_entry_3, money_card_id, 2)
+
+	// Test
+	err := Update_Option_Value(db_test, option_id_3, 4)
+	if err != nil {
+		t.Error(err)
+	}
+
+	log, _ := Get_Log(db_test, log_id)
+
+	if log.Value != 4 {
+		t.Errorf("got %d, expected %d", log.Value, 4)
+	}
+	if log.Present != "American Express" {
+		t.Errorf("got %s, expected %s", log.Present, "American Express")
+	}
+
+}
+
 // Delete
 
 func Test_Delete_Tracker(t *testing.T) {
@@ -578,31 +652,111 @@ func Test_Delete_Tracker(t *testing.T) {
 	}
 }
 
-// func Test_Delete_Field(t *testing.T) {
-// 	Db_Tracker_Test_Reset_Database(t)
-// 	Db_Tracker_Test_Tracker_Money(t)
+func Test_Delete_Field(t *testing.T) {
+	_test_Reset_Entry_Database(t)
 
-//     err := Delete_Field(db_test, 1)
-//     if err != nil {
-//         t.Error(err)
-//     }
+	// Create "Money" tracker, add fields, and add entries
+	money_id, _ := Create_Tracker(db_test, "Money", "Transactions")
+	money_amount_id, _ := Add_Number_Field(db_test, money_id, "Amount", "Amount of money in dollars", 2)
+	money_card_id, _ := Add_Option_Field(db_test, money_id, "Card", "Payment Method")
+	Add_Option_to_Field(db_test, money_card_id, 1, "Discover")
+	Add_Option_to_Field(db_test, money_card_id, 2, "Visa")
+	Add_Option_to_Field(db_test, money_card_id, 3, "American Express")
+	money_entry_1, _ := Create_Entry(db_test, money_id, "9.99 dollars entered as 999")
+	Add_Log_To_Entry(db_test, money_entry_1, money_amount_id, -9_99)
+	Add_Log_To_Entry(db_test, money_entry_1, money_card_id, 1)
+	money_entry_2, _ := Create_Entry(db_test, money_id, "not for what you think")
+	Add_Log_To_Entry(db_test, money_entry_2, money_amount_id, -420_69)
+	Add_Log_To_Entry(db_test, money_entry_2, money_card_id, 3)
+	money_entry_3, _ := Create_Entry(db_test, money_id, "big spendin")
+	Add_Log_To_Entry(db_test, money_entry_3, money_amount_id, 2000_00)
+	Add_Log_To_Entry(db_test, money_entry_3, money_card_id, 2)
 
-//     trackers, err := Get_Trackers(db_test)
-//     if err != nil {
-//         t.Error(err)
-//     }
-//     if len(trackers) != 1 {
-//         t.Errorf("got %d, expected %d", len(trackers), 1)
-//     }
-// }
+	// Test
+    err := Delete_Field(db_test, money_amount_id)
+    if err != nil {
+        t.Error(err)
+    }
+
+    tracker, _ := Get_Tracker(db_test, money_id)
+	// s, _ := json.MarshalIndent(tracker, "", "    ")
+	// fmt.Println("JSON:", string(s))
+
+    if len(tracker.Fields) != 1 {
+        t.Errorf("got %d, expected %d", len(tracker.Fields), 1)
+    }
+	
+    entries, _ := Get_Entries(db_test, money_id)
+	// s2, _ := json.MarshalIndent(entries, "", "    ")
+	// fmt.Println("JSON:", string(s2))
+
+    if len(entries[0].Logs) != 1 {
+        t.Errorf("got %d, expected %d", len(entries[0].Logs), 1)
+    }
+
+    err = Delete_Field(db_test, money_card_id)
+    if err != nil {
+        t.Error(err)
+    }
+
+    tracker, _ = Get_Tracker(db_test, money_id)
+	// s3, _ := json.MarshalIndent(tracker, "", "    ")
+	// fmt.Println("JSON:", string(s3))
+
+    if len(tracker.Fields) != 0 {
+        t.Errorf("got %d, expected %d", len(tracker.Fields), 0)
+    }
+	
+    entries, _ = Get_Entries(db_test, money_id)
+	// s4, _ := json.MarshalIndent(entries, "", "    ")
+	// fmt.Println("JSON:", string(s4))
+
+    if len(entries[0].Logs) != 0 {
+        t.Errorf("got %d, expected %d", len(entries[0].Logs), 0)
+    }
+}
+
+func Test_Delete_Option(t *testing.T) {
+	_test_Reset_Entry_Database(t)
+
+	// Create "Money" tracker, add fields, and add entries
+	money_id, _ := Create_Tracker(db_test, "Money", "Transactions")
+	money_amount_id, _ := Add_Number_Field(db_test, money_id, "Amount", "Amount of money in dollars", 2)
+	money_card_id, _ := Add_Option_Field(db_test, money_id, "Card", "Payment Method")
+	Add_Option_to_Field(db_test, money_card_id, 1, "Discover")
+	option_id_2, _ := Add_Option_to_Field(db_test, money_card_id, 2, "Visa")
+	Add_Option_to_Field(db_test, money_card_id, 3, "American Express")
+	money_entry_1, _ := Create_Entry(db_test, money_id, "9.99 dollars entered as 999")
+	Add_Log_To_Entry(db_test, money_entry_1, money_amount_id, -9_99)
+	Add_Log_To_Entry(db_test, money_entry_1, money_card_id, 1)
+	money_entry_2, _ := Create_Entry(db_test, money_id, "not for what you think")
+	Add_Log_To_Entry(db_test, money_entry_2, money_amount_id, -420_69)
+	Add_Log_To_Entry(db_test, money_entry_2, money_card_id, 3)
+	money_entry_3, _ := Create_Entry(db_test, money_id, "big spendin")
+	Add_Log_To_Entry(db_test, money_entry_3, money_amount_id, 2000_00)
+	Add_Log_To_Entry(db_test, money_entry_3, money_card_id, 2)
+
+	// Test
+    err := Delete_Option(db_test, option_id_2)
+    if err != nil {
+        t.Error(err)
+    }
+
+    tracker, _ := Get_Tracker(db_test, money_id)
+	s, _ := json.MarshalIndent(tracker, "", "    ")
+	fmt.Println("JSON:", string(s))
+
+    if len(tracker.Fields[1].Options) != 2 {
+        t.Errorf("got %d, expected %d", len(tracker.Fields[1].Options), 2)
+    }
+
+    entries, _ := Get_Entries(db_test, money_id)
+	s2, _ := json.MarshalIndent(entries, "", "    ")
+	fmt.Println("JSON:", string(s2))
+
+    if len(entries) != 2 {
+        t.Errorf("got %d, expected %d", len(entries), 2)
+    }
+}
 
 // Other
-
-// func Test_Create_Trackers_x100(t *testing.T) {
-// 	_test_Reset_Tracker_Database(t)
-
-// 	for i := 0; i < 100; i++ {
-// 		name := fmt.Sprintf("tracker_%d", i)
-// 		Create_Tracker(db_test, name, "notes")
-// 	}
-// }

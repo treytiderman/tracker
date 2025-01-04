@@ -428,8 +428,6 @@ func Update_Field_Notes(db *sql.DB, field_id int, field_notes string) error {
 	return err
 }
 
-// Update - Effects Logged Data
-
 func Update_Number_Decimal_Places(db *sql.DB, field_id int, decimal_places int) error {
 	sql_string := fmt.Sprintf(
 		`UPDATE log
@@ -509,8 +507,7 @@ func Delete_Tracker(db *sql.DB, tracker_id int) error {
 	return nil
 }
 
-// Delete - Effects Logged Data
-
+// Delete Field, this will delete all logs that have the field, entries will remain
 func Delete_Field(db *sql.DB, field_id int) (err error) {
 	sql_string := fmt.Sprintf(
 		`DELETE FROM field WHERE field_id = "%d";
@@ -526,9 +523,9 @@ func Delete_Field(db *sql.DB, field_id int) (err error) {
 	return nil
 }
 
+// Delete Option, this will delete all entries & logs that have the option id
 func Delete_Option(db *sql.DB, option_id int) (err error) {
-	sql_string := fmt.Sprintf(
-		`DELETE FROM entry WHERE entry_id = (
+	fmt.Printf(`SQL: DELETE FROM entry WHERE entry_id = (
 			SELECT entry_id FROM log
 			WHERE log.field_id = (SELECT field_id FROM option WHERE option_id = %d)
 			AND log.log_value = (SELECT option_value FROM option WHERE option_id = %d)
@@ -536,8 +533,13 @@ func Delete_Option(db *sql.DB, option_id int) (err error) {
 		DELETE FROM option WHERE option_id = %d;`,
 		option_id, option_id, option_id)
 
-	fmt.Println("SQL:", sql_string)
-	_, err = db.Exec(sql_string)
+	_, err = db.Exec(`DELETE FROM entry WHERE entry_id = (
+			SELECT entry_id FROM log
+			WHERE log.field_id = (SELECT field_id FROM option WHERE option_id = ?)
+			AND log.log_value = (SELECT option_value FROM option WHERE option_id = ?)
+		);
+		DELETE FROM option WHERE option_id = ?;`,
+		option_id, option_id, option_id)
 
 	return err
 }
