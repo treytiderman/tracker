@@ -66,11 +66,7 @@ func notes_search_results(w http.ResponseWriter, r *http.Request) {
 	search := r.Form.Get("search")
 	log.Println("SEARCH:", search)
 
-<<<<<<< HEAD:src/main-route-hx.go
-	entries, err := Db_Entry_Filter_Notes_Get(db, 1, search)
-=======
 	entries, err := Get_Entries_Filter(db, 1, search)
->>>>>>> v0.6:src/web-route-notes.go
 	if err != nil {
 		log.Fatal(err)
 	}
