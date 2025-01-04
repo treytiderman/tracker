@@ -1,9 +1,22 @@
 {{ define "app_page" }}
 
-<section class="flex-col gap-4 pad-4">
-
-    {{ template "notes" . }}
-
+<section id="notes_editor" class="h-full flex-col grow gap-4 pad-4">
+    {{ template "notes_editor" . }}
 </section>
+
+<section id="notes_search" class="h-full flex-col grow gap-4 pad-4" hidden>
+    {{ template "notes_search" . }}
+</section>
+
+<script>
+    function notes__show_editor() {
+        document.getElementById("notes_editor").hidden = false
+        document.getElementById("notes_search").hidden = true
+    }
+    function notes__show_search() {
+        document.getElementById("notes_editor").hidden = true
+        document.getElementById("notes_search").hidden = false
+    }
+</script>
 
 {{ end }}

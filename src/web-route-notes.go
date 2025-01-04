@@ -71,7 +71,7 @@ func notes_search_results(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	tmp.ExecuteTemplate(w, "notes_search_results", struct {
+	tmp.ExecuteTemplate(w, "notes_history", struct {
 		Search   string
 		Tracker  Db_Tracker
 		Trackers []Db_Tracker

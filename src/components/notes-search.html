@@ -1,25 +1,74 @@
 {{ define "notes_search" }}
 
-<div class="pad-4 grid gap-4">
-    <div class="flex gap-4">
-        <a href="/trackers" class="tt-link">Home</a>
-        <a href="/settings" class="tt-link">Settings</a>
-        <a href="/notes" class="tt-link">New Entry</a>
-        <div class="grow"></div>
-        <button class="tt-icon-button tt-color-red-hover" onclick="document.getElementById('notes_search_dialog').close()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M18 6 6 18" />
-                <path d="m6 6 12 12" />
-            </svg>
-        </button>
+<div id="search" class="flex-col grow gap-4">
+    <div class="flex-col gap-2 max-width">
+        <div class="flex gap-2 items-center">
+            <a href="/" class="tt-icon-button dim tt-color-primary-hover">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" />
+                    <path
+                        d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                </svg>
+            </a>
+
+            <button type="button" class="tt-icon-button dim tt-color-primary-hover" onclick="notes__show_editor()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.3-4.3" />
+                </svg>
+            </button>
+
+            <a href="/notes" class="tt-icon-button dim tt-color-yellow-hover">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12h14" />
+                    <path d="M12 5v14" />
+                </svg>
+            </a>
+
+            <div class="grow place-items-center">Search</div>
+
+            <a class="tt-icon-button dim ztt-color-yellow-hover">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"></svg>
+            </a>
+
+            <button type="button" class="tt-icon-button dim tt-color-yellow-hover" onclick="set_search_input('- [ ]')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="5" width="6" height="6" rx="1"/>
+                    <path d="m3 17 2 2 4-4"/>
+                    <path d="M13 6h8"/>
+                    <path d="M13 12h8"/>
+                    <path d="M13 18h8"/>
+                </svg>
+            </button>
+
+            <button type="button" class="tt-icon-button dim tt-color-red-hover" onclick="notes__show_editor()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 6 6 18" />
+                    <path d="m6 6 12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <form class="flex gap-4" hx-post="/notes/search" hx-target="#notes_page">
+            <input autofocus type="search" name="search" id="notes_search__search" placeholder="search..." class="tt-input grow"
+                hx-post="/notes/search" hx-trigger="input changed delay:500ms, search" hx-target="#notes_search_results"
+                hx-swap="innerHTML">
+        </form>
+        <script>
+            function set_search_input(str) {
+                console.log("set_search_input", str);
+                document.getElementById("notes_search__search").value = str
+                htmx.trigger("#notes_search__search", "input")
+            }
+        </script>
     </div>
-    <form class="flex gap-4" hx-post="/notes/search" hx-target="#notes_page">
-        <input autofocus type="search" name="search" id="search" placeholder="search..." class="tt-input grow"
-            hx-trigger="input changed delay:500ms, search" hx-target="#notes_search_results" hx-post="/notes/search"
-            hx-swap="outerHTML">
-    </form>
-    <div id="notes_search_results" class="overflow" hx-post="/notes/search" hx-trigger="load">
+
+    <div id="notes_search_results" class="grow overflow max-width" hx-post="/notes/search" hx-trigger="load"
+        hx-target="#notes_search_results" hx-swap="innerHTML" style="height: 500px; padding-right: 0.5rem;">
         ...
     </div>
 </div>
