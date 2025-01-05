@@ -1,6 +1,6 @@
 :root {
     --color-bg: #FFFFFF;
-    --color-text: var(--color-zinc-600);
+    --color-text: var(--color-zinc-700);
     --color-border: var(--color-zinc-400);
     --color-outline: #000000;
     --color-box-shadow: #00000055;
