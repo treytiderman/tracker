@@ -1,5 +1,6 @@
 # Todo
 
+- [ ] Update Auth function to use a real token
 - [ ] Add Ctrl+Enter to submit from a "textarea"
 - [ ] Add Backup logic. Backup whole db every day, hour, change?
 - [ ] Rename Records page to Table
