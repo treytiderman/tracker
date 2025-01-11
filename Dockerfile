@@ -11,6 +11,7 @@ COPY ./public /app/public
 # Add data folder and test.db
 RUN mkdir /app/data
 RUN touch /app/data/test.db
+RUN mkdir /app/content
 
 # Run Tests and remove test.db
 RUN go test

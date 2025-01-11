@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"log/slog"
 	"net/http"
 	"strconv"
 )
@@ -10,9 +11,7 @@ import (
 func handle_routes_ui(mux *http.ServeMux) {
 	mux.Handle("/notes", mw_logger(mw_auth(http.HandlerFunc(notes_home_page))))
 	mux.Handle("/notes/search", mw_logger(mw_auth(http.HandlerFunc(notes_search_results))))
-
 	mux.Handle("/notes/entry", mw_logger(mw_auth(http.HandlerFunc(notes_entry))))
-
 	mux.Handle("/notes/hello", mw_logger(mw_auth(http.HandlerFunc(notes_hello))))
 }
 
@@ -25,9 +24,8 @@ func notes_home_page(w http.ResponseWriter, r *http.Request) {
 
 	entry_id, err := strconv.Atoi(r.URL.Query().Get("entry"))
 	if err != nil {
-		entry_id = 1
+		entry_id = 0
 	}
-	log.Println("entry_id", entry_id)
 
 	entries, err := Get_Entries(db, 1)
 	if err != nil {
@@ -64,7 +62,6 @@ func notes_search_results(w http.ResponseWriter, r *http.Request) {
 	}
 
 	search := r.Form.Get("search")
-	log.Println("SEARCH:", search)
 
 	entries, err := Get_Entries_Filter(db, 1, search)
 	if err != nil {
@@ -110,7 +107,7 @@ func notes_entry(w http.ResponseWriter, r *http.Request) {
 	}
 
 	url := fmt.Sprintf("/notes?entry=%d", entry_id)
-	log.Println("url", url)
+	slog.Debug("http redirect", "url", url)
 	w.Header().Add("HX-Redirect", url)
 	w.Write([]byte("ok"))
 }

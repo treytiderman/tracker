@@ -2,7 +2,7 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
+	"log/slog"
 	"math"
 	"strconv"
 
@@ -69,9 +69,7 @@ func Create_Entry_Tables(db *sql.DB) error {
 }
 
 func Create_Entry(db *sql.DB, tracker_id int, entry_notes string) (int, error) {
-	fmt.Printf(
-		"SQL: INSERT INTO entry (tracker_id, entry_notes) VALUES (%d,'%s');\n",
-		tracker_id, entry_notes)
+	slog.Debug("database create entry", "tracker_id", tracker_id, "entry_notes", entry_notes)
 
 	result, err := db.Exec(
 		"INSERT INTO entry (tracker_id, entry_notes) VALUES (?,?);",
@@ -89,9 +87,7 @@ func Create_Entry(db *sql.DB, tracker_id int, entry_notes string) (int, error) {
 }
 
 func Add_Log_To_Entry(db *sql.DB, entry_id int, field_id int, log_value int) (int, error) {
-	fmt.Printf(
-		"SQL: INSERT INTO log (entry_id, field_id, log_value) VALUES (%d,%d,%d);\n",
-		entry_id, field_id, log_value)
+	slog.Debug("database add log to entry", "entry_id", entry_id, "field_id", field_id, "log_value", log_value)
 
 	result, err := db.Exec(
 		"INSERT INTO log (entry_id, field_id, log_value) VALUES (?,?,?);",
@@ -454,7 +450,6 @@ func Get_Log(db *sql.DB, log_id int) (Db_Log, error) {
 		log_id)
 
 	var log_scan Db_Log
-
 	err := row.Scan(
 		&log_scan.Id, &log_scan.Value, &log_scan.Field_Id, &log_scan.Field_Type, &log_scan.Field_Name,
 		&log_scan.Decimal_Places, &log_scan.Option_Value, &log_scan.Option_Name, &log_scan.Present)
@@ -468,19 +463,19 @@ func Get_Log(db *sql.DB, log_id int) (Db_Log, error) {
 // Update
 
 func Update_Entry_Timestamp(db *sql.DB, entry_id int, timestamp string) error {
-	fmt.Printf("SQL: UPDATE entry SET timestamp = '%s' WHERE entry_id = %d;\n", timestamp, entry_id)
+	slog.Debug("database update entry timestamp", "entry_id", entry_id, "timestamp", timestamp)
 	_, err := db.Exec("UPDATE entry SET timestamp = ? WHERE entry_id = ?;", timestamp, entry_id)
 	return err
 }
 
 func Update_Entry_Notes(db *sql.DB, entry_id int, entry_notes string) error {
-	fmt.Printf("SQL: UPDATE entry SET entry_notes = '%s' WHERE entry_id = %d;\n", entry_notes, entry_id)
+	slog.Debug("database update entry notes", "entry_id", entry_id, "entry_notes", entry_notes)
 	_, err := db.Exec("UPDATE entry SET entry_notes = ? WHERE entry_id = ?;", entry_notes, entry_id)
 	return err
 }
 
 func Update_Log(db *sql.DB, log_id int, log_value int) error {
-	fmt.Printf("SQL: UPDATE log SET log_value = %d WHERE log_id = %d;\n", log_value, log_id)
+	slog.Debug("database update log", "log_id", log_id, "log_value", log_value)
 	_, err := db.Exec("UPDATE log SET log_value = ? WHERE log_id = ?;", log_value, log_id)
 	return err
 }
@@ -488,7 +483,7 @@ func Update_Log(db *sql.DB, log_id int, log_value int) error {
 // Delete
 
 func Delete_Entry(db *sql.DB, entry_id int) error {
-	fmt.Printf("SQL: DELETE FROM entry WHERE entry_id = %d; DELETE FROM log WHERE entry_id = %d;\n", entry_id, entry_id)
+	slog.Debug("database delete entry", "entry_id", entry_id)
 	_, err := db.Exec("DELETE FROM entry WHERE entry_id = ?; DELETE FROM log WHERE entry_id = ?;", entry_id, entry_id)
 	return err
 }

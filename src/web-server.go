@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"os"
 	"time"
@@ -16,7 +17,7 @@ func handler_time(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, time.Now().Format(time.UnixDate))
 }
 
-func http_server_start() {
+func http_server_start() error {
 	mux := http.NewServeMux()
 
 	// Routes
@@ -36,9 +37,10 @@ func http_server_start() {
 	port = fmt.Sprintf(":%s", port)
 
 	// Start Web Server
-	fmt.Printf("HTTP SERVER: http://%s%s\n", "localhost", port)
+	slog.Info("http server started", "url", "http://localhost"+port)
 	err := http.ListenAndServe(port, mux)
-	fmt.Print(err)
+
+	return err
 }
 
 // Middleware
@@ -46,9 +48,16 @@ func http_server_start() {
 func mw_logger(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/favicon.ico" {
-			fmt.Printf("%s: %s\n", r.Method, r.URL.Path)
-			next.ServeHTTP(w, r)
+			r.ParseForm()
+			slog.Debug("http request",
+				"method", r.Method,
+				"url", r.URL.Path,
+				"query", r.URL.RawQuery,
+				"form", r.Form,
+				"ip", r.RemoteAddr,
+			)
 		}
+		next.ServeHTTP(w, r)
 	})
 }
 
