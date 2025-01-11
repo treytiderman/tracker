@@ -3,7 +3,7 @@
 <div id="search" class="flex-col grow gap-4">
     <div class="flex-col gap-2 max-width">
         <div class="flex gap-2 items-center">
-            <a href="/" class="tt-icon-button dim tt-color-primary-hover">
+            <a href="/" class="tt-icon-button dim tt-color-primary-hover" title="Go to Home page">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" />
@@ -12,7 +12,8 @@
                 </svg>
             </a>
 
-            <button type="button" class="tt-icon-button dim tt-color-primary-hover" onclick="notes__show_editor()">
+            <button type="button" class="tt-icon-button dim tt-color-primary-hover" onclick="notes__show_editor()"
+                title="Search Notes (Ctrl+B)">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="11" cy="11" r="8" />
@@ -20,7 +21,7 @@
                 </svg>
             </button>
 
-            <a href="/notes" class="tt-icon-button dim tt-color-yellow-hover">
+            <a href="/notes" class="tt-icon-button dim tt-color-yellow-hover" title="Create New Note (Ctrl+Q)">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M5 12h14" />
@@ -28,23 +29,26 @@
                 </svg>
             </a>
 
-            <div class="grow place-items-center">Search</div>
+            <div class="grow place-items-center">Search Notes</div>
 
             <a class="tt-icon-button dim ztt-color-yellow-hover">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"></svg>
             </a>
 
-            <button type="button" class="tt-icon-button dim tt-color-yellow-hover" onclick="set_search_input('- [ ]')">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="5" width="6" height="6" rx="1"/>
-                    <path d="m3 17 2 2 4-4"/>
-                    <path d="M13 6h8"/>
-                    <path d="M13 12h8"/>
-                    <path d="M13 18h8"/>
+            <button type="button" class="tt-icon-button dim tt-color-yellow-hover" onclick="set_search_input('- [ ]')"
+                title="Search for Unchecked Tasks">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="5" width="6" height="6" rx="1" />
+                    <path d="m3 17 2 2 4-4" />
+                    <path d="M13 6h8" />
+                    <path d="M13 12h8" />
+                    <path d="M13 18h8" />
                 </svg>
             </button>
 
-            <button type="button" class="tt-icon-button dim tt-color-red-hover" onclick="notes__show_editor()">
+            <button type="button" class="tt-icon-button dim tt-color-red-hover" onclick="notes__show_editor()"
+                title="Back to Editor (Escape)">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M18 6 6 18" />
@@ -54,7 +58,7 @@
         </div>
 
         <form class="flex gap-4" hx-post="/notes/search" hx-target="#notes_page">
-            <input autofocus type="search" name="search" id="notes_search__search" placeholder="search..." class="tt-input grow"
+            <input type="search" name="search" id="notes_search__search" placeholder="search..." class="tt-input grow"
                 hx-post="/notes/search" hx-trigger="input changed delay:500ms, search" hx-target="#notes_search_results"
                 hx-swap="innerHTML">
         </form>

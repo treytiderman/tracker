@@ -9,13 +9,18 @@
 </section>
 
 <script>
+    let notes__is_showing_editor = false
     function notes__show_editor() {
+        notes__is_showing_editor = true
         document.getElementById("notes_editor").hidden = false
         document.getElementById("notes_search").hidden = true
+        monaco__focus()
     }
     function notes__show_search() {
+        notes__is_showing_editor = false
         document.getElementById("notes_editor").hidden = true
         document.getElementById("notes_search").hidden = false
+        notes_search__search.focus()
     }
 </script>
 

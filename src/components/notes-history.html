@@ -16,15 +16,7 @@
             <script>
                 document.getElementById("entry_{{$Entry.Id}}").children[0].children[0].innerText = getRelativeTimeString('{{ $Entry.Timestamp }}')
             </script>
-            <a href="/entry-view?tracker_id={{$.Tracker.Id}}&entry_id={{$Entry.Id}}"
-                class="tt-icon-button dim tt-color-primary-hover" title="View Entry">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-                </svg>
-            </a>
-            <a href="/notes?entry={{$Entry.Id}}" class="tt-icon-button dim tt-color-yellow-hover" title="View Entry">
+            <a href="/notes?entry={{$Entry.Id}}" class="tt-icon-button dim tt-color-yellow-hover" title="Edit Note">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path
@@ -32,8 +24,16 @@
                     <path d="m15 5 4 4" />
                 </svg>
             </a>
+            <a href="/entry-view?tracker_id={{$.Tracker.Id}}&entry_id={{$Entry.Id}}"
+                class="tt-icon-button dim tt-color-primary-hover" title="View Note">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                </svg>
+            </a>
             <a href="/htmx/tracker/log-delete?tracker_id={{$.Tracker.Id}}&entry_id={{$Entry.Id}}"
-                class="tt-icon-button dim tt-color-red-hover"
+                class="tt-icon-button dim tt-color-red-hover" title="Delete Note"
                 onclick="return confirm('Are you sure you want to delete this log?')">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
