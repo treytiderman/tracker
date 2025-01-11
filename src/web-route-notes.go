@@ -25,7 +25,7 @@ func notes_home_page(w http.ResponseWriter, r *http.Request) {
 
 	entry_id, err := strconv.Atoi(r.URL.Query().Get("entry"))
 	if err != nil {
-		entry_id = 1
+		entry_id = 0
 	}
 	log.Println("entry_id", entry_id)
 
