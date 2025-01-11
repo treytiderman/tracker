@@ -11,6 +11,10 @@ import (
 var db *sql.DB
 
 func main() {
+	// logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	// logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
+	// slog.SetDefault(logger)
+
 	db_path := os.Getenv("DB_PATH")
 	if db_path == "" {
 		db_path = "../data/data.db"

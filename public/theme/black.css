@@ -12,14 +12,14 @@
     --color-bg-header: var(--color-zinc-950);
     --color-text-heading: var(--color-zinc-200);
 
-    --color-bg-button: var(--color-zinc-950);
+    --color-bg-button: var(--color-zinc-900);
     --color-text-button: var(--color-zinc-200);
     --color-border-button: var(--color-zinc-600);
 
     --color-bg-input: var(--color-zinc-950);
     --color-text-input: var(--color-zinc-300);
     --color-border-input: var(--color-border);
-    --color-placeholder: var(--color-zinc-500);
+    --color-placeholder: var(--color-zinc-600);
 
     --color-text-link: var(--color-purple-300);
 

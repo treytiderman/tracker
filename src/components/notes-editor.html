@@ -2,7 +2,7 @@
 
 <form id="editor" class="flex-col grow gap-2" hx-post="/notes/entry?entry={{$.Entry.Id}}">
     <div class="flex gap-2 items-center max-width">
-        <a href="/" class="tt-icon-button dim tt-color-primary-hover">
+        <a href="/" class="tt-icon-button dim tt-color-primary-hover" title="Go to Home page">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" />
@@ -10,7 +10,8 @@
                     d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
             </svg>
         </a>
-        <button type="button" class="tt-icon-button dim tt-color-primary-hover" onclick="notes__show_search()">
+        <button type="button" class="tt-icon-button dim tt-color-primary-hover" onclick="notes__show_search()"
+            title="Search Notes (Ctrl+B)">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="11" cy="11" r="8" />
@@ -22,7 +23,7 @@
         <a class="tt-icon-button dim ztt-color-yellow-hover">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"></svg>
         </a>
-        <div class="grow place-items-center">New</div>
+        <div class="grow place-items-center">New Note</div>
         <a class="tt-icon-button dim ztt-color-yellow-hover">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"></svg>
         </a>
@@ -30,7 +31,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"></svg>
         </a>
         {{ else }}
-        <a href="/notes" class="tt-icon-button dim tt-color-yellow-hover">
+        <a href="/notes" class="tt-icon-button dim tt-color-yellow-hover" title="Create Note (Ctrl+Q)">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M5 12h14" />
@@ -42,12 +43,13 @@
             onclick="this.innerText = getTimeString('{{ $.Entry.Timestamp }}')"></div>
         <script>
             document.getElementById("editor").children[0].children[3].innerText = getRelativeTimeString('{{ $.Entry.Timestamp }}')
+            document.getElementById("editor").children[0].children[3].title = "Created on " + getTimeString('{{ $.Entry.Timestamp }}')
         </script>
         <a class="tt-icon-button dim ztt-color-yellow-hover">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"></svg>
         </a>
-        <a href="/entry-view?tracker_id=1&entry_id={{$.Entry.Id}}"
-            class="tt-icon-button dim tt-color-primary-hover" title="View Entry">
+        <a href="/entry-view?tracker_id=1&entry_id={{$.Entry.Id}}" class="tt-icon-button dim tt-color-primary-hover"
+            title="View Note">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
@@ -56,11 +58,8 @@
         </a>
         {{ end }}
 
-        <button type="submit" id="notes_editor_submit" class="tt-icon-button dim tt-color-green-hover">
-            <!-- <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20 6 9 17l-5-5" />
-            </svg> -->
+        <button type="submit" id="notes_editor_submit" class="tt-icon-button dim tt-color-green-hover"
+            title="Save (Ctrl + S)" disabled>
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path
@@ -84,26 +83,77 @@
 
 <script>
 
+    // Save on Ctrl+S
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "s" && (navigator.userAgent.includes("Mac") ? event.metaKey : event.ctrlKey)) {
+            event.preventDefault()
+            document.getElementById("notes_editor_submit").click()
+        }
+    })
+
+    // Show Search on Ctrl+B
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "b" && (navigator.userAgent.includes("Mac") ? event.metaKey : event.ctrlKey)) {
+            event.preventDefault()
+            notes__is_showing_editor ? notes__show_search() : notes__show_editor()
+        }
+    })
+
+    // Create New Note on Ctrl+Q
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "q" && (navigator.userAgent.includes("Mac") ? event.metaKey : event.ctrlKey)) {
+            event.preventDefault()
+            window.location.href = "/notes"
+        }
+    })
+
+    // Show Editor on Escape Key
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+            event.preventDefault()
+            notes__show_editor()
+        }
+    })
+
     // Monaco Editor Setup
+    monaco__focus()
     monaco__line_numbers_set(true)
     monaco__value_set(document.getElementById("minimal__textarea").value)
 
-    if (localStorage.getItem("memory") && !document.getElementById("minimal__textarea").value) {
-        document.getElementById("minimal__textarea").value = localStorage.getItem("memory")
-        monaco__value_set(localStorage.getItem("memory"))
+    let entry_value_needs_saved = false
+    const entry_value = document.getElementById("minimal__textarea").value
+
+    function check_entry_value_needs_saved() {
+        entry_value_needs_saved = monaco__value_get() !== entry_value
+        document.getElementById("notes_editor_submit").disabled = !entry_value_needs_saved
+        console.log("entry_value_needs_saved", entry_value_needs_saved);
+
+        if (!entry_value_needs_saved) {
+            localStorage.removeItem("memory_{{$.Entry.Id}}")
+        }
+    }
+
+    check_entry_value_needs_saved()
+
+    if (localStorage.getItem("memory_{{$.Entry.Id}}")) {
+        document.getElementById("minimal__textarea").value = localStorage.getItem("memory_{{$.Entry.Id}}")
+        monaco__value_set(localStorage.getItem("memory_{{$.Entry.Id}}"))
+        check_entry_value_needs_saved()
     }
 
     monaco__value_oninput(event => {
-        localStorage.setItem("memory", monaco__value_get())
+        localStorage.setItem("memory_{{$.Entry.Id}}", monaco__value_get())
         document.getElementById("minimal__textarea").value = monaco__value_get()
+        check_entry_value_needs_saved()
     })
 
     document.getElementById("minimal__textarea").addEventListener("input", event => {
         monaco__value_set(document.getElementById("minimal__textarea").value)
+        check_entry_value_needs_saved()
     })
 
     document.getElementById("notes_editor_submit").addEventListener("click", event => {
-        localStorage.setItem("memory", "")
+        localStorage.removeItem("memory_{{$.Entry.Id}}")
     })
 
     // Show textarea on mobile

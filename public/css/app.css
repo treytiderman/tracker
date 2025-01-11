@@ -250,6 +250,11 @@ input[type=checkbox].tt-input:checked {
 
 /* Markdown */
 
+.tt-markdown h2,
+.tt-markdown h3 {
+    padding-top: 1.5rem;
+}
+
 .tt-markdown a {
     color: var(--color-text-link);
 }

@@ -1,21 +1,26 @@
 {{ define "app_page" }}
 
-<section id="notes_editor" class="h-full flex-col grow gap-4 pad-4">
+<section id="notes_editor" class="h-full flex-col grow gap-4 pad-4" style="padding-top: 2rem;">
     {{ template "notes_editor" . }}
 </section>
 
-<section id="notes_search" class="h-full flex-col grow gap-4 pad-4" hidden>
+<section id="notes_search" class="h-full flex-col grow gap-4 pad-4" style="padding-top: 2rem;" hidden>
     {{ template "notes_search" . }}
 </section>
 
 <script>
+    let notes__is_showing_editor = false
     function notes__show_editor() {
+        notes__is_showing_editor = true
         document.getElementById("notes_editor").hidden = false
         document.getElementById("notes_search").hidden = true
+        monaco__focus()
     }
     function notes__show_search() {
+        notes__is_showing_editor = false
         document.getElementById("notes_editor").hidden = true
         document.getElementById("notes_search").hidden = false
+        notes_search__search.focus()
     }
 </script>
 
