@@ -352,11 +352,9 @@ func htmx_entry_history(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.Form.Del("id")
-	log.Println("FORM: tracker_id =", tracker_id)
 
 	search := r.Form.Get("search")
 	r.Form.Del("search")
-	log.Println("FORM: search =", search)
 
 	tracker, err := Get_Tracker(db, tracker_id)
 	if err != nil {

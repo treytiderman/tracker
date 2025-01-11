@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"log/slog"
 	"math"
 	"net/http"
 	"os"
@@ -14,8 +15,8 @@ import (
 )
 
 func handle_routes_api_htmx(mux *http.ServeMux) {
-	mux.Handle("GET /htmx/token", mw_logger(http.HandlerFunc(auth_token_get)))   // test cookie
-	mux.Handle("POST /htmx/token", mw_logger(http.HandlerFunc(auth_token_post))) // set cookie if password correct
+	mux.Handle("GET /htmx/token", http.HandlerFunc(auth_token_get))   // test cookie
+	mux.Handle("POST /htmx/token", http.HandlerFunc(auth_token_post)) // set cookie if password correct
 
 	mux.Handle("/htmx/test/form", mw_logger(http.HandlerFunc(htmx_test_form)))
 
@@ -82,19 +83,19 @@ func auth_token_post(w http.ResponseWriter, r *http.Request) {
 
 	if form_password == password {
 		cookie := http.Cookie{
-			Name:   "token",
-			Value:  form_password,
-			Path:   "/",
-			MaxAge: 0,
-			// HttpOnly: true, // can't access via javascript
+			Name:     "token",
+			Value:    form_password,
+			Path:     "/",
+			MaxAge:   0,
+			HttpOnly: true,
 			Secure:   true,
 			SameSite: http.SameSiteLaxMode,
 		}
 		http.SetCookie(w, &cookie)
-		log.Printf("FORM: password correct\n")
+		slog.Info("password correct, cookie set")
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	} else {
-		log.Printf("FORM: password not correct\n")
+		slog.Warn("password not correct")
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 	}
 }
@@ -102,16 +103,6 @@ func auth_token_post(w http.ResponseWriter, r *http.Request) {
 // Test
 
 func htmx_test_form(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseForm()
-	if err != nil {
-		return
-	}
-
-	for key, value := range r.Form {
-		val := strings.ReplaceAll(value[0], "\n", "\\n")
-		log.Printf("FORM: %s = %s\n", key, val)
-	}
-
 	w.Write([]byte("ok"))
 }
 
@@ -122,7 +113,6 @@ func htmx_tracker_create(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-	log.Printf("FORM: %s\n", r.Form.Encode())
 
 	tracker_name := r.Form.Get("tracker_name")
 	tracker_notes := r.Form.Get("tracker_notes")
@@ -187,7 +177,6 @@ func htmx_tracker_name(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-	log.Printf("FORM: %s\n", r.Form.Encode())
 
 	// Get Id from URL
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
@@ -214,7 +203,6 @@ func htmx_tracker_notes(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-	log.Printf("FORM: %s\n", r.Form.Encode())
 
 	// Get Id from URL
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
@@ -258,10 +246,6 @@ func htmx_entry_create(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
 		return
-	}
-	for key, value := range r.Form {
-		val := strings.ReplaceAll(value[0], "\n", "\\n")
-		log.Printf("FORM: %s = %s\n", key, val)
 	}
 
 	// Get Id from URL
@@ -351,10 +335,6 @@ func htmx_entry_update(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-	for key, value := range r.Form {
-		val := strings.ReplaceAll(value[0], "\n", "\\n")
-		log.Printf("FORM: %s = %s\n", key, val)
-	}
 
 	// Get Id from URL
 	entry_id, err := strconv.Atoi(r.URL.Query().Get("entry_id"))
@@ -394,7 +374,6 @@ func htmx_entry_update(w http.ResponseWriter, r *http.Request) {
 	time_string := fmt.Sprintf("%s %s %s", entry_date, entry_time, entry_timezone)
 	dt, err := time.Parse("2006-01-02 15:04:05 -0700", time_string)
 	if err != nil {
-		log.Println("error parsing timestamp")
 		return
 	}
 
@@ -403,20 +382,16 @@ func htmx_entry_update(w http.ResponseWriter, r *http.Request) {
 	for k, v := range r.Form {
 
 		ids := strings.Split(k, "__")
-		fmt.Println(ids)
 
 		log_id, err := strconv.Atoi(strings.ReplaceAll(ids[0], "log_", ""))
 		if err != nil {
-			log.Println("error getting log_id")
 			return
 		}
 
 		field_id, err := strconv.Atoi(strings.ReplaceAll(ids[1], "field_", ""))
 		if err != nil {
-			log.Println("error getting field_id")
 			return
 		}
-		fmt.Println("log_id", log_id, "\nfield_id", field_id)
 
 		var field Db_Field
 		for _, f := range tracker.Fields {
@@ -454,7 +429,6 @@ func htmx_log_create(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-	log.Printf("FORM: %s\n", r.Form.Encode())
 
 	// Get Id from URL
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
@@ -529,7 +503,6 @@ func htmx_log_update(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	log.Printf("FORM: %s\n", r.Form.Encode())
 
 	entry_note := r.Form.Get("entry_note")
 
@@ -634,7 +607,7 @@ func content_delete(w http.ResponseWriter, r *http.Request) {
 
 	// remove content path from db
 
-	log.Println("FILE DELETED:", content_path)
+	slog.Info("FILE DELETED:", "path", content_path)
 	w.Write([]byte("ok"))
 }
 
@@ -674,7 +647,7 @@ func content_upload(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("FILE SAVED: %s\n", path)
+	slog.Info("FILE Saved:", "path", path)
 	defer file.Close()
 
 	_, err = io.Copy(file, r.Body)

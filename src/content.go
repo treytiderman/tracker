@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"log/slog"
 	"os"
 )
 
@@ -57,7 +57,7 @@ func Upload_Content(file_name string, file_bytes []byte) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("file uploaded", content_folder_path+file_name)
+	slog.Info("file uploaded", "path", content_folder_path+file_name)
 
 	// add content path to db?
 
@@ -69,7 +69,7 @@ func Delete_Content(file_name string) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("file deleted:", content_folder_path+file_name)
+	slog.Info("file deleted", "path", content_folder_path+file_name)
 
 	// remove content path from db?
 
