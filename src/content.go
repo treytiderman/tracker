@@ -7,10 +7,12 @@ import (
 
 type Content struct {
 	Path string
+	Url string
 	Name string
 	Size int
 }
 
+var content_folder_url = "/content/"
 var content_folder_path = "../content/"
 
 func Get_Content_List() ([]Content, error) {
@@ -29,6 +31,7 @@ func Get_Content_List() ([]Content, error) {
 
 		content_list = append(content_list, Content{
 			Path: content_folder_path + file.Name(),
+			Url: content_folder_url + file.Name(),
 			Name: file.Name(),
 			Size: int(info.Size()),
 		})
