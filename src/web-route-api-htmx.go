@@ -32,8 +32,8 @@ func handle_routes_api_htmx(mux *http.ServeMux) {
 	mux.Handle("POST /htmx/tracker/log-update", mw_logger(mw_read_only(mw_auth(http.HandlerFunc(htmx_log_update)))))
 	mux.Handle("GET /htmx/tracker/log-delete", mw_logger(mw_read_only(mw_auth(http.HandlerFunc(htmx_log_delete)))))
 
+	mux.Handle("GET /content/{content_path}", mw_auth(http.HandlerFunc(content_get)))
 	mux.Handle("POST /content-upload", mw_logger(mw_read_only(mw_auth(http.HandlerFunc(content_upload)))))
-	mux.Handle("GET /content/{content_path}", mw_logger(mw_auth(http.HandlerFunc(content_get))))
 	mux.Handle("DELETE /content/{content_path}", mw_logger(mw_read_only(mw_auth(http.HandlerFunc(content_delete)))))
 }
 

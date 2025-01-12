@@ -29,6 +29,7 @@ func handle_routes_page(mux *http.ServeMux) {
 	mux.Handle("/entry-view", mw_logger(mw_auth(http.HandlerFunc(page_entry_view))))
 	mux.Handle("/entry-editor", mw_logger(mw_auth(http.HandlerFunc(page_entry_editor))))
 
+	mux.Handle("/content", mw_logger(mw_auth(http.HandlerFunc(page_content))))
 	mux.Handle("/settings", mw_logger(mw_auth(http.HandlerFunc(page_settings))))
 	mux.Handle("/test", mw_logger(mw_auth(http.HandlerFunc(page_test))))
 }
@@ -487,6 +488,32 @@ func page_settings(w http.ResponseWriter, r *http.Request) {
 		Title:    "Trackers",
 		Tracker:  Db_Tracker{Id: 1, Name: ""},
 		Trackers: trackers,
+	})
+}
+
+func page_content(w http.ResponseWriter, r *http.Request) {
+	tmp := parse_templates("page-content")
+
+	trackers, err := Get_Trackers(db)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	content_list, err := Get_Content_List()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	tmp.ExecuteTemplate(w, "app", struct {
+		Title        string
+		Tracker      Db_Tracker
+		Trackers     []Db_Tracker
+		Content_List []Content
+	}{
+		Title:        "Log",
+		Tracker:      Db_Tracker{Id: 1, Name: ""},
+		Trackers:     trackers,
+		Content_List: content_list,
 	})
 }
 
